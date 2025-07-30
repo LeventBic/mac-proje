@@ -1,0 +1,1 @@
+UPDATE users SET password_hash = '$2a$12$D5y.uKNRWamYuCWNb4sp3eKaDWy1mGQLcQ4N.nR15PZYFiQA/xyRm' WHERE username = 'levent';

@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  # Frontend Service
+  frontend:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - REACT_APP_API_URL=http://backend:3001/api
+      - GENERATE_SOURCEMAP=false
+    depends_on:
+      - backend
+    networks:
+      - app-network
+    volumes:
+      - ./src:/app/src
+    command: npm start
+
+  # Backend Service (bu bölümü kendi backend yapınıza göre güncelleyin)
+  backend:
+    # Backend image veya build path'inizi buraya yazın
+    # build: ../backend  # Backend klasörünüz buradaysa
+    # image: your-backend-image:latest  # Veya hazır image kullanıyorsanız
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=development
+      - DB_HOST=database
+      - DB_PORT=5432
+    depends_on:
+      - database
+    networks:
+      - app-network
+
+  # Database Service (PostgreSQL örneği)
+  database:
+    image: postgres:15
+    environment:
+      - POSTGRES_DB=your_database_name
+      - POSTGRES_USER=your_username
+      - POSTGRES_PASSWORD=your_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  postgres_data: 
