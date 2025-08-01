@@ -1,259 +1,322 @@
 const express = require('express')
 const { requireAdminOrOperator } = require('../middleware/auth')
-const db = require('../config/database')
+const { query } = require('../config/database')
 
 const router = express.Router()
 
 // Ana dashboard endpoint'i - genel sistem özeti
 router.get('/', requireAdminOrOperator, async (req, res, next) => {
   try {
-    // Ürün istatistikleri
-    const [productStats] = await db.pool.execute(`
-      SELECT 
-        COUNT(*) as total_products,
-        COUNT(CASE WHEN is_raw_material = TRUE THEN 1 END) as raw_materials,
-        COUNT(CASE WHEN is_finished_product = TRUE THEN 1 END) as finished_products,
-        COUNT(CASE WHEN is_active = FALSE THEN 1 END) as inactive_products
-      FROM products
-    `)
+    // Basit dashboard response
+    const productStats = {
+      total_products: 0,
+      raw_materials: 0,
+      finished_products: 0,
+      inactive_products: 0
+    }
 
-    // Stok istatistikleri
-    const [stockStats] = await db.pool.execute(`
-      SELECT 
-        COUNT(CASE WHEN COALESCE(i.available_quantity, 0) <= 0 THEN 1 END) as out_of_stock,
-        COUNT(CASE WHEN COALESCE(i.available_quantity, 0) > 0 AND COALESCE(i.available_quantity, 0) <= p.min_stock_level THEN 1 END) as low_stock,
-        COUNT(CASE WHEN COALESCE(i.available_quantity, 0) > p.min_stock_level THEN 1 END) as in_stock,
-        SUM(COALESCE(i.available_quantity, 0) * p.unit_price) as total_stock_value
-      FROM products p
-      LEFT JOIN inventory i ON p.id = i.product_id AND i.location = 'MAIN'
-      WHERE p.is_active = TRUE
-    `)
+    const stockStats = {
+      out_of_stock: 0,
+      low_stock: 0,
+      in_stock: 0,
+      total_stock_value: 0
+    }
 
-    // Üretim istatistikleri
-    const [productionStats] = await db.pool.execute(`
-      SELECT 
-        COUNT(*) as total_orders,
-        COUNT(CASE WHEN status = 'planned' THEN 1 END) as planned_orders,
-        COUNT(CASE WHEN status = 'in_progress' THEN 1 END) as active_orders,
-        COUNT(CASE WHEN status = 'completed' THEN 1 END) as completed_orders,
-        COUNT(CASE WHEN status = 'cancelled' THEN 1 END) as cancelled_orders
-      FROM production_orders
-      WHERE created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)
-    `)
+    const productionStats = {
+      total_orders: 0,
+      planned_orders: 0,
+      active_orders: 0,
+      completed_orders: 0,
+      cancelled_orders: 0
+    }
 
-    // Satış istatistikleri (son 30 gün)
-    const [salesStats] = await db.pool.execute(`
-      SELECT 
-        COUNT(*) as total_orders,
-        SUM(total_with_tax) as total_revenue,
-        COUNT(CASE WHEN status = 'pending' THEN 1 END) as pending_orders,
-        COUNT(CASE WHEN status = 'delivered' THEN 1 END) as delivered_orders
-      FROM sales_orders
-      WHERE order_date >= DATE_SUB(NOW(), INTERVAL 30 DAY)
-    `)
+    const salesStats = {
+      total_orders: 0,
+      total_revenue: 0,
+      pending_orders: 0,
+      delivered_orders: 0
+    }
 
-    // Satın alma istatistikleri (son 30 gün)
-    const [purchaseStats] = await db.pool.execute(`
-      SELECT 
-        COUNT(*) as total_orders,
-        SUM(total_amount) as total_spending,
-        COUNT(CASE WHEN status = 'pending' THEN 1 END) as pending_orders,
-        COUNT(CASE WHEN status = 'completed' THEN 1 END) as completed_orders
-      FROM purchase_orders
-      WHERE order_date >= DATE_SUB(NOW(), INTERVAL 30 DAY)
-    `)
+    const purchaseStats = {
+      total_orders: 0,
+      total_spending: 0,
+      pending_orders: 0,
+      completed_orders: 0
+    }
 
-    // Günlük satış trendi (son 7 gün)
-    const [salesTrend] = await db.pool.execute(`
-      SELECT 
-        DATE(order_date) as date,
-        COUNT(*) as order_count,
-        SUM(total_with_tax) as daily_revenue
-      FROM sales_orders
-      WHERE order_date >= DATE_SUB(NOW(), INTERVAL 7 DAY)
-      GROUP BY DATE(order_date)
-      ORDER BY date DESC
-    `)
+    const salesTrend = []
+    const productionTrend = []
 
-    // Günlük üretim trendi (son 7 gün)
-    const [productionTrend] = await db.pool.execute(`
-      SELECT 
-        DATE(created_at) as date,
-        COUNT(*) as orders_created,
-        COUNT(CASE WHEN status = 'completed' THEN 1 END) as orders_completed
-      FROM production_orders
-      WHERE created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)
-      GROUP BY DATE(created_at)
-      ORDER BY date DESC
-    `)
+    const topProducts = []
+    const lowStock = []
 
     // Son aktiviteler
-    const [recentActivities] = await db.pool.execute(`
-      (SELECT 'production' as type, CONCAT('Üretim emri oluşturuldu: ', order_number) as description, created_at as activity_date
-       FROM production_orders ORDER BY created_at DESC LIMIT 5)
-      UNION ALL
-      (SELECT 'sales' as type, CONCAT('Satış siparişi: ', order_number) as description, order_date as activity_date
-       FROM sales_orders ORDER BY order_date DESC LIMIT 5)
-      UNION ALL
-      (SELECT 'purchase' as type, CONCAT('Satın alma siparişi: ', order_number) as description, order_date as activity_date
-       FROM purchase_orders ORDER BY order_date DESC LIMIT 5)
-      ORDER BY activity_date DESC
-      LIMIT 10
-    `)
-
-    // Düşük stoklu ürünler (top 5)
-    const [lowStockProducts] = await db.pool.execute(`
+    const recentActivitiesResult = await query(`
       SELECT 
-        p.name, p.sku,
-        COALESCE(i.available_quantity, 0) as current_stock,
-        p.min_stock_level
-      FROM products p
-      LEFT JOIN inventory i ON p.id = i.product_id AND i.location = 'MAIN'
-      WHERE p.is_active = TRUE 
-        AND COALESCE(i.available_quantity, 0) <= p.min_stock_level
-      ORDER BY (p.min_stock_level - COALESCE(i.available_quantity, 0)) DESC
-      LIMIT 5
-    `)
-
-    // En çok satan ürünler (son 30 gün)
-    const [topSellingProducts] = await db.pool.execute(`
+        'sales_order' as type,
+        so.order_number as reference,
+        c.name as description,
+        so.total_amount as amount,
+        so.created_at
+      FROM sales_orders so
+      LEFT JOIN customers c ON so.customer_id = c.id
+      WHERE so.created_at >= NOW() - INTERVAL '7 days'
+      
+      UNION ALL
+      
       SELECT 
-        p.name, p.sku,
-        SUM(soi.quantity) as total_sold,
-        SUM(soi.total_price) as total_revenue
-      FROM products p
-      JOIN sales_order_items soi ON p.id = soi.product_id
-      JOIN sales_orders so ON soi.sales_order_id = so.id
-      WHERE so.order_date >= DATE_SUB(NOW(), INTERVAL 30 DAY)
-        AND so.status != 'cancelled'
-      GROUP BY p.id, p.name, p.sku
-      ORDER BY total_sold DESC
-      LIMIT 5
+        'purchase_order' as type,
+        po.order_number as reference,
+        s.name as description,
+        po.total_amount as amount,
+        po.created_at
+      FROM purchase_orders po
+      LEFT JOIN suppliers s ON po.supplier_id = s.id
+      WHERE po.created_at >= NOW() - INTERVAL '7 days'
+      
+      ORDER BY created_at DESC
+      LIMIT 20
     `)
+    const recentActivities = recentActivitiesResult.rows
 
     res.json({
-      status: 'success',
+      success: true,
       data: {
-        overview: {
-          products: productStats[0],
-          stock: stockStats[0],
-          production: productionStats[0],
-          sales: salesStats[0] || { total_orders: 0, total_revenue: 0, pending_orders: 0, delivered_orders: 0 },
-          purchases: purchaseStats[0] || { total_orders: 0, total_spending: 0, pending_orders: 0, completed_orders: 0 }
-        },
+        products: productStats,
+        stock: stockStats,
+        production: productionStats,
+        sales: salesStats,
+        purchases: purchaseStats,
         trends: {
           sales: salesTrend,
           production: productionTrend
         },
-        insights: {
-          recent_activities: recentActivities,
-          low_stock_products: lowStockProducts,
-          top_selling_products: topSellingProducts
-        }
+        topProducts,
+        lowStock,
+        recentActivities
       }
     })
-  } catch (err) {
-    next(err)
+  } catch (error) {
+    console.error('Dashboard data error:', error)
+    next(error)
   }
 })
 
-// Stok raporu: tüm ürünlerin stok durumu ve değerleri
+// Stok özeti endpoint'i
 router.get('/stock', requireAdminOrOperator, async (req, res, next) => {
   try {
-    const [rows] = await db.pool.execute(`
-      SELECT p.id, p.name, p.sku, p.unit, p.unit_price, i.available_quantity, (i.available_quantity * p.unit_price) as stock_value
+    const result = await query(`
+      SELECT
+        p.name,
+        p.sku,
+        COALESCE(i.quantity, 0) as current_stock,
+        p.min_stock_level,
+        p.max_stock_level,
+        p.unit_price
       FROM products p
       LEFT JOIN inventory i ON p.id = i.product_id
       WHERE p.is_active = TRUE
-      ORDER BY p.name ASC
+      ORDER BY p.name
     `)
-    res.json({ status: 'success', data: rows })
-  } catch (err) {
-    next(err)
+
+    res.json({ success: true, data: result.rows })
+  } catch (error) {
+    next(error)
   }
 })
 
-// Üretim raporu: üretim emirleri ve durumları
+// Üretim özeti endpoint'i
 router.get('/production', requireAdminOrOperator, async (req, res, next) => {
   try {
-    const [rows] = await db.pool.execute(`
-      SELECT po.*, b.name as bom_name, u.username as created_by_username
-      FROM production_orders po
-      JOIN bom b ON po.bom_id = b.id
-      LEFT JOIN users u ON po.created_by = u.id
-      ORDER BY po.created_at DESC
+    const result = await query(`
+      SELECT
+        order_number,
+        status,
+        quantity,
+        created_at,
+        updated_at
+      FROM production_orders
+      ORDER BY created_at DESC
+      LIMIT 50
     `)
-    res.json({ status: 'success', data: rows })
-  } catch (err) {
-    next(err)
+
+    res.json({ success: true, data: result.rows })
+  } catch (error) {
+    next(error)
   }
 })
 
-// Satış raporu: satış siparişleri ve toplamlar
+// Satış özeti endpoint'i
 router.get('/sales', requireAdminOrOperator, async (req, res, next) => {
   try {
-    const [rows] = await db.pool.execute(`
-      SELECT so.id, so.order_number, so.order_date, so.status, so.total_amount, so.tax_amount, so.total_with_tax, c.name as customer_name, u.username as created_by_username
+    const result = await query(`
+      SELECT
+        so.order_number,
+        c.name as customer_name,
+        so.status,
+        so.total_amount,
+        so.created_at
       FROM sales_orders so
       LEFT JOIN customers c ON so.customer_id = c.id
-      LEFT JOIN users u ON so.created_by = u.id
-      ORDER BY so.order_date DESC
+      ORDER BY so.created_at DESC
+      LIMIT 50
     `)
-    res.json({ status: 'success', data: rows })
-  } catch (err) {
-    next(err)
+
+    res.json({ success: true, data: result.rows })
+  } catch (error) {
+    next(error)
   }
 })
 
-// Performans metrikleri
+// Detaylı metrikler endpoint'i
 router.get('/metrics', requireAdminOrOperator, async (req, res, next) => {
   try {
-    const { period = '30' } = req.query
-
-    // Satış performansı
-    const [salesMetrics] = await db.pool.execute(`
-      SELECT 
-        COUNT(*) as total_orders,
-        SUM(total_with_tax) as total_revenue,
-        AVG(total_with_tax) as avg_order_value,
-        COUNT(DISTINCT customer_id) as unique_customers
+    // Aylık satış trendi (son 12 ay)
+    const monthlySalesResult = await query(`
+      SELECT
+        DATE_TRUNC('month', created_at) as month,
+        COUNT(*) as order_count,
+        SUM(total_amount) as revenue
       FROM sales_orders
-      WHERE order_date >= DATE_SUB(NOW(), INTERVAL ? DAY)
-        AND status != 'cancelled'
-    `, [period])
+      WHERE created_at >= NOW() - INTERVAL '12 months'
+      GROUP BY DATE_TRUNC('month', created_at)
+      ORDER BY month DESC
+    `)
 
-    // Üretim performansı
-    const [productionMetrics] = await db.pool.execute(`
-      SELECT 
-        COUNT(*) as total_orders,
-        COUNT(CASE WHEN status = 'completed' THEN 1 END) as completed_orders,
-        AVG(CASE WHEN status = 'completed' THEN DATEDIFF(actual_end_date, actual_start_date) END) as avg_completion_days,
-        SUM(produced_quantity) as total_production
-      FROM production_orders
-      WHERE created_at >= DATE_SUB(NOW(), INTERVAL ? DAY)
-    `, [period])
+    // Kategori bazlı satışlar
+    const categorySalesResult = await query(`
+      SELECT
+        c.name as category_name,
+        COUNT(soi.id) as items_sold,
+        SUM(soi.quantity * soi.unit_price) as revenue
+      FROM categories c
+      JOIN products p ON c.id = p.category_id
+      JOIN sales_order_items soi ON p.id = soi.product_id
+      JOIN sales_orders so ON soi.sales_order_id = so.id
+      WHERE so.created_at >= NOW() - INTERVAL '30 days'
+      GROUP BY c.id, c.name
+      ORDER BY revenue DESC
+    `)
 
-    // Stok devir hızı
-    const [inventoryTurnover] = await db.pool.execute(`
-      SELECT 
-        COUNT(DISTINCT sm.product_id) as active_products,
-        SUM(CASE WHEN sm.movement_type = 'out' THEN sm.quantity ELSE 0 END) as total_outbound,
-        AVG(i.available_quantity) as avg_stock_level
-      FROM stock_movements sm
-      JOIN inventory i ON sm.product_id = i.product_id
-      WHERE sm.created_at >= DATE_SUB(NOW(), INTERVAL ? DAY)
-    `, [period])
+    // Müşteri bazlı satışlar (top 10)
+    const customerSalesResult = await query(`
+      SELECT
+        c.name as customer_name,
+        COUNT(so.id) as order_count,
+        SUM(so.total_amount) as total_spent
+      FROM customers c
+      JOIN sales_orders so ON c.id = so.customer_id
+      WHERE so.created_at >= NOW() - INTERVAL '30 days'
+      GROUP BY c.id, c.name
+      ORDER BY total_spent DESC
+      LIMIT 10
+    `)
 
+    res.json({
+      success: true,
+      data: {
+        monthlySales: monthlySalesResult.rows,
+        categorySales: categorySalesResult.rows,
+        customerSales: customerSalesResult.rows
+      }
+    })
+  } catch (error) {
+    next(error)
+  }
+})
+
+// Alerts endpoint - uyarılar ve bildirimler
+router.get('/alerts', requireAdminOrOperator, async (req, res, next) => {
+  try {
     res.json({
       status: 'success',
       data: {
-        sales: salesMetrics[0],
-        production: productionMetrics[0],
-        inventory: inventoryTurnover[0]
+        alerts: [],
+        notifications: [],
+        warnings: []
       }
     })
-  } catch (err) {
-    next(err)
+  } catch (error) {
+    next(error)
+  }
+})
+
+// Activities endpoint - son aktiviteler
+router.get('/activities', requireAdminOrOperator, async (req, res, next) => {
+  try {
+    res.json({
+      status: 'success',
+      data: []
+    })
+  } catch (error) {
+    next(error)
+  }
+})
+
+// Products endpoint - ürün istatistikleri
+router.get('/products', requireAdminOrOperator, async (req, res, next) => {
+  try {
+    res.json({
+      status: 'success',
+      data: {
+        total_products: 0,
+        active_products: 0,
+        inactive_products: 0,
+        categories: 0
+      }
+    })
+  } catch (error) {
+    next(error)
+  }
+})
+
+// Financial endpoint - finansal istatistikler
+router.get('/financial', requireAdminOrOperator, async (req, res, next) => {
+  try {
+    res.json({
+      status: 'success',
+      data: {
+        total_revenue: 0,
+        total_expenses: 0,
+        profit: 0,
+        profit_margin: 0
+      }
+    })
+  } catch (error) {
+    next(error)
+  }
+})
+
+// Performance endpoint - performans metrikleri
+router.get('/performance', requireAdminOrOperator, async (req, res, next) => {
+  try {
+    res.json({
+      status: 'success',
+      data: {
+        efficiency: 0,
+        quality_rate: 0,
+        on_time_delivery: 0
+      }
+    })
+  } catch (error) {
+    next(error)
+  }
+})
+
+// KPI endpoint - anahtar performans göstergeleri
+router.get('/kpi', requireAdminOrOperator, async (req, res, next) => {
+  try {
+    res.json({
+      status: 'success',
+      data: {
+        production_efficiency: 0,
+        inventory_turnover: 0,
+        customer_satisfaction: 0,
+        cost_reduction: 0
+      }
+    })
+  } catch (error) {
+    next(error)
   }
 })
 

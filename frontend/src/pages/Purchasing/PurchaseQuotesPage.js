@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { FiPlus, FiEye, FiCheck, FiX, FiRefreshCw, FiMail, FiFileText } from 'react-icons/fi';
 import { toast } from 'react-hot-toast';
+import axiosClient from '../../config/axiosClient';
 
 const PurchaseQuotesPage = () => {
     const [showCreateModal, setShowCreateModal] = useState(false);
@@ -22,14 +23,8 @@ const PurchaseQuotesPage = () => {
                 if (value) params.append(key, value);
             });
             
-            const response = await fetch(`/api/purchase-quotes?${params}`, {
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
-                }
-            });
-            
-            if (!response.ok) throw new Error('Teklif verileri getirilemedi');
-            return response.json();
+            const response = await axiosClient.get(`/purchase-quotes?${params}`);
+            return response.data;
         }
     });
 
@@ -37,14 +32,8 @@ const PurchaseQuotesPage = () => {
     const { data: suppliersData } = useQuery({
         queryKey: ['quotesSuppliers'],
         queryFn: async () => {
-            const response = await fetch('/api/purchase-orders/suppliers/list', {
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
-                }
-            });
-            
-            if (!response.ok) throw new Error('Tedarikçi listesi getirilemedi');
-            return response.json();
+            const response = await axiosClient.get('/purchase-orders/suppliers/list');
+            return response.data;
         }
     });
 
@@ -52,31 +41,16 @@ const PurchaseQuotesPage = () => {
     const { data: productsData } = useQuery({
         queryKey: ['quotesProducts'],
         queryFn: async () => {
-            const response = await fetch('/api/purchase-orders/products/list', {
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
-                }
-            });
-            
-            if (!response.ok) throw new Error('Ürün listesi getirilemedi');
-            return response.json();
+            const response = await axiosClient.get('/purchase-orders/products/list');
+            return response.data;
         }
     });
 
     // Yeni teklif talebi oluştur
     const createQuoteMutation = useMutation({
         mutationFn: async (data) => {
-            const response = await fetch('/api/purchase-quotes', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
-                },
-                body: JSON.stringify(data)
-            });
-            
-            if (!response.ok) throw new Error('Teklif talebi oluşturulamadı');
-            return response.json();
+            const response = await axiosClient.post('/purchase-quotes', data);
+            return response.data;
         },
         onSuccess: () => {
             queryClient.invalidateQueries(['purchaseQuotes']);
@@ -91,17 +65,8 @@ const PurchaseQuotesPage = () => {
     // Durum güncelleme
     const updateStatusMutation = useMutation({
         mutationFn: async ({ quoteId, status }) => {
-            const response = await fetch(`/api/purchase-quotes/${quoteId}/status`, {
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
-                },
-                body: JSON.stringify({ status })
-            });
-            
-            if (!response.ok) throw new Error('Durum güncellenemedi');
-            return response.json();
+            const response = await axiosClient.patch(`/purchase-quotes/${quoteId}/status`, { status });
+            return response.data;
         },
         onSuccess: () => {
             queryClient.invalidateQueries(['purchaseQuotes']);
@@ -112,15 +77,8 @@ const PurchaseQuotesPage = () => {
     // Siparişe çevir
     const convertToOrderMutation = useMutation({
         mutationFn: async (quoteId) => {
-            const response = await fetch(`/api/purchase-quotes/${quoteId}/convert-to-order`, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
-                }
-            });
-            
-            if (!response.ok) throw new Error('Siparişe çevrilemedi');
-            return response.json();
+            const response = await axiosClient.post(`/purchase-quotes/${quoteId}/convert-to-order`);
+            return response.data;
         },
         onSuccess: (data) => {
             queryClient.invalidateQueries(['purchaseQuotes']);
@@ -590,4 +548,4 @@ const PurchaseQuotesPage = () => {
     );
 };
 
-export default PurchaseQuotesPage; 
+export default PurchaseQuotesPage;

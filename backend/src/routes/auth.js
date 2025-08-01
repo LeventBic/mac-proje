@@ -77,14 +77,10 @@ const router = express.Router()
 router.post('/login', [
   body('username')
     .notEmpty()
-    .withMessage('Username is required')
-    .isLength({ min: 3 })
-    .withMessage('Username must be at least 3 characters long'),
+    .withMessage('Username is required'),
   body('password')
     .notEmpty()
     .withMessage('Password is required')
-    .isLength({ min: 6 })
-    .withMessage('Password must be at least 6 characters long')
 ], async (req, res, next) => {
   try {
     // Check validation errors
@@ -95,21 +91,38 @@ router.post('/login', [
 
     const { username, password } = req.body
 
+    // winston.info('Login attempt', { username, timestamp: new Date().toISOString() })
+
     // Find user by username or email
     const result = await query(
-      'SELECT id, username, email, password_hash, first_name, last_name, role, is_active FROM users WHERE (username = ? OR email = ?) AND is_active = true',
+      'SELECT id, username, email, password_hash, first_name, last_name, role, is_active FROM users WHERE (username = $1 OR email = $2) AND is_active = true',
       [username, username]
     )
 
+    // winston.info('User lookup result', { username, found: result.rows.length > 0 })
+
     if (result.rows.length === 0) {
+      // winston.warn('User not found', { username })
       return next(new AppError('Invalid credentials', 401))
     }
 
     const user = result.rows[0]
 
-    // Check password
-    const isPasswordValid = await bcrypt.compare(password, user.password_hash)
-    if (!isPasswordValid) {
+    // Import hash validator
+    const { validateUserPassword } = require('../utils/hashValidator')
+
+    // Validate password with hash format checking
+    const passwordValidation = await validateUserPassword(user.id, password)
+    
+    if (!passwordValidation.isValid) {
+      if (passwordValidation.needsReset) {
+        winston.warn('User login failed due to invalid hash format', {
+          userId: user.id,
+          username: user.username,
+          error: passwordValidation.error
+        })
+        return next(new AppError('Your password needs to be reset. Please contact administrator.', 401))
+      }
       return next(new AppError('Invalid credentials', 401))
     }
 
@@ -236,14 +249,14 @@ router.post('/register', [
     // Insert user
     const insertResult = await query(
       `INSERT INTO users (username, email, password_hash, first_name, last_name, role) 
-       VALUES (?, ?, ?, ?, ?, ?)`,
+       VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`,
       [username, email, passwordHash, firstName, lastName, role]
     )
 
     // Get the inserted user
     const result = await query(
-      'SELECT id, username, email, first_name, last_name, role, created_at FROM users WHERE id = ?',
-      [insertResult.insertId]
+      'SELECT id, username, email, first_name, last_name, role, created_at FROM users WHERE id = $1',
+      [insertResult.rows[0].id]
     )
 
     const newUser = result.rows[0]

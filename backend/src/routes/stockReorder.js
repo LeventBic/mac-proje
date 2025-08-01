@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const db = require('../config/database');
+const { query } = require('../config/database');
 const { requireAuth: authenticateToken, requireRole } = require('../middleware/auth');
 
 // Yeniden sipariş edilmesi gereken ürünleri listele
@@ -14,25 +14,25 @@ router.get('/needed', authenticateToken, async (req, res) => {
 
         // Arama filtresi
         if (search) {
-            whereConditions.push('(p.name LIKE ? OR p.sku LIKE ?)');
+            whereConditions.push(`(p.name LIKE $${queryParams.length + 1} OR p.sku LIKE $${queryParams.length + 2})`);
             queryParams.push(`%${search}%`, `%${search}%`);
         }
 
         // Tedarikçi filtresi
         if (supplier_id) {
-            whereConditions.push('p.supplier_id = ?');
+            whereConditions.push(`p.supplier_id = $${queryParams.length + 1}`);
             queryParams.push(supplier_id);
         }
 
         // Kategori filtresi
         if (category_id) {
-            whereConditions.push('p.category_id = ?');
+            whereConditions.push(`p.category_id = $${queryParams.length + 1}`);
             queryParams.push(category_id);
         }
 
         const whereClause = whereConditions.join(' AND ');
 
-        const query = `
+        const queryText = `
             SELECT 
                 p.id,
                 p.uuid,
@@ -64,11 +64,11 @@ router.get('/needed', authenticateToken, async (req, res) => {
                     WHEN COALESCE(i.available_quantity, 0) <= (p.reorder_point * 0.5) THEN 'urgent'
                     ELSE 'normal'
                 END as priority,
-                DATE_ADD(CURDATE(), INTERVAL COALESCE(p.lead_time_days, 7) DAY) as expected_delivery,
+                CURRENT_DATE + INTERVAL '1 day' * COALESCE(p.lead_time_days, 7) as expected_delivery,
                 p.created_at,
                 p.updated_at
             FROM products p
-            LEFT JOIN inventory i ON p.id = i.product_id AND i.location = 'MAIN'
+            LEFT JOIN inventory i ON p.id = i.product_id
             LEFT JOIN product_categories pc ON p.category_id = pc.id
             LEFT JOIN suppliers s ON p.supplier_id = s.id
             WHERE ${whereClause}
@@ -79,7 +79,7 @@ router.get('/needed', authenticateToken, async (req, res) => {
                     ELSE 3
                 END,
                 (p.reorder_point - COALESCE(i.available_quantity, 0)) DESC
-            LIMIT ? OFFSET ?
+            LIMIT $${queryParams.length + 1} OFFSET $${queryParams.length + 2}
         `;
 
         queryParams.push(parseInt(limit), parseInt(offset));
@@ -88,27 +88,28 @@ router.get('/needed', authenticateToken, async (req, res) => {
         const countQuery = `
             SELECT COUNT(*) as total
             FROM products p
-            LEFT JOIN inventory i ON p.id = i.product_id AND i.location = 'MAIN'
+            LEFT JOIN inventory i ON p.id = i.product_id
             LEFT JOIN product_categories pc ON p.category_id = pc.id
             LEFT JOIN suppliers s ON p.supplier_id = s.id
             WHERE ${whereClause}
         `;
 
-        const [reorderItems] = await db.pool.execute(query, queryParams);
-        const [countResult] = await db.pool.execute(countQuery, queryParams.slice(0, -2));
+        const reorderItemsResult = await query(queryText, queryParams);
+        const countResult = await query(countQuery, queryParams.slice(0, -2));
 
-        const total = countResult[0].total;
+        const reorderItems = reorderItemsResult.rows;
+        const total = countResult.rows[0].total;
         const totalPages = Math.ceil(total / limit);
 
         // Özet istatistikler
-        const [statsResult] = await db.pool.execute(`
+        const statsResult = await query(`
             SELECT 
                 COUNT(*) as total_items,
                 COUNT(CASE WHEN COALESCE(i.available_quantity, 0) = 0 THEN 1 END) as critical_items,
                 COUNT(CASE WHEN COALESCE(i.available_quantity, 0) <= (p.reorder_point * 0.5) AND COALESCE(i.available_quantity, 0) > 0 THEN 1 END) as urgent_items,
                 SUM(p.reorder_quantity * p.cost_price) as total_estimated_cost
             FROM products p
-            LEFT JOIN inventory i ON p.id = i.product_id AND i.location = 'MAIN'
+            LEFT JOIN inventory i ON p.id = i.product_id
             WHERE p.is_active = TRUE 
               AND p.reorder_point > 0 
               AND i.available_quantity <= p.reorder_point
@@ -124,7 +125,7 @@ router.get('/needed', authenticateToken, async (req, res) => {
                     totalItems: total,
                     itemsPerPage: parseInt(limit)
                 },
-                stats: statsResult[0]
+                stats: statsResult.rows[0]
             }
         });
 
@@ -280,8 +281,8 @@ router.put('/settings/:id', authenticateToken, requireRole(['admin', 'operator']
                 p.*,
                 COALESCE(i.available_quantity, 0) as current_stock
             FROM products p
-            LEFT JOIN inventory i ON p.id = i.product_id AND i.location = 'MAIN'
-            WHERE p.id = ?
+            LEFT JOIN inventory i ON p.id = i.product_id
+            WHERE p.id = $1
         `, [id]);
 
         res.json({
@@ -404,4 +405,4 @@ router.get('/suppliers', authenticateToken, async (req, res) => {
     }
 });
 
-module.exports = router; 
+module.exports = router;

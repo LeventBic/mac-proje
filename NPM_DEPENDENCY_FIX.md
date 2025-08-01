@@ -206,7 +206,7 @@ npm start
 # Frontend test
 cd frontend
 npm start
-# Beklenen: Browser'da http://localhost:3000 açılmalı
+# Beklenen: Browser'da http://localhost:3001 açılmalı
 
 # Docker test
 docker-compose up -d
@@ -214,4 +214,4 @@ docker-compose ps
 # Beklenen: Tüm servisler "Up" durumda olmalı
 ```
 
-Bu rehber ile npm dependency sorunlarınızı çözebilirsiniz! 🚀 
+Bu rehber ile npm dependency sorunlarınızı çözebilirsiniz! 🚀

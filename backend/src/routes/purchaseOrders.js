@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const db = require('../config/database');
+const { query } = require('../config/database');
 const { requireAuth: authenticateToken, requireRole } = require('../middleware/auth');
 
 // Tüm satın alma siparişlerini listele
@@ -13,28 +13,28 @@ router.get('/', authenticateToken, async (req, res) => {
         let queryParams = [];
 
         if (status) {
-            whereConditions.push('po.status = ?');
+            whereConditions.push(`po.status = $${queryParams.length + 1}`);
             queryParams.push(status);
         }
 
         if (supplier_id) {
-            whereConditions.push('po.supplier_id = ?');
+            whereConditions.push(`po.supplier_id = $${queryParams.length + 1}`);
             queryParams.push(supplier_id);
         }
 
         if (date_from) {
-            whereConditions.push('DATE(po.order_date) >= ?');
+            whereConditions.push(`DATE(po.order_date) >= $${queryParams.length + 1}`);
             queryParams.push(date_from);
         }
 
         if (date_to) {
-            whereConditions.push('DATE(po.order_date) <= ?');
+            whereConditions.push(`DATE(po.order_date) <= $${queryParams.length + 1}`);
             queryParams.push(date_to);
         }
 
         const whereClause = whereConditions.join(' AND ');
 
-        const query = `
+        const queryText = `
             SELECT 
                 po.id,
                 po.uuid,
@@ -63,18 +63,19 @@ router.get('/', authenticateToken, async (req, res) => {
             WHERE ${whereClause}
             GROUP BY po.id
             ORDER BY po.order_date DESC, po.created_at DESC
-            LIMIT ? OFFSET ?
+            LIMIT $${queryParams.length + 1} OFFSET $${queryParams.length + 2}
         `;
 
         queryParams.push(parseInt(limit), parseInt(offset));
 
-        const [orders] = await db.pool.execute(query, queryParams);
+        const ordersResult = await query(queryText, queryParams);
+        const orders = ordersResult.rows;
 
         // Count sorgusu
         const countQuery = `SELECT COUNT(DISTINCT po.id) as total FROM purchase_orders po WHERE ${whereClause}`;
-        const [countResult] = await db.pool.execute(countQuery, queryParams.slice(0, -2));
+        const countResult = await query(countQuery, queryParams.slice(0, -2));
 
-        const total = countResult[0].total;
+        const total = countResult.rows[0].total;
         const totalPages = Math.ceil(total / limit);
 
         res.json({
@@ -523,4 +524,4 @@ router.delete('/:id', authenticateToken, requireRole(['admin']), async (req, res
     }
 });
 
-module.exports = router; 
+module.exports = router;

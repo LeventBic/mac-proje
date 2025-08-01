@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const db = require('../config/database');
+const { query } = require('../config/database');
 const { requireAuth: authenticateToken, requireRole } = require('../middleware/auth');
 
 // Tüm stok transferlerini listele
@@ -31,19 +31,19 @@ router.get('/', authenticateToken, async (req, res) => {
         }
 
         if (location_to) {
-            whereConditions.push('st.location_to LIKE ?');
+            whereConditions.push(`st.location_to ILIKE $${queryParams.length + 1}`);
             queryParams.push(`%${location_to}%`);
         }
 
         // Ürün filtresi
         if (product_id) {
-            whereConditions.push('st.product_id = ?');
+            whereConditions.push(`st.product_id = $${queryParams.length + 1}`);
             queryParams.push(product_id);
         }
 
         const whereClause = whereConditions.join(' AND ');
 
-        const query = `
+        const queryText = `
             SELECT 
                 st.id,
                 st.uuid,
@@ -75,7 +75,8 @@ router.get('/', authenticateToken, async (req, res) => {
 
         queryParams.push(parseInt(limit), parseInt(offset));
 
-        const [transfers] = await db.pool.execute(query, queryParams);
+        const transfersResult = await query(queryText, queryParams);
+        const transfers = transfersResult.rows;
 
         // Count sorgusu
         const countQuery = `
@@ -85,9 +86,9 @@ router.get('/', authenticateToken, async (req, res) => {
             WHERE ${whereClause}
         `;
 
-        const [countResult] = await db.pool.execute(countQuery, queryParams.slice(0, -2));
+        const countResult = await query(countQuery, queryParams.slice(0, -2));
 
-        const total = countResult[0].total;
+        const total = countResult.rows[0].total;
         const totalPages = Math.ceil(total / limit);
 
         res.json({
@@ -473,4 +474,4 @@ router.get('/products/stock-by-location', authenticateToken, async (req, res) =>
     }
 });
 
-module.exports = router; 
+module.exports = router;

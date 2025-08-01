@@ -1,64 +1,136 @@
-import axios from 'axios';
+import axiosClient from '../config/axiosClient';
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001/api';
-
-// Create axios instance
-const userAPI = axios.create({
-  baseURL: `${API_BASE_URL}/users`,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
-
-// Add token to requests
-userAPI.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  }
-);
-
-// User API methods
-const userService = {
+class UserService {
   // Get all users (Admin only)
-  getUsers: async () => {
-    const response = await userAPI.get('/');
-    return response;
-  },
+  static async getAll(params = {}) {
+    const response = await axiosClient.get('/users', { params });
+    return response.data;
+  }
+
+  // Get single user by ID
+  static async getById(id) {
+    const response = await axiosClient.get(`/users/${id}`);
+    return response.data;
+  }
 
   // Create new user (Admin only)
-  createUser: async (userData) => {
-    const response = await userAPI.post('/', userData);
-    return response;
-  },
+  static async create(userData) {
+    const response = await axiosClient.post('/users', userData);
+    return response.data;
+  }
 
-  // Update user status (Admin only)
-  updateUser: async (userId, userData) => {
-    const response = await userAPI.put(`/${userId}`, userData);
-    return response;
-  },
+  // Update user
+  static async update(id, userData) {
+    const response = await axiosClient.put(`/users/${id}`, userData);
+    return response.data;
+  }
 
   // Delete user (Admin only)
-  deleteUser: async (userId) => {
-    const response = await userAPI.delete(`/${userId}`);
-    return response;
-  },
+  static async delete(id) {
+    const response = await axiosClient.delete(`/users/${id}`);
+    return response.data;
+  }
 
-  // Change own password
-  changePassword: async (userId, data) => {
-    // Sadece gerekli parametreleri gönder
-    const payload = {};
-    if (typeof data.oldPassword === 'string') payload.oldPassword = data.oldPassword;
-    if (typeof data.newPassword === 'string') payload.newPassword = data.newPassword;
-    const response = await userAPI.put(`/${userId}/password`, payload);
-    return response;
-  },
-};
+  // Update user status (Admin only)
+  static async updateStatus(id, status) {
+    const response = await axiosClient.patch(`/users/${id}/status`, { status });
+    return response.data;
+  }
 
-export default userService; 
+  // Change user password
+  static async changePassword(id, passwordData) {
+    const response = await axiosClient.put(`/users/${id}/change-password`, passwordData);
+    return response.data;
+  }
+
+  // Reset user password (Admin only)
+  static async resetPassword(id) {
+    const response = await axiosClient.post(`/users/${id}/reset-password`);
+    return response.data;
+  }
+
+  // Get user permissions
+  static async getPermissions(id) {
+    const response = await axiosClient.get(`/users/${id}/permissions`);
+    return response.data;
+  }
+
+  // Update user permissions (Admin only)
+  static async updatePermissions(id, permissions) {
+    const response = await axiosClient.put(`/users/${id}/permissions`, { permissions });
+    return response.data;
+  }
+
+  // Get user roles
+  static async getRoles() {
+    const response = await axiosClient.get('/users/roles');
+    return response.data;
+  }
+
+  // Assign role to user (Admin only)
+  static async assignRole(id, roleId) {
+    const response = await axiosClient.post(`/users/${id}/roles`, { roleId });
+    return response.data;
+  }
+
+  // Remove role from user (Admin only)
+  static async removeRole(id, roleId) {
+    const response = await axiosClient.delete(`/users/${id}/roles/${roleId}`);
+    return response.data;
+  }
+
+  // Get user activity log
+  static async getActivityLog(id, params = {}) {
+    const response = await axiosClient.get(`/users/${id}/activity`, { params });
+    return response.data;
+  }
+
+  // Bulk operations
+  static async bulkDelete(userIds) {
+    const response = await axiosClient.post('/users/bulk-delete', { ids: userIds });
+    return response.data;
+  }
+
+  static async bulkUpdateStatus(userIds, status) {
+    const response = await axiosClient.post('/users/bulk-update-status', { ids: userIds, status });
+    return response.data;
+  }
+
+  // Search users
+  static async search(query, params = {}) {
+    const response = await axiosClient.get('/users/search', {
+      params: { q: query, ...params }
+    });
+    return response.data;
+  }
+
+  // Export users
+  static async export(format = 'csv', filters = {}) {
+    const response = await axiosClient.get('/users/export', {
+      params: { format, ...filters },
+      responseType: 'blob'
+    });
+    return response;
+  }
+
+  // Import users
+  static async import(file) {
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    const response = await axiosClient.post('/users/import', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
+  }
+
+  // Get user statistics
+  static async getStatistics() {
+    const response = await axiosClient.get('/users/statistics');
+    return response.data;
+  }
+}
+
+export default UserService;

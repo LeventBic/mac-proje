@@ -1,23 +1,24 @@
-import React, { useState, useEffect } from 'react';
-import { FiPlus, FiEdit, FiTrash2, FiUser, FiMail, FiShield, FiCheck, FiX, FiLock } from 'react-icons/fi';
+import React, { useState } from 'react';
+import { FiPlus, FiTrash2, FiCheck, FiX, FiLock } from 'react-icons/fi';
 import { useForm } from 'react-hook-form';
 import { useSelector } from 'react-redux';
-import userService from '../../services/userAPI';
+import {
+  useUsers,
+  useCreateUser,
+  useDeleteUser,
+  useUpdateUserStatus,
+  useChangeUserPassword,
+} from '../../hooks/useUsers';
 import toast from 'react-hot-toast';
 
 const UsersPage = () => {
-  const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [userToDelete, setUserToDelete] = useState(null);
-  const [deleting, setDeleting] = useState(false);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
-  const [passwordSubmitting, setPasswordSubmitting] = useState(false);
   const [passwordError, setPasswordError] = useState('');
 
-  const { user: currentUser } = useSelector((state) => state.auth);
+  const { user: currentUser } = useSelector(state => state.auth);
 
   const {
     register,
@@ -34,30 +35,18 @@ const UsersPage = () => {
     formState: { errors: passwordErrors },
   } = useForm();
 
-  // Load users on component mount
-  useEffect(() => {
-    loadUsers();
-  }, []);
+  // React Query hooks
+  const { data: usersData, isLoading } = useUsers();
+  const createUserMutation = useCreateUser();
+  const deleteUserMutation = useDeleteUser();
+  const updateUserStatusMutation = useUpdateUserStatus();
+  const changePasswordMutation = useChangeUserPassword();
 
-  const loadUsers = async () => {
-    try {
-      setLoading(true);
-      const response = await userService.getUsers();
-      setUsers(response.data.users);
-    } catch (error) {
-      toast.error('Kullanıcılar yüklenirken hata oluştu');
-      console.error('Error loading users:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const users = usersData?.users || [];
 
-  const handleCreateUser = async (data) => {
+  const handleCreateUser = async data => {
     try {
-      setSubmitting(true);
-      const response = await userService.createUser(data);
-      toast.success('Kullanıcı başarıyla oluşturuldu!');
-      setUsers([response.data.user, ...users]);
+      await createUserMutation.mutateAsync(data);
       setShowCreateModal(false);
       reset();
     } catch (error) {
@@ -65,27 +54,22 @@ const UsersPage = () => {
         error.response.data.errors.forEach(err => {
           toast.error(err.msg);
         });
-      } else {
-        toast.error(error.response?.data?.message || 'Kullanıcı oluşturulurken hata oluştu');
       }
-    } finally {
-      setSubmitting(false);
     }
   };
 
   const handleToggleUserStatus = async (userId, currentStatus) => {
     try {
-      await userService.updateUser(userId, { isActive: !currentStatus });
-      toast.success('Kullanıcı durumu güncellendi');
-      setUsers(users.map(user => 
-        user.id === userId ? { ...user, isActive: !currentStatus } : user
-      ));
+      await updateUserStatusMutation.mutateAsync({
+        id: userId,
+        status: !currentStatus,
+      });
     } catch (error) {
       toast.error('Kullanıcı durumu güncellenirken hata oluştu');
     }
   };
 
-  const handleDeleteClick = (user) => {
+  const handleDeleteClick = user => {
     setUserToDelete(user);
     setShowDeleteModal(true);
   };
@@ -94,16 +78,13 @@ const UsersPage = () => {
     if (!userToDelete) return;
 
     try {
-      setDeleting(true);
-      await userService.deleteUser(userToDelete.id);
-      toast.success('Kullanıcı başarıyla silindi!');
-      setUsers(users.filter(user => user.id !== userToDelete.id));
+      await deleteUserMutation.mutateAsync(userToDelete.id);
       setShowDeleteModal(false);
       setUserToDelete(null);
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Kullanıcı silinirken hata oluştu');
-    } finally {
-      setDeleting(false);
+      toast.error(
+        error.response?.data?.message || 'Kullanıcı silinirken hata oluştu'
+      );
     }
   };
 
@@ -113,22 +94,20 @@ const UsersPage = () => {
     resetPasswordForm();
   };
 
-  const handleChangePassword = async (data) => {
+  const handleChangePassword = async data => {
     setPasswordError('');
-    setPasswordSubmitting(true);
     try {
-      await userService.changePassword(currentUser.id, data);
-      toast.success('Şifreniz başarıyla değiştirildi!');
+      await changePasswordMutation.mutateAsync({ id: currentUser.id, data });
       setShowPasswordModal(false);
       resetPasswordForm();
     } catch (error) {
-      setPasswordError(error.response?.data?.message || 'Şifre değiştirilirken hata oluştu');
-    } finally {
-      setPasswordSubmitting(false);
+      setPasswordError(
+        error.response?.data?.message || 'Şifre değiştirilirken hata oluştu'
+      );
     }
   };
 
-  const getRoleBadgeClass = (role) => {
+  const getRoleBadgeClass = role => {
     switch (role) {
       case 'admin':
         return 'bg-red-100 text-red-800';
@@ -141,7 +120,7 @@ const UsersPage = () => {
     }
   };
 
-  const getRoleText = (role) => {
+  const getRoleText = role => {
     switch (role) {
       case 'admin':
         return 'Admin';
@@ -154,17 +133,21 @@ const UsersPage = () => {
     }
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="space-y-6">
         <div>
-          <h1 className="text-2xl font-bold text-secondary-900">Kullanıcı Yönetimi</h1>
-          <p className="text-secondary-600">Sistem kullanıcılarını yönetin (Sadece Admin)</p>
+          <h1 className="text-2xl font-bold text-secondary-900">
+            Kullanıcı Yönetimi
+          </h1>
+          <p className="text-secondary-600">
+            Sistem kullanıcılarını yönetin (Sadece Admin)
+          </p>
         </div>
         <div className="card">
           <div className="animate-pulse py-12">
             <div className="text-center">
-              <div className="h-4 bg-secondary-200 rounded w-32 mx-auto"></div>
+              <div className="mx-auto h-4 w-32 rounded bg-secondary-200"></div>
             </div>
           </div>
         </div>
@@ -175,16 +158,20 @@ const UsersPage = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex justify-between items-center">
+      <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-secondary-900">Kullanıcı Yönetimi</h1>
-          <p className="text-secondary-600">Sistem kullanıcılarını yönetin (Sadece Admin)</p>
+          <h1 className="text-2xl font-bold text-secondary-900">
+            Kullanıcı Yönetimi
+          </h1>
+          <p className="text-secondary-600">
+            Sistem kullanıcılarını yönetin (Sadece Admin)
+          </p>
         </div>
         <button
           onClick={() => setShowCreateModal(true)}
           className="btn-primary flex items-center"
         >
-          <FiPlus className="w-4 h-4 mr-2" />
+          <FiPlus className="mr-2 h-4 w-4" />
           Yeni Kullanıcı
         </button>
       </div>
@@ -195,34 +182,35 @@ const UsersPage = () => {
           <table className="min-w-full divide-y divide-secondary-200">
             <thead className="bg-secondary-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-secondary-500">
                   Kullanıcı
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-secondary-500">
                   E-posta
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-secondary-500">
                   Rol
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-secondary-500">
                   Durum
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-secondary-500">
                   Oluşturma Tarihi
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-secondary-500">
                   İşlemler
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-secondary-200">
-              {users.map((user) => (
+            <tbody className="divide-y divide-secondary-200 bg-white">
+              {users.map(user => (
                 <tr key={user.id} className="hover:bg-secondary-50">
-                  <td className="px-6 py-4 whitespace-nowrap">
+                  <td className="whitespace-nowrap px-6 py-4">
                     <div className="flex items-center">
-                      <div className="flex-shrink-0 w-10 h-10 bg-primary-100 rounded-full flex items-center justify-center">
-                        <span className="text-primary-600 font-medium text-sm">
-                          {user.firstName?.charAt(0)}{user.lastName?.charAt(0)}
+                      <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-primary-100">
+                        <span className="text-sm font-medium text-primary-600">
+                          {user.firstName?.charAt(0)}
+                          {user.lastName?.charAt(0)}
                         </span>
                       </div>
                       <div className="ml-4">
@@ -235,47 +223,61 @@ const UsersPage = () => {
                       </div>
                     </div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-secondary-900">
+                  <td className="whitespace-nowrap px-6 py-4 text-sm text-secondary-900">
                     {user.email}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getRoleBadgeClass(user.role)}`}>
+                  <td className="whitespace-nowrap px-6 py-4">
+                    <span
+                      className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${getRoleBadgeClass(user.role)}`}
+                    >
                       {getRoleText(user.role)}
                     </span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                      user.isActive 
-                        ? 'bg-success-100 text-success-800' 
-                        : 'bg-error-100 text-error-800'
-                    }`}>
+                  <td className="whitespace-nowrap px-6 py-4">
+                    <span
+                      className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${
+                        user.isActive
+                          ? 'bg-success-100 text-success-800'
+                          : 'bg-error-100 text-error-800'
+                      }`}
+                    >
                       {user.isActive ? 'Aktif' : 'Pasif'}
                     </span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-secondary-500">
+                  <td className="whitespace-nowrap px-6 py-4 text-sm text-secondary-500">
                     {new Date(user.createdAt).toLocaleDateString('tr-TR')}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                  <td className="whitespace-nowrap px-6 py-4 text-sm font-medium">
                     <div className="flex items-center space-x-2">
                       <button
-                        onClick={() => handleToggleUserStatus(user.id, user.isActive)}
+                        onClick={() =>
+                          handleToggleUserStatus(user.id, user.isActive)
+                        }
                         className={`${
-                          user.isActive 
-                            ? 'text-warning-600 hover:text-warning-900' 
+                          user.isActive
+                            ? 'text-warning-600 hover:text-warning-900'
                             : 'text-success-600 hover:text-success-900'
                         }`}
-                        title={user.isActive ? 'Kullanıcıyı Pasifleştir' : 'Kullanıcıyı Aktifleştir'}
+                        title={
+                          user.isActive
+                            ? 'Kullanıcıyı Pasifleştir'
+                            : 'Kullanıcıyı Aktifleştir'
+                        }
                       >
-                        {user.isActive ? <FiX className="w-4 h-4" /> : <FiCheck className="w-4 h-4" />}
+                        {user.isActive ? (
+                          <FiX className="h-4 w-4" />
+                        ) : (
+                          <FiCheck className="h-4 w-4" />
+                        )}
                       </button>
-                      
+
                       {currentUser?.id !== user.id && (
                         <button
                           onClick={() => handleDeleteClick(user)}
                           className="text-error-600 hover:text-error-900"
                           title="Kullanıcıyı Sil"
                         >
-                          <FiTrash2 className="w-4 h-4" />
+                          <FiTrash2 className="h-4 w-4" />
                         </button>
                       )}
                       {currentUser?.id === user.id && (
@@ -284,7 +286,7 @@ const UsersPage = () => {
                           className="text-primary-600 hover:text-primary-900"
                           title="Şifre Değiştir"
                         >
-                          <FiLock className="w-4 h-4" />
+                          <FiLock className="h-4 w-4" />
                         </button>
                       )}
                     </div>
@@ -298,10 +300,12 @@ const UsersPage = () => {
 
       {/* Create User Modal */}
       {showCreateModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg max-w-md w-full p-6">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-medium text-secondary-900">Yeni Kullanıcı Oluştur</h3>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
+          <div className="w-full max-w-md rounded-lg bg-white p-6">
+            <div className="mb-4 flex items-center justify-between">
+              <h3 className="text-lg font-medium text-secondary-900">
+                Yeni Kullanıcı Oluştur
+              </h3>
               <button
                 onClick={() => {
                   setShowCreateModal(false);
@@ -309,18 +313,24 @@ const UsersPage = () => {
                 }}
                 className="text-secondary-400 hover:text-secondary-600"
               >
-                <FiX className="w-6 h-6" />
+                <FiX className="h-6 w-6" />
               </button>
             </div>
 
-            <form onSubmit={handleSubmit(handleCreateUser)} className="space-y-4">
+            <form
+              onSubmit={handleSubmit(handleCreateUser)}
+              className="space-y-4"
+            >
               {/* Username */}
               <div className="form-group">
                 <label className="form-label">Kullanıcı Adı</label>
                 <input
                   {...register('username', {
                     required: 'Kullanıcı adı gereklidir',
-                    minLength: { value: 3, message: 'En az 3 karakter olmalıdır' },
+                    minLength: {
+                      value: 3,
+                      message: 'En az 3 karakter olmalıdır',
+                    },
                   })}
                   type="text"
                   className={`form-input ${errors.username ? 'border-error-300' : ''}`}
@@ -357,7 +367,10 @@ const UsersPage = () => {
                 <input
                   {...register('password', {
                     required: 'Şifre gereklidir',
-                    minLength: { value: 6, message: 'En az 6 karakter olmalıdır' },
+                    minLength: {
+                      value: 6,
+                      message: 'En az 6 karakter olmalıdır',
+                    },
                   })}
                   type="password"
                   className={`form-input ${errors.password ? 'border-error-300' : ''}`}
@@ -374,7 +387,10 @@ const UsersPage = () => {
                 <input
                   {...register('firstName', {
                     required: 'Ad gereklidir',
-                    minLength: { value: 2, message: 'En az 2 karakter olmalıdır' },
+                    minLength: {
+                      value: 2,
+                      message: 'En az 2 karakter olmalıdır',
+                    },
                   })}
                   type="text"
                   className={`form-input ${errors.firstName ? 'border-error-300' : ''}`}
@@ -391,7 +407,10 @@ const UsersPage = () => {
                 <input
                   {...register('lastName', {
                     required: 'Soyad gereklidir',
-                    minLength: { value: 2, message: 'En az 2 karakter olmalıdır' },
+                    minLength: {
+                      value: 2,
+                      message: 'En az 2 karakter olmalıdır',
+                    },
                   })}
                   type="text"
                   className={`form-input ${errors.lastName ? 'border-error-300' : ''}`}
@@ -428,16 +447,18 @@ const UsersPage = () => {
                     reset();
                   }}
                   className="btn-secondary"
-                  disabled={submitting}
+                  disabled={createUserMutation.isLoading}
                 >
                   İptal
                 </button>
                 <button
                   type="submit"
                   className="btn-primary"
-                  disabled={submitting}
+                  disabled={createUserMutation.isLoading}
                 >
-                  {submitting ? 'Oluşturuluyor...' : 'Oluştur'}
+                  {createUserMutation.isLoading
+                    ? 'Oluşturuluyor...'
+                    : 'Oluştur'}
                 </button>
               </div>
             </form>
@@ -447,42 +468,45 @@ const UsersPage = () => {
 
       {/* Delete Confirmation Modal */}
       {showDeleteModal && userToDelete && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg max-w-md w-full p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-medium text-secondary-900">Kullanıcıyı Sil</h3>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
+          <div className="w-full max-w-md rounded-lg bg-white p-6">
+            <div className="mb-4 flex items-center justify-between">
+              <h3 className="text-lg font-medium text-secondary-900">
+                Kullanıcıyı Sil
+              </h3>
               <button
                 onClick={() => {
                   setShowDeleteModal(false);
                   setUserToDelete(null);
                 }}
                 className="text-secondary-400 hover:text-secondary-600"
-                disabled={deleting}
+                disabled={deleteUserMutation.isLoading}
               >
-                <FiX className="w-6 h-6" />
+                <FiX className="h-6 w-6" />
               </button>
             </div>
 
             <div className="mb-6">
-              <div className="flex items-center mb-4">
-                <div className="flex-shrink-0 w-12 h-12 bg-error-100 rounded-full flex items-center justify-center">
-                  <FiTrash2 className="w-6 h-6 text-error-600" />
+              <div className="mb-4 flex items-center">
+                <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-error-100">
+                  <FiTrash2 className="h-6 w-6 text-error-600" />
                 </div>
                 <div className="ml-4">
                   <h4 className="text-lg font-medium text-secondary-900">
                     Kullanıcıyı silmek istediğinizden emin misiniz?
                   </h4>
-                  <p className="text-sm text-secondary-600 mt-1">
+                  <p className="mt-1 text-sm text-secondary-600">
                     Bu işlem geri alınamaz.
                   </p>
                 </div>
               </div>
 
-              <div className="bg-secondary-50 rounded-lg p-4">
+              <div className="rounded-lg bg-secondary-50 p-4">
                 <div className="flex items-center">
-                  <div className="flex-shrink-0 w-10 h-10 bg-primary-100 rounded-full flex items-center justify-center">
-                    <span className="text-primary-600 font-medium text-sm">
-                      {userToDelete.firstName?.charAt(0)}{userToDelete.lastName?.charAt(0)}
+                  <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-primary-100">
+                    <span className="text-sm font-medium text-primary-600">
+                      {userToDelete.firstName?.charAt(0)}
+                      {userToDelete.lastName?.charAt(0)}
                     </span>
                   </div>
                   <div className="ml-3">
@@ -508,23 +532,23 @@ const UsersPage = () => {
                   setUserToDelete(null);
                 }}
                 className="btn-secondary"
-                disabled={deleting}
+                disabled={deleteUserMutation.isLoading}
               >
                 İptal
               </button>
               <button
                 onClick={handleDeleteUser}
-                className="bg-error-600 hover:bg-error-700 text-white px-4 py-2 rounded-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-                disabled={deleting}
+                className="rounded-lg bg-error-600 px-4 py-2 font-medium text-white hover:bg-error-700 disabled:cursor-not-allowed disabled:opacity-50"
+                disabled={deleteUserMutation.isLoading}
               >
-                {deleting ? (
+                {deleteUserMutation.isLoading ? (
                   <div className="flex items-center">
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                    <div className="mr-2 h-4 w-4 animate-spin rounded-full border-b-2 border-white"></div>
                     Siliniyor...
                   </div>
                 ) : (
                   <div className="flex items-center">
-                    <FiTrash2 className="w-4 h-4 mr-2" />
+                    <FiTrash2 className="mr-2 h-4 w-4" />
                     Kullanıcıyı Sil
                   </div>
                 )}
@@ -536,30 +560,42 @@ const UsersPage = () => {
 
       {/* Şifre Değiştir Modal */}
       {showPasswordModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg max-w-md w-full p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-medium text-secondary-900">Şifre Değiştir</h3>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
+          <div className="w-full max-w-md rounded-lg bg-white p-6">
+            <div className="mb-4 flex items-center justify-between">
+              <h3 className="text-lg font-medium text-secondary-900">
+                Şifre Değiştir
+              </h3>
               <button
-                onClick={() => { setShowPasswordModal(false); resetPasswordForm(); }}
+                onClick={() => {
+                  setShowPasswordModal(false);
+                  resetPasswordForm();
+                }}
                 className="text-secondary-400 hover:text-secondary-600"
-                disabled={passwordSubmitting}
+                disabled={changePasswordMutation.isLoading}
               >
-                <FiX className="w-6 h-6" />
+                <FiX className="h-6 w-6" />
               </button>
             </div>
-            <form onSubmit={handlePasswordSubmit(handleChangePassword)} className="space-y-4">
+            <form
+              onSubmit={handlePasswordSubmit(handleChangePassword)}
+              className="space-y-4"
+            >
               <div className="form-group">
                 <label className="form-label">Mevcut Şifre</label>
                 <input
-                  {...registerPassword('oldPassword', { required: 'Mevcut şifre gereklidir' })}
+                  {...registerPassword('oldPassword', {
+                    required: 'Mevcut şifre gereklidir',
+                  })}
                   type="password"
                   className={`form-input ${passwordErrors.oldPassword ? 'border-error-300' : ''}`}
                   placeholder="••••••••"
                   autoComplete="current-password"
                 />
                 {passwordErrors.oldPassword && (
-                  <p className="form-error">{passwordErrors.oldPassword.message}</p>
+                  <p className="form-error">
+                    {passwordErrors.oldPassword.message}
+                  </p>
                 )}
               </div>
               <div className="form-group">
@@ -567,7 +603,10 @@ const UsersPage = () => {
                 <input
                   {...registerPassword('newPassword', {
                     required: 'Yeni şifre gereklidir',
-                    minLength: { value: 6, message: 'En az 6 karakter olmalıdır' },
+                    minLength: {
+                      value: 6,
+                      message: 'En az 6 karakter olmalıdır',
+                    },
                   })}
                   type="password"
                   className={`form-input ${passwordErrors.newPassword ? 'border-error-300' : ''}`}
@@ -575,25 +614,34 @@ const UsersPage = () => {
                   autoComplete="new-password"
                 />
                 {passwordErrors.newPassword && (
-                  <p className="form-error">{passwordErrors.newPassword.message}</p>
+                  <p className="form-error">
+                    {passwordErrors.newPassword.message}
+                  </p>
                 )}
               </div>
-              {passwordError && <p className="form-error text-center">{passwordError}</p>}
+              {passwordError && (
+                <p className="form-error text-center">{passwordError}</p>
+              )}
               <div className="flex justify-end space-x-3 pt-4">
                 <button
                   type="button"
-                  onClick={() => { setShowPasswordModal(false); resetPasswordForm(); }}
+                  onClick={() => {
+                    setShowPasswordModal(false);
+                    resetPasswordForm();
+                  }}
                   className="btn-secondary"
-                  disabled={passwordSubmitting}
+                  disabled={changePasswordMutation.isLoading}
                 >
                   İptal
                 </button>
                 <button
                   type="submit"
                   className="btn-primary"
-                  disabled={passwordSubmitting}
+                  disabled={changePasswordMutation.isLoading}
                 >
-                  {passwordSubmitting ? 'Kaydediliyor...' : 'Kaydet'}
+                  {changePasswordMutation.isLoading
+                    ? 'Kaydediliyor...'
+                    : 'Kaydet'}
                 </button>
               </div>
             </form>

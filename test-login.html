@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Frontend Login Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .result { margin: 10px 0; padding: 10px; border: 1px solid #ccc; }
+        .success { background-color: #d4edda; border-color: #c3e6cb; }
+        .error { background-color: #f8d7da; border-color: #f5c6cb; }
+        button { padding: 10px 20px; margin: 5px; }
+    </style>
+</head>
+<body>
+    <h1>Frontend Login Test</h1>
+    
+    <h3>Test 1: Direct API Call</h3>
+    <button onclick="testDirectAPI()">Test Direct API</button>
+    <div id="direct-result" class="result"></div>
+    
+    <h3>Test 2: Frontend Login Simulation</h3>
+    <button onclick="testFrontendLogin()">Test Frontend Login</button>
+    <div id="frontend-result" class="result"></div>
+    
+    <h3>Test 3: Check Frontend Status</h3>
+    <button onclick="checkFrontendStatus()">Check Frontend</button>
+    <div id="status-result" class="result"></div>
+
+    <script>
+        // Test 1: Direct API call to backend
+        async function testDirectAPI() {
+            const resultDiv = document.getElementById('direct-result');
+            try {
+                const response = await fetch('http://localhost:3002/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Origin': 'http://localhost:3001'
+                    },
+                    body: JSON.stringify({
+                        username: 'admin',
+                        password: 'admin2024'
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    resultDiv.className = 'result success';
+                    resultDiv.innerHTML = `
+                        <h4>✅ Direct API Success!</h4>
+                        <p>Status: ${response.status}</p>
+                        <p>Token received: ${data.token ? 'Yes' : 'No'}</p>
+                    `;
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.innerHTML = `
+                        <h4>❌ Direct API Failed!</h4>
+                        <p>Status: ${response.status}</p>
+                        <p>Error: ${data.message || 'Unknown error'}</p>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `
+                    <h4>❌ Network Error!</h4>
+                    <p>Error: ${error.message}</p>
+                    <p>This might be a CORS issue or network connectivity problem.</p>
+                `;
+            }
+        }
+        
+        // Test 2: Test frontend login page
+        async function testFrontendLogin() {
+            const resultDiv = document.getElementById('frontend-result');
+            try {
+                const response = await fetch('http://localhost:3001/login', {
+                    method: 'GET'
+                });
+                
+                if (response.ok) {
+                    resultDiv.className = 'result success';
+                    resultDiv.innerHTML = `
+                        <h4>✅ Frontend Login Page Accessible!</h4>
+                        <p>Status: ${response.status}</p>
+                        <p>Content-Type: ${response.headers.get('content-type')}</p>
+                    `;
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.innerHTML = `
+                        <h4>❌ Frontend Login Page Error!</h4>
+                        <p>Status: ${response.status}</p>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `
+                    <h4>❌ Frontend Error!</h4>
+                    <p>Error: ${error.message}</p>
+                `;
+            }
+        }
+        
+        // Test 3: Check frontend status
+        async function checkFrontendStatus() {
+            const resultDiv = document.getElementById('status-result');
+            try {
+                const response = await fetch('http://localhost:3001', {
+                    method: 'GET'
+                });
+                
+                const text = await response.text();
+                const hasReact = text.includes('react') || text.includes('React');
+                const hasError = text.includes('error') || text.includes('Error');
+                
+                resultDiv.className = 'result success';
+                resultDiv.innerHTML = `
+                    <h4>✅ Frontend Status Check</h4>
+                    <p>Status: ${response.status}</p>
+                    <p>Has React: ${hasReact ? 'Yes' : 'No'}</p>
+                    <p>Has Errors: ${hasError ? 'Yes' : 'No'}</p>
+                    <p>Content Length: ${text.length} characters</p>
+                `;
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `
+                    <h4>❌ Frontend Status Error!</h4>
+                    <p>Error: ${error.message}</p>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>

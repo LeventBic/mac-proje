@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Frontend Token Test</title>
+</head>
+<body>
+    <h1>Frontend Token Test</h1>
+    <button onclick="setToken()">Set Valid Token</button>
+    <button onclick="checkToken()">Check Token</button>
+    <button onclick="testAPI()">Test API</button>
+    <div id="result"></div>
+
+    <script>
+        const validToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEyLCJ1c2VybmFtZSI6ImxldmVudDIiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3NTM5NTc4MDgsImV4cCI6MTc1NDA0NDIwOH0.fvqHMhCNpb1cPft552n7bojOSU3rnWzVO5dntcc4T_U';
+        
+        function setToken() {
+            localStorage.setItem('token', validToken);
+            document.getElementById('result').innerHTML = 'Token set successfully!';
+        }
+        
+        function checkToken() {
+            const token = localStorage.getItem('token');
+            document.getElementById('result').innerHTML = 'Current token: ' + (token || 'No token found');
+        }
+        
+        async function testAPI() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                document.getElementById('result').innerHTML = 'No token found. Please set token first.';
+                return;
+            }
+            
+            document.getElementById('result').innerHTML = 'Testing API...';
+            
+            try {
+                // Test with different approaches
+                console.log('Testing API with token:', token.substring(0, 20) + '...');
+                
+                const response = await fetch('http://localhost:3002/api/products?is_active=true', {
+                    method: 'GET',
+                    mode: 'cors',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                console.log('Response status:', response.status);
+                console.log('Response headers:', response.headers);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                console.log('Response data:', data);
+                
+                document.getElementById('result').innerHTML = `
+                    <h3>API Response:</h3>
+                    <p>Status: ${response.status} ${response.statusText}</p>
+                    <p>Products count: ${data.data ? data.data.length : 'N/A'}</p>
+                    <p>Total products: ${data.pagination ? data.pagination.total : 'N/A'}</p>
+                    <details>
+                        <summary>Full Response</summary>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    </details>
+                `;
+            } catch (error) {
+                console.error('API Error:', error);
+                document.getElementById('result').innerHTML = `
+                    <h3>API Error:</h3>
+                    <p>Error: ${error.message}</p>
+                    <p>This might be a CORS issue. Try opening the main app at <a href="http://localhost:3001" target="_blank">http://localhost:3001</a> and setting the token there.</p>
+                    <h4>Alternative: Set token in main app</h4>
+                    <p>1. Open <a href="http://localhost:3001" target="_blank">http://localhost:3001</a></p>
+                    <p>2. Open Developer Tools (F12)</p>
+                    <p>3. In Console, run: <code>localStorage.setItem('token', '${validToken}')</code></p>
+                    <p>4. Refresh the page and go to Products</p>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>

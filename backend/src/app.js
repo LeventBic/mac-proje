@@ -12,6 +12,9 @@ const swaggerUi = require('swagger-ui-express')
 const { testConnection } = require('./config/database')
 const logger = require('./utils/logger')
 
+// Test database connection
+testConnection()
+
 // Import routes
 const authRoutes = require('./routes/auth')
 const userRoutes = require('./routes/users')
@@ -20,7 +23,7 @@ const inventoryRoutes = require('./routes/inventory')
 const productionRoutes = require('./routes/production')
 const dashboardRoutes = require('./routes/dashboard')
 const bomRoutes = require('./routes/bom')
-const currentStockRoutes = require('./routes/currentStock')
+const currentStockRoutes = require('./routes/currentstock')
 const supplierRoutes = require('./routes/suppliers')
 const categoryRoutes = require('./routes/categories')
 const productTypeRoutes = require('./routes/productTypes')
@@ -35,6 +38,8 @@ const salesOrderRoutes = require('./routes/salesOrders')
 const salesQuoteRoutes = require('./routes/salesQuotes')
 const customerRoutes = require('./routes/customers')
 const projectRoutes = require('./routes/projects')
+const hashAdminRoutes = require('./routes/hashAdmin')
+const settingsRoutes = require('./routes/settings')
 
 // Import middleware
 const errorHandler = require('./middleware/errorHandler')
@@ -52,10 +57,14 @@ app.use(helmet({
   crossOriginResourcePolicy: { policy: 'cross-origin' }
 }))
 
-// CORS configuration
+// CORS configuration - Allow both frontend ports
 app.use(cors({
-  origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
-  credentials: process.env.CORS_CREDENTIALS === 'true',
+  origin: [
+    'http://localhost:3000',
+    'http://localhost:3001',
+    process.env.CORS_ORIGIN
+  ].filter(Boolean),
+  credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }))
@@ -63,18 +72,18 @@ app.use(cors({
 // Compression middleware
 app.use(compression())
 
-// Rate limiting - Temporarily disabled for development
-// const limiter = rateLimit({
-//   windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000, // 15 minutes
-//   max: parseInt(process.env.RATE_LIMIT_MAX) || 1000, // Limit each IP to 1000 requests per windowMs
-//   message: {
-//     error: 'Too many requests from this IP, please try again later'
-//   },
-//   standardHeaders: true,
-//   legacyHeaders: false
-// })
+// Rate limiting - Production için aktif et
+const limiter = rateLimit({
+  windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000, // 15 minutes
+  max: parseInt(process.env.RATE_LIMIT_MAX) || 1000, // Limit each IP to 1000 requests per windowMs
+  message: {
+    error: 'Too many requests from this IP, please try again later'
+  },
+  standardHeaders: true,
+  legacyHeaders: false
+})
 
-// app.use('/api/', limiter)
+app.use('/api/', limiter)
 
 // Body parsing middleware
 app.use(express.json({ limit: '10mb' }))
@@ -156,35 +165,12 @@ app.use('/api/sales-orders', authMiddleware.verifyToken, salesOrderRoutes)
 app.use('/api/sales-quotes', authMiddleware.verifyToken, salesQuoteRoutes)
 app.use('/api/customers', authMiddleware.verifyToken, customerRoutes)
 app.use('/api/projects', authMiddleware.verifyToken, projectRoutes)
+app.use('/api/admin', authMiddleware.verifyToken, hashAdminRoutes)
 
-// Serve static files (uploads)
-app.use('/uploads', express.static('uploads'))
+app.use('/api/settings', authMiddleware.verifyToken, settingsRoutes)
 
-// 404 handler
-app.use('*', (req, res) => {
-  res.status(404).json({
-    error: 'Route not found',
-    path: req.originalUrl,
-    method: req.method
-  })
-})
-
-// Global error handler
-app.use(globalErrorHandler)
+// Global error handler (correct order)
 app.use(errorHandler)
-
-// Graceful shutdown
-process.on('SIGTERM', () => {
-  winston.info('SIGTERM received, shutting down gracefully')
-  process.exit(0)
-})
-
-process.on('SIGINT', () => {
-  winston.info('SIGINT received, shutting down gracefully')
-  process.exit(0)
-})
-
-// Export the app for use in server.js
-// Database connection will be tested when the server starts
+app.use(globalErrorHandler)
 
 module.exports = app

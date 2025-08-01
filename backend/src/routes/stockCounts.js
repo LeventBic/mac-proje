@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const db = require('../config/database');
+const { query } = require('../config/database');
 const { requireAuth: authenticateToken, requireRole } = require('../middleware/auth');
 
 // Tüm stok sayımlarını listele
@@ -13,13 +13,13 @@ router.get('/', authenticateToken, async (req, res) => {
         let queryParams = [];
 
         if (status) {
-            whereConditions.push('sc.status = ?');
+            whereConditions.push(`sc.status = $${queryParams.length + 1}`);
             queryParams.push(status);
         }
 
         const whereClause = whereConditions.join(' AND ');
 
-        const query = `
+        const queryText = `
             SELECT 
                 sc.id,
                 sc.uuid,
@@ -41,18 +41,19 @@ router.get('/', authenticateToken, async (req, res) => {
             LEFT JOIN users u ON sc.created_by = u.id
             WHERE ${whereClause}
             ORDER BY sc.scheduled_date DESC, sc.created_at DESC
-            LIMIT ? OFFSET ?
+            LIMIT $${queryParams.length + 1} OFFSET $${queryParams.length + 2}
         `;
 
         queryParams.push(parseInt(limit), parseInt(offset));
 
-        const [counts] = await db.pool.execute(query, queryParams);
+        const countsResult = await query(queryText, queryParams);
+        const counts = countsResult.rows;
 
         // Count sorgusu
         const countQuery = `SELECT COUNT(*) as total FROM stock_counts sc WHERE ${whereClause}`;
-        const [countResult] = await db.pool.execute(countQuery, queryParams.slice(0, -2));
+        const countResult = await query(countQuery, queryParams.slice(0, -2));
 
-        const total = countResult[0].total;
+        const total = countResult.rows[0].total;
         const totalPages = Math.ceil(total / limit);
 
         res.json({
@@ -81,11 +82,11 @@ router.post('/', authenticateToken, requireRole(['admin', 'operator']), async (r
             return res.status(400).json({ success: false, message: 'Planlanan tarih zorunludur' });
         }
         const countNumber = `COUNT-${Date.now()}-${Math.random().toString(36).substr(2, 4).toUpperCase()}`;
-        const [result] = await db.pool.execute(`
+        const result = await query(`
             INSERT INTO stock_counts (count_number, location, scheduled_date, status, notes, created_by)
-            VALUES (?, ?, ?, 'planned', ?, ?)
+            VALUES ($1, $2, $3, 'planned', $4, $5) RETURNING id
         `, [countNumber, location, scheduled_date, notes, req.user.id]);
-        res.status(201).json({ success: true, message: 'Stok sayımı başlatıldı', data: { id: result.insertId, count_number: countNumber } });
+        res.status(201).json({ success: true, message: 'Stok sayımı başlatıldı', data: { id: result.rows[0].id, count_number: countNumber } });
     } catch (error) {
         console.error('Stok sayımı başlatma hatası:', error);
         res.status(500).json({ success: false, message: 'Sunucu hatası', error: error.message });
@@ -96,13 +97,13 @@ router.post('/', authenticateToken, requireRole(['admin', 'operator']), async (r
 router.get('/:id', authenticateToken, async (req, res) => {
     try {
         const { id } = req.params;
-        const [result] = await db.pool.execute(`
-            SELECT * FROM stock_counts WHERE id = ?
+        const result = await query(`
+            SELECT * FROM stock_counts WHERE id = $1
         `, [id]);
-        if (result.length === 0) {
+        if (result.rows.length === 0) {
             return res.status(404).json({ success: false, message: 'Sayım bulunamadı' });
         }
-        res.json({ success: true, data: result[0] });
+        res.json({ success: true, data: result.rows[0] });
     } catch (error) {
         console.error('Sayım detayı getirme hatası:', error);
         res.status(500).json({ success: false, message: 'Sunucu hatası', error: error.message });
@@ -113,13 +114,13 @@ router.get('/:id', authenticateToken, async (req, res) => {
 router.get('/:id/items', authenticateToken, async (req, res) => {
     try {
         const { id } = req.params;
-        const [items] = await db.pool.execute(`
+        const result = await query(`
             SELECT sci.*, p.name as product_name, p.sku, p.unit
             FROM stock_count_items sci
             LEFT JOIN products p ON sci.product_id = p.id
-            WHERE sci.stock_count_id = ?
+            WHERE sci.stock_count_id = $1
         `, [id]);
-        res.json({ success: true, data: items });
+        res.json({ success: true, data: result.rows });
     } catch (error) {
         console.error('Sayım ürünleri getirme hatası:', error);
         res.status(500).json({ success: false, message: 'Sunucu hatası', error: error.message });
@@ -134,9 +135,9 @@ router.put('/:id/items/:itemId', authenticateToken, requireRole(['admin', 'opera
         if (counted_quantity === undefined) {
             return res.status(400).json({ success: false, message: 'Sayım miktarı zorunludur' });
         }
-        await db.pool.execute(`
-            UPDATE stock_count_items SET counted_quantity = ?, notes = ?, counted_by = ?, counted_at = NOW()
-            WHERE id = ? AND stock_count_id = ?
+        await query(`
+            UPDATE stock_count_items SET counted_quantity = $1, notes = $2, counted_by = $3, counted_at = CURRENT_TIMESTAMP
+            WHERE id = $4 AND stock_count_id = $5
         `, [counted_quantity, notes, req.user.id, itemId, id]);
         res.json({ success: true, message: 'Sayım kaydedildi' });
     } catch (error) {
@@ -147,71 +148,62 @@ router.put('/:id/items/:itemId', authenticateToken, requireRole(['admin', 'opera
 
 // Sayımı başlat (status: in_progress, ürünleri ekle)
 router.post('/:id/start', authenticateToken, requireRole(['admin', 'operator']), async (req, res) => {
-    const connection = await db.pool.getConnection();
     try {
-        await connection.beginTransaction();
         const { id } = req.params;
         // Sayım var mı kontrol et
-        const [count] = await connection.execute('SELECT * FROM stock_counts WHERE id = ?', [id]);
-        if (count.length === 0) {
+        const countResult = await query('SELECT * FROM stock_counts WHERE id = $1', [id]);
+        if (countResult.rows.length === 0) {
             return res.status(404).json({ success: false, message: 'Sayım bulunamadı' });
         }
+        const count = countResult.rows[0];
         // Ürünleri ekle (o lokasyondaki tüm aktif ürünler)
-        const [products] = await connection.execute(`
+        const productsResult = await query(`
             SELECT p.id as product_id, COALESCE(i.available_quantity, 0) as expected_quantity, p.unit
             FROM products p
-            LEFT JOIN inventory i ON p.id = i.product_id AND i.location = ?
+            LEFT JOIN inventory i ON p.id = i.product_id AND i.location = $1
             WHERE p.is_active = TRUE
-        `, [count[0].location]);
+        `, [count.location]);
+        const products = productsResult.rows;
         for (const prod of products) {
-            await connection.execute(`
+            await query(`
                 INSERT INTO stock_count_items (stock_count_id, product_id, expected_quantity)
-                VALUES (?, ?, ?)
-                ON DUPLICATE KEY UPDATE expected_quantity = VALUES(expected_quantity)
+                VALUES ($1, $2, $3)
+                ON CONFLICT (stock_count_id, product_id) DO UPDATE SET expected_quantity = EXCLUDED.expected_quantity
             `, [id, prod.product_id, prod.expected_quantity]);
         }
-        await connection.execute(`
-            UPDATE stock_counts SET status = 'in_progress', started_at = NOW(), total_items = ? WHERE id = ?
+        await query(`
+            UPDATE stock_counts SET status = 'in_progress', started_at = CURRENT_TIMESTAMP, total_items = $1 WHERE id = $2
         `, [products.length, id]);
-        await connection.commit();
         res.json({ success: true, message: 'Sayım başlatıldı', data: { total_items: products.length } });
     } catch (error) {
-        await connection.rollback();
         console.error('Sayım başlatma hatası:', error);
         res.status(500).json({ success: false, message: 'Sunucu hatası', error: error.message });
-    } finally {
-        connection.release();
     }
 });
 
 // Sayımı tamamla
 router.post('/:id/complete', authenticateToken, requireRole(['admin', 'operator']), async (req, res) => {
-    const connection = await db.pool.getConnection();
     try {
-        await connection.beginTransaction();
         const { id } = req.params;
         // Sayım var mı kontrol et
-        const [count] = await connection.execute('SELECT * FROM stock_counts WHERE id = ?', [id]);
-        if (count.length === 0) {
+        const countResult = await query('SELECT * FROM stock_counts WHERE id = $1', [id]);
+        if (countResult.rows.length === 0) {
             return res.status(404).json({ success: false, message: 'Sayım bulunamadı' });
         }
         // Farklı ürün sayısı
-        const [discrepancies] = await connection.execute(`
-            SELECT COUNT(*) as diff_count FROM stock_count_items WHERE stock_count_id = ? AND variance_quantity != 0
+        const discrepanciesResult = await query(`
+            SELECT COUNT(*) as diff_count FROM stock_count_items WHERE stock_count_id = $1 AND variance_quantity != 0
         `, [id]);
+        const discrepancies = discrepanciesResult.rows[0];
         // Sayımı tamamla
-        await connection.execute(`
-            UPDATE stock_counts SET status = 'completed', completed_at = NOW(), discrepancies_found = ? WHERE id = ?
-        `, [discrepancies[0].diff_count, id]);
-        await connection.commit();
-        res.json({ success: true, message: 'Sayım tamamlandı', data: { discrepancies: discrepancies[0].diff_count } });
+        await query(`
+            UPDATE stock_counts SET status = 'completed', completed_at = CURRENT_TIMESTAMP, discrepancies_found = $1 WHERE id = $2
+        `, [discrepancies.diff_count, id]);
+        res.json({ success: true, message: 'Sayım tamamlandı', data: { discrepancies: discrepancies.diff_count } });
     } catch (error) {
-        await connection.rollback();
         console.error('Sayım tamamlama hatası:', error);
         res.status(500).json({ success: false, message: 'Sunucu hatası', error: error.message });
-    } finally {
-        connection.release();
     }
 });
 
-module.exports = router; 
+module.exports = router;

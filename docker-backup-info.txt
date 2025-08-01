@@ -1,0 +1,33 @@
+=== DOCKER CONTAINER BACKUP INFO ===
+Tarih: $(date)
+
+=== ÇALIŞAN CONTAINER'LAR ===
+CONTAINER ID   IMAGE                                                            COMMAND                  CREATED             STATUS                          PORTS                      NAMES
+0d9461dc5ea7   mac-proje-frontend                                               "docker-entrypoint.s…"   About an hour ago   Exited (0) 15 minutes ago       0.0.0.0:3001->3000/tcp     inflow_frontend
+ef71d1cfa280   mac-proje-backend                                                "docker-entrypoint.s…"   About an hour ago   Exited (0) 15 minutes ago       0.0.0.0:3002->3001/tcp     inflow_backend
+3dda72bb14d2   mac-proje-postgres                                               "docker-entrypoint.s…"   About an hour ago   Exited (0) 15 minutes ago       0.0.0.0:5435->5432/tcp     inflow_postgres
+4eee3eb30885   registry.supertokens.io/supertokens/supertokens-postgresql:7.0   "docker-entrypoint.s…"   About an hour ago   Up 15 minutes (healthy)         0.0.0.0:3567->3567/tcp     devarp-web-api-supertokens-1
+e2ad2c57c2ba   68e3e6d6aaeb                                                     "docker-entrypoint.s…"   About an hour ago   Restarting (1) 48 seconds ago                              devarp-web-api-my-app-1
+824c7870a40d   devarp-web-api-mongodb_replica                                   "/bin/sh -c 'mongod …"   About an hour ago   Up 15 minutes (healthy)         0.0.0.0:27018->27017/tcp   devarp-web-api-mongodb_replica-1
+3ccbbe7b0df0   postgres:latest                                                  "docker-entrypoint.s…"   About an hour ago   Up 15 minutes (healthy)         0.0.0.0:5434->5432/tcp     devarp-web-api-db-1
+
+=== ÖNEMLİ VOLUME'LAR ===
+- mac-proje_postgres_data (mac-proje PostgreSQL verisi)
+- devarp-api_tut12-mongo-keys (devarp-web-api MongoDB verisi)
+
+=== PROJE KLASÖRLERI ===
+- /Users/software/Documents/mac-proje (mac-proje)
+- /Users/software/Desktop/devarp-softwares/devarp-web-api (devarp-web-api)
+
+=== DOCKER COMPOSE DOSYALARI ===
+- /Users/software/Documents/mac-proje/docker-compose.yml
+- /Users/software/Documents/mac-proje/old-project-docker-compose.yml
+- /Users/software/Desktop/devarp-softwares/devarp-web-api/docker-compose.yml
+
+=== YENİDEN KURULUM SONRASI YAPILACAKLAR ===
+1. Docker Desktop'ı yükle
+2. Proje klasörlerinde docker-compose up -d çalıştır
+3. Volume'lar otomatik olarak yeniden oluşturulacak
+4. Port ayarları:
+   - mac-proje: PostgreSQL 5435, Backend 3002, Frontend 3001
+   - devarp-web-api: PostgreSQL 5434, MongoDB 27018, SuperTokens 3567

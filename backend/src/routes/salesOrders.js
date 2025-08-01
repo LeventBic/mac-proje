@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const db = require('../config/database');
+const { query } = require('../config/database');
 const { requireAuth: authenticateToken, requireRole } = require('../middleware/auth');
 
 // Tüm satış siparişlerini listele
@@ -13,18 +13,18 @@ router.get('/', authenticateToken, async (req, res) => {
         let queryParams = [];
 
         if (status) {
-            whereConditions.push('so.status = ?');
+            whereConditions.push(`so.status = $${queryParams.length + 1}`);
             queryParams.push(status);
         }
 
         if (customer_id) {
-            whereConditions.push('so.customer_id = ?');
+            whereConditions.push(`so.customer_id = $${queryParams.length + 1}`);
             queryParams.push(customer_id);
         }
 
         const whereClause = whereConditions.join(' AND ');
 
-        const query = `
+        const queryText = `
             SELECT 
                 so.id,
                 so.order_number,
@@ -48,14 +48,15 @@ router.get('/', authenticateToken, async (req, res) => {
             WHERE ${whereClause}
             GROUP BY so.id
             ORDER BY so.order_date DESC
-            LIMIT ? OFFSET ?
+            LIMIT $${queryParams.length + 1} OFFSET $${queryParams.length + 2}
         `;
 
         queryParams.push(parseInt(limit), parseInt(offset));
-        const [orders] = await db.pool.execute(query, queryParams);
+        const ordersResult = await query(queryText, queryParams);
+        const orders = ordersResult.rows;
 
         const countQuery = `SELECT COUNT(DISTINCT so.id) as total FROM sales_orders so WHERE ${whereClause}`;
-        const [countResult] = await db.pool.execute(countQuery, queryParams.slice(0, -2));
+        const countResult = await query(countQuery, queryParams.slice(0, -2));
 
         res.json({
             success: true,
@@ -63,8 +64,8 @@ router.get('/', authenticateToken, async (req, res) => {
                 orders,
                 pagination: {
                     currentPage: parseInt(page),
-                    totalPages: Math.ceil(countResult[0].total / limit),
-                    totalItems: countResult[0].total,
+                    totalPages: Math.ceil(countResult.rows[0].total / limit),
+                    totalItems: countResult.rows[0].total,
                     itemsPerPage: parseInt(limit)
                 }
             }
@@ -105,7 +106,7 @@ router.post('/', authenticateToken, requireRole(['admin', 'operator']), async (r
                 order_number, customer_id, order_date, delivery_date, 
                 status, total_amount, tax_amount, total_with_tax, notes, created_by
             )
-            VALUES (?, ?, ?, ?, 'pending', ?, ?, ?, ?, ?)
+            VALUES ($1, $2, $3, $4, 'pending', $5, $6, $7, $8, $9) RETURNING id
         `, [orderNumber, customer_id, order_date, delivery_date, totalAmount, taxAmount, totalWithTax, notes, req.user.id]);
 
         const salesOrderId = orderResult.insertId;
@@ -115,7 +116,7 @@ router.post('/', authenticateToken, requireRole(['admin', 'operator']), async (r
                 INSERT INTO sales_order_items (
                     sales_order_id, product_id, quantity, unit_price, total_price
                 )
-                VALUES (?, ?, ?, ?, ?)
+                VALUES ($1, $2, $3, $4, $5)
             `, [salesOrderId, item.product_id, item.quantity, item.unit_price, item.quantity * item.unit_price]);
         }
 
@@ -144,7 +145,7 @@ router.get('/:id', authenticateToken, async (req, res) => {
             SELECT so.*, c.name as customer_name, c.email, c.phone, c.address
             FROM sales_orders so
             LEFT JOIN customers c ON so.customer_id = c.id
-            WHERE so.id = ?
+            WHERE so.id = $1
         `, [id]);
 
         if (orderResult.length === 0) {
@@ -155,7 +156,7 @@ router.get('/:id', authenticateToken, async (req, res) => {
             SELECT soi.*, p.name as product_name, p.sku, p.unit
             FROM sales_order_items soi
             LEFT JOIN products p ON soi.product_id = p.id
-            WHERE soi.sales_order_id = ?
+            WHERE soi.sales_order_id = $1
         `, [id]);
 
         const order = orderResult[0];
@@ -181,8 +182,8 @@ router.patch('/:id/status', authenticateToken, requireRole(['admin', 'operator']
 
         await db.pool.execute(`
             UPDATE sales_orders 
-            SET status = ?, updated_at = NOW() 
-            WHERE id = ?
+            SET status = $1, updated_at = NOW()
+            WHERE id = $2
         `, [status, id]);
 
         res.json({ success: true, message: 'Sipariş durumu güncellendi' });
@@ -192,4 +193,4 @@ router.patch('/:id/status', authenticateToken, requireRole(['admin', 'operator']
     }
 });
 
-module.exports = router; 
+module.exports = router;

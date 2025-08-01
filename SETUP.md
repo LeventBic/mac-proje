@@ -37,7 +37,7 @@ docker-compose up -d --build
 ```
 
 3. **Uygulamaya erişin:**
-- Frontend: http://localhost:3000
+- Frontend: http://localhost:3001
 - Backend API: http://localhost:3001
 - API Dokümantasyonu: http://localhost:3001/api/docs
 
@@ -114,7 +114,7 @@ DB_USER=root
 DB_PASSWORD=your_mysql_password_here
 JWT_SECRET=your_super_secret_jwt_key_here
 JWT_EXPIRES_IN=24h
-CORS_ORIGIN=http://localhost:3000
+CORS_ORIGIN=http://localhost:3001
 ```
 
 ```bash

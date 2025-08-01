@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const db = require('../config/database');
+const { query } = require('../config/database');
 const { requireAuth: authenticateToken, requireRole } = require('../middleware/auth');
 
 // Tüm ürün tiplerini listele
@@ -13,7 +13,7 @@ router.get('/', authenticateToken, async (req, res) => {
             whereCondition = 'WHERE is_active = TRUE';
         }
 
-        const query = `
+        const queryText = `
             SELECT 
                 id,
                 uuid,
@@ -27,7 +27,8 @@ router.get('/', authenticateToken, async (req, res) => {
             ORDER BY name ASC
         `;
 
-        const [productTypes] = await db.pool.execute(query);
+        const result = await query(queryText);
+        const productTypes = result.rows;
 
         res.json({
             success: true,
@@ -49,12 +50,12 @@ router.get('/:id', authenticateToken, async (req, res) => {
     try {
         const { id } = req.params;
 
-        const [result] = await db.pool.execute(
-            'SELECT * FROM product_types WHERE id = ?',
+        const result = await query(
+            'SELECT * FROM product_types WHERE id = $1',
             [id]
         );
 
-        if (result.length === 0) {
+        if (result.rows.length === 0) {
             return res.status(404).json({
                 success: false,
                 message: 'Ürün tipi bulunamadı'
@@ -63,7 +64,7 @@ router.get('/:id', authenticateToken, async (req, res) => {
 
         res.json({
             success: true,
-            data: result[0]
+            data: result.rows[0]
         });
 
     } catch (error) {
@@ -90,33 +91,29 @@ router.post('/', authenticateToken, requireRole(['admin', 'operator']), async (r
         }
 
         // Ürün tipi adı benzersizlik kontrolü
-        const [existingName] = await db.pool.execute(
-            'SELECT id FROM product_types WHERE name = ? AND is_active = TRUE',
+        const existingName = await query(
+            'SELECT id FROM product_types WHERE name = $1 AND is_active = TRUE',
             [name]
         );
 
-        if (existingName.length > 0) {
+        if (existingName.rows.length > 0) {
             return res.status(400).json({
                 success: false,
                 message: 'Bu ürün tipi adı zaten kullanılıyor'
             });
         }
 
-        const [result] = await db.pool.execute(`
+        const result = await query(`
             INSERT INTO product_types (name, description)
-            VALUES (?, ?)
+            VALUES ($1, $2) RETURNING *
         `, [name, description]);
 
-        // Yeni eklenen ürün tipini getir
-        const [newProductType] = await db.pool.execute(
-            'SELECT * FROM product_types WHERE id = ?',
-            [result.insertId]
-        );
+        const newProductType = result.rows[0];
 
         res.status(201).json({
             success: true,
             message: 'Ürün tipi başarıyla eklendi',
-            data: newProductType[0]
+            data: newProductType
         });
 
     } catch (error) {
@@ -136,12 +133,12 @@ router.put('/:id', authenticateToken, requireRole(['admin', 'operator']), async 
         const { name, description, is_active } = req.body;
 
         // Ürün tipi var mı kontrol et
-        const [existing] = await db.pool.execute(
-            'SELECT id FROM product_types WHERE id = ?',
+        const existing = await query(
+            'SELECT id FROM product_types WHERE id = $1',
             [id]
         );
 
-        if (existing.length === 0) {
+        if (existing.rows.length === 0) {
             return res.status(404).json({
                 success: false,
                 message: 'Ürün tipi bulunamadı'
@@ -150,12 +147,12 @@ router.put('/:id', authenticateToken, requireRole(['admin', 'operator']), async 
 
         // Ürün tipi adı benzersizlik kontrolü (kendi ID'si hariç)
         if (name) {
-            const [existingName] = await db.pool.execute(
-                'SELECT id FROM product_types WHERE name = ? AND id != ? AND is_active = TRUE',
+            const existingName = await query(
+                'SELECT id FROM product_types WHERE name = $1 AND id != $2 AND is_active = TRUE',
                 [name, id]
             );
 
-            if (existingName.length > 0) {
+            if (existingName.rows.length > 0) {
                 return res.status(400).json({
                     success: false,
                     message: 'Bu ürün tipi adı zaten kullanılıyor'
@@ -163,25 +160,25 @@ router.put('/:id', authenticateToken, requireRole(['admin', 'operator']), async 
             }
         }
 
-        await db.pool.execute(`
+        await query(`
             UPDATE product_types SET
-                name = COALESCE(?, name),
-                description = ?,
-                is_active = COALESCE(?, is_active),
-                updated_at = CURRENT_TIMESTAMP
-            WHERE id = ?
+                name = COALESCE($1, name),
+            description = $2,
+            is_active = COALESCE($3, is_active),
+            updated_at = CURRENT_TIMESTAMP
+            WHERE id = $4
         `, [name, description, is_active, id]);
 
         // Güncellenmiş ürün tipini getir
-        const [updatedProductType] = await db.pool.execute(
-            'SELECT * FROM product_types WHERE id = ?',
+        const updatedProductType = await query(
+            'SELECT * FROM product_types WHERE id = $1',
             [id]
         );
 
         res.json({
             success: true,
             message: 'Ürün tipi başarıyla güncellendi',
-            data: updatedProductType[0]
+            data: updatedProductType.rows[0]
         });
 
     } catch (error) {
@@ -200,12 +197,12 @@ router.delete('/:id', authenticateToken, requireRole(['admin']), async (req, res
         const { id } = req.params;
 
         // Ürün tipi var mı kontrol et
-        const [existing] = await db.pool.execute(
-            'SELECT id, name FROM product_types WHERE id = ?',
+        const existing = await query(
+            'SELECT id, name FROM product_types WHERE id = $1',
             [id]
         );
 
-        if (existing.length === 0) {
+        if (existing.rows.length === 0) {
             return res.status(404).json({
                 success: false,
                 message: 'Ürün tipi bulunamadı'
@@ -213,12 +210,12 @@ router.delete('/:id', authenticateToken, requireRole(['admin']), async (req, res
         }
 
         // Bu ürün tipine bağlı ürün var mı kontrol et
-        const [connectedProducts] = await db.pool.execute(
-            'SELECT COUNT(*) as count FROM products WHERE product_type_id = ? AND is_active = TRUE',
+        const connectedProducts = await query(
+            'SELECT COUNT(*) as count FROM products WHERE product_type_id = $1 AND is_active = TRUE',
             [id]
         );
 
-        if (connectedProducts[0].count > 0) {
+        if (connectedProducts.rows[0].count > 0) {
             return res.status(400).json({
                 success: false,
                 message: 'Bu ürün tipine bağlı aktif ürünler bulunuyor. Önce ürünleri güncelleyin.'
@@ -226,14 +223,14 @@ router.delete('/:id', authenticateToken, requireRole(['admin']), async (req, res
         }
 
         // Soft delete
-        await db.pool.execute(
-            'UPDATE product_types SET is_active = FALSE, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
+        await query(
+            'UPDATE product_types SET is_active = FALSE, updated_at = CURRENT_TIMESTAMP WHERE id = $1',
             [id]
         );
 
         res.json({
             success: true,
-            message: `${existing[0].name} ürün tipi başarıyla silindi`
+            message: `${existing.rows[0].name} ürün tipi başarıyla silindi`
         });
 
     } catch (error) {
@@ -246,4 +243,4 @@ router.delete('/:id', authenticateToken, requireRole(['admin']), async (req, res
     }
 });
 
-module.exports = router; 
+module.exports = router;

@@ -1,42 +1,123 @@
-const express = require('express');
-const router = express.Router();
-const { requireAuth: authenticateToken, requireRole } = require('../middleware/auth');
-const projectController = require('../controllers/projectController');
+const express = require('express')
+const router = express.Router()
 const {
-    createProjectSchema,
-    updateProjectSchema,
-    createTaskSchema,
-    createCostSchema,
-    queryParamsSchema,
-    validateRequest,
-    validateQuery
-} = require('../validators/projectValidators');
+  requireAuth: authenticateToken,
+  requireRole
+} = require('../middleware/auth')
+const projectController = require('../controllers/projectController')
+const {
+  createProjectSchema,
+  updateProjectSchema,
+  createTaskSchema,
+  createCostSchema,
+  queryParamsSchema,
+  validateRequest,
+  validateQuery
+} = require('../validators/projectValidators')
 
 // Tüm projeleri listele
-router.get('/', authenticateToken, validateQuery(queryParamsSchema), projectController.getAllProjects);
+router.get(
+  '/',
+  authenticateToken,
+  validateQuery(queryParamsSchema),
+  projectController.getAllProjects
+)
 
 // Yeni proje ekle
-router.post('/', authenticateToken, requireRole('admin', 'operator'), validateRequest(createProjectSchema), projectController.createProject);
+router.post(
+  '/',
+  authenticateToken,
+  requireRole('admin', 'operator'),
+  validateRequest(createProjectSchema),
+  projectController.createProject
+)
 
 // Proje detaylarını getir
-router.get('/:id', authenticateToken, projectController.getProjectById);
+router.get('/:id', authenticateToken, projectController.getProjectById)
 
 // Proje güncelle
-router.put('/:id', authenticateToken, requireRole('admin', 'operator'), validateRequest(updateProjectSchema), projectController.updateProject);
+router.put(
+  '/:id',
+  authenticateToken,
+  requireRole('admin', 'operator'),
+  validateRequest(updateProjectSchema),
+  projectController.updateProject
+)
 
 // Proje sil
-router.delete('/:id', authenticateToken, requireRole('admin'), projectController.deleteProject);
+router.delete(
+  '/:id',
+  authenticateToken,
+  requireRole('admin'),
+  projectController.deleteProject
+)
 
 // Proje görevleri
-router.get('/:id/tasks', authenticateToken, projectController.getProjectTasks);
+router.get('/:id/tasks', authenticateToken, projectController.getProjectTasks)
 
 // Proje görevi ekle
-router.post('/:id/tasks', authenticateToken, requireRole('admin', 'operator'), validateRequest(createTaskSchema), projectController.addProjectTask);
+router.post(
+  '/:id/tasks',
+  authenticateToken,
+  requireRole('admin', 'operator'),
+  validateRequest(createTaskSchema),
+  projectController.addProjectTask
+)
 
 // Proje maliyetleri
-router.get('/:id/costs', authenticateToken, projectController.getProjectCosts);
+router.get('/:id/costs', authenticateToken, projectController.getProjectCosts)
 
 // Proje maliyeti ekle
-router.post('/:id/costs', authenticateToken, requireRole('admin', 'operator'), validateRequest(createCostSchema), projectController.addProjectCost);
+router.post(
+  '/:id/costs',
+  authenticateToken,
+  requireRole('admin', 'operator'),
+  validateRequest(createCostSchema),
+  projectController.addProjectCost
+)
 
-module.exports = router;
+// Proje durumunu güncelle
+router.patch(
+  '/:id/status',
+  authenticateToken,
+  requireRole('admin', 'operator'),
+  projectController.updateProjectStatus
+)
+
+// Proje görevini güncelle
+router.put(
+  '/:id/tasks/:taskId',
+  authenticateToken,
+  requireRole('admin', 'operator'),
+  projectController.updateProjectTask
+)
+
+// Proje görevini sil
+router.delete(
+  '/:id/tasks/:taskId',
+  authenticateToken,
+  requireRole('admin', 'operator'),
+  projectController.deleteProjectTask
+)
+
+// Proje zaman çizelgesi
+router.get(
+  '/:id/timeline',
+  authenticateToken,
+  projectController.getProjectTimeline
+)
+
+// Proje raporu
+router.get('/:id/report', authenticateToken, projectController.getProjectReport)
+
+// Proje dışa aktar
+router.get('/:id/export', authenticateToken, projectController.exportProject)
+
+// Proje analitikleri
+router.get(
+  '/analytics',
+  authenticateToken,
+  projectController.getProjectAnalytics
+)
+
+module.exports = router

@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const db = require('../config/database');
+const { query } = require('../config/database');
 const { requireAuth: authenticateToken, requireRole } = require('../middleware/auth');
 
 // Tüm tedarikçileri listele
@@ -19,13 +19,13 @@ router.get('/', authenticateToken, async (req, res) => {
 
         // Arama filtresi
         if (search) {
-            whereConditions.push('(name LIKE ? OR supplier_code LIKE ? OR contact_person LIKE ?)');
+            whereConditions.push(`(name LIKE $${queryParams.length + 1} OR supplier_code LIKE $${queryParams.length + 2} OR contact_person LIKE $${queryParams.length + 3})`);
             queryParams.push(`%${search}%`, `%${search}%`, `%${search}%`);
         }
 
         const whereClause = whereConditions.join(' AND ');
 
-        const query = `
+        const queryText = `
             SELECT 
                 id,
                 uuid,
@@ -48,18 +48,19 @@ router.get('/', authenticateToken, async (req, res) => {
             FROM suppliers
             WHERE ${whereClause}
             ORDER BY name ASC
-            LIMIT ? OFFSET ?
+            LIMIT $${queryParams.length + 1} OFFSET $${queryParams.length + 2}
         `;
 
         queryParams.push(parseInt(limit), parseInt(offset));
 
-        const [suppliers] = await db.pool.execute(query, queryParams);
+        const suppliersResult = await query(queryText, queryParams);
+        const suppliers = suppliersResult.rows;
 
         // Count sorgusu
         const countQuery = `SELECT COUNT(*) as total FROM suppliers WHERE ${whereClause}`;
-        const [countResult] = await db.pool.execute(countQuery, queryParams.slice(0, -2));
+        const countResult = await query(countQuery, queryParams.slice(0, -2));
 
-        const total = countResult[0].total;
+        const total = countResult.rows[0].total;
         const totalPages = Math.ceil(total / limit);
 
         res.json({
@@ -90,12 +91,12 @@ router.get('/:id', authenticateToken, async (req, res) => {
     try {
         const { id } = req.params;
 
-        const [result] = await db.pool.execute(
-            'SELECT * FROM suppliers WHERE id = ?',
+        const result = await query(
+            'SELECT * FROM suppliers WHERE id = $1',
             [id]
         );
 
-        if (result.length === 0) {
+        if (result.rows.length === 0) {
             return res.status(404).json({
                 success: false,
                 message: 'Tedarikçi bulunamadı'
@@ -104,7 +105,7 @@ router.get('/:id', authenticateToken, async (req, res) => {
 
         res.json({
             success: true,
-            data: result[0]
+            data: result.rows[0]
         });
 
     } catch (error) {
@@ -145,38 +146,34 @@ router.post('/', authenticateToken, requireRole(['admin', 'operator']), async (r
         }
 
         // Tedarikçi kodu benzersizlik kontrolü
-        const [existingCode] = await db.pool.execute(
-            'SELECT id FROM suppliers WHERE supplier_code = ?',
+        const existingCode = await query(
+            'SELECT id FROM suppliers WHERE supplier_code = $1',
             [supplier_code]
         );
 
-        if (existingCode.length > 0) {
+        if (existingCode.rows.length > 0) {
             return res.status(400).json({
                 success: false,
                 message: 'Bu tedarikçi kodu zaten kullanılıyor'
             });
         }
 
-        const [result] = await db.pool.execute(`
+        const result = await query(`
             INSERT INTO suppliers (
                 supplier_code, name, contact_person, email, phone, address,
                 city, country, tax_number, payment_terms, currency, rating, notes
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) RETURNING *
         `, [
             supplier_code, name, contact_person, email, phone, address,
             city, country, tax_number, payment_terms, currency, rating, notes
         ]);
 
-        // Yeni eklenen tedarikçiyi getir
-        const [newSupplier] = await db.pool.execute(
-            'SELECT * FROM suppliers WHERE id = ?',
-            [result.insertId]
-        );
+        const newSupplier = result.rows[0];
 
         res.status(201).json({
             success: true,
             message: 'Tedarikçi başarıyla eklendi',
-            data: newSupplier[0]
+            data: newSupplier
         });
 
     } catch (error) {
@@ -211,12 +208,12 @@ router.put('/:id', authenticateToken, requireRole(['admin', 'operator']), async 
         } = req.body;
 
         // Tedarikçi var mı kontrol et
-        const [existing] = await db.pool.execute(
-            'SELECT id FROM suppliers WHERE id = ?',
+        const existing = await query(
+            'SELECT id FROM suppliers WHERE id = $1',
             [id]
         );
 
-        if (existing.length === 0) {
+        if (existing.rows.length === 0) {
             return res.status(404).json({
                 success: false,
                 message: 'Tedarikçi bulunamadı'
@@ -225,12 +222,12 @@ router.put('/:id', authenticateToken, requireRole(['admin', 'operator']), async 
 
         // Tedarikçi kodu benzersizlik kontrolü (kendi ID'si hariç)
         if (supplier_code) {
-            const [existingCode] = await db.pool.execute(
-                'SELECT id FROM suppliers WHERE supplier_code = ? AND id != ?',
+            const existingCode = await query(
+                'SELECT id FROM suppliers WHERE supplier_code = $1 AND id != $2',
                 [supplier_code, id]
             );
 
-            if (existingCode.length > 0) {
+            if (existingCode.rows.length > 0) {
                 return res.status(400).json({
                     success: false,
                     message: 'Bu tedarikçi kodu zaten kullanılıyor'
@@ -238,24 +235,24 @@ router.put('/:id', authenticateToken, requireRole(['admin', 'operator']), async 
             }
         }
 
-        await db.pool.execute(`
+        await query(`
             UPDATE suppliers SET
-                supplier_code = COALESCE(?, supplier_code),
-                name = COALESCE(?, name),
-                contact_person = ?,
-                email = ?,
-                phone = ?,
-                address = ?,
-                city = ?,
-                country = ?,
-                tax_number = ?,
-                payment_terms = COALESCE(?, payment_terms),
-                currency = COALESCE(?, currency),
-                rating = COALESCE(?, rating),
-                notes = ?,
-                is_active = COALESCE(?, is_active),
-                updated_at = CURRENT_TIMESTAMP
-            WHERE id = ?
+                supplier_code = COALESCE($1, supplier_code),
+            name = COALESCE($2, name),
+            contact_person = $3,
+            email = $4,
+            phone = $5,
+            address = $6,
+            city = $7,
+            country = $8,
+            tax_number = $9,
+            payment_terms = COALESCE($10, payment_terms),
+            currency = COALESCE($11, currency),
+            rating = COALESCE($12, rating),
+            notes = $13,
+            is_active = COALESCE($14, is_active),
+            updated_at = CURRENT_TIMESTAMP
+            WHERE id = $15
         `, [
             supplier_code, name, contact_person, email, phone, address,
             city, country, tax_number, payment_terms, currency, rating,
@@ -263,15 +260,15 @@ router.put('/:id', authenticateToken, requireRole(['admin', 'operator']), async 
         ]);
 
         // Güncellenmiş tedarikçiyi getir
-        const [updatedSupplier] = await db.pool.execute(
-            'SELECT * FROM suppliers WHERE id = ?',
+        const updatedSupplier = await query(
+            'SELECT * FROM suppliers WHERE id = $1',
             [id]
         );
 
         res.json({
             success: true,
             message: 'Tedarikçi başarıyla güncellendi',
-            data: updatedSupplier[0]
+            data: updatedSupplier.rows[0]
         });
 
     } catch (error) {
@@ -290,12 +287,12 @@ router.delete('/:id', authenticateToken, requireRole(['admin']), async (req, res
         const { id } = req.params;
 
         // Tedarikçi var mı kontrol et
-        const [existing] = await db.pool.execute(
-            'SELECT id, name FROM suppliers WHERE id = ?',
+        const existing = await query(
+            'SELECT id, name FROM suppliers WHERE id = $1',
             [id]
         );
 
-        if (existing.length === 0) {
+        if (existing.rows.length === 0) {
             return res.status(404).json({
                 success: false,
                 message: 'Tedarikçi bulunamadı'
@@ -303,12 +300,12 @@ router.delete('/:id', authenticateToken, requireRole(['admin']), async (req, res
         }
 
         // Bu tedarikçiye bağlı ürün var mı kontrol et
-        const [connectedProducts] = await db.pool.execute(
-            'SELECT COUNT(*) as count FROM products WHERE supplier_id = ? AND is_active = TRUE',
+        const connectedProducts = await query(
+            'SELECT COUNT(*) as count FROM products WHERE supplier_id = $1 AND is_active = TRUE',
             [id]
         );
 
-        if (connectedProducts[0].count > 0) {
+        if (connectedProducts.rows[0].count > 0) {
             return res.status(400).json({
                 success: false,
                 message: 'Bu tedarikçiye bağlı aktif ürünler bulunuyor. Önce ürünleri güncelleyin.'
@@ -316,14 +313,14 @@ router.delete('/:id', authenticateToken, requireRole(['admin']), async (req, res
         }
 
         // Soft delete
-        await db.pool.execute(
-            'UPDATE suppliers SET is_active = FALSE, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
+        await query(
+            'UPDATE suppliers SET is_active = FALSE, updated_at = CURRENT_TIMESTAMP WHERE id = $1',
             [id]
         );
 
         res.json({
             success: true,
-            message: `${existing[0].name} tedarikçisi başarıyla silindi`
+            message: `${existing.rows[0].name} tedarikçisi başarıyla silindi`
         });
 
     } catch (error) {
@@ -336,4 +333,4 @@ router.delete('/:id', authenticateToken, requireRole(['admin']), async (req, res
     }
 });
 
-module.exports = router; 
+module.exports = router;

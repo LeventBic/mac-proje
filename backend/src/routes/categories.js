@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const db = require('../config/database');
+const { query } = require('../config/database');
 const { requireAuth: authenticateToken, requireRole } = require('../middleware/auth');
 
 // Tüm kategorileri listele
@@ -13,7 +13,7 @@ router.get('/', authenticateToken, async (req, res) => {
             whereCondition = 'WHERE is_active = TRUE';
         }
 
-        const query = `
+        const queryText = `
             SELECT 
                 id,
                 uuid,
@@ -28,7 +28,8 @@ router.get('/', authenticateToken, async (req, res) => {
             ORDER BY name ASC
         `;
 
-        const [categories] = await db.pool.execute(query);
+        const categoriesResult = await query(queryText);
+        const categories = categoriesResult.rows;
 
         res.json({
             success: true,
@@ -50,12 +51,12 @@ router.get('/:id', authenticateToken, async (req, res) => {
     try {
         const { id } = req.params;
 
-        const [result] = await db.pool.execute(
-            'SELECT * FROM product_categories WHERE id = ?',
+        const result = await query(
+            'SELECT * FROM product_categories WHERE id = $1',
             [id]
         );
 
-        if (result.length === 0) {
+        if (result.rows.length === 0) {
             return res.status(404).json({
                 success: false,
                 message: 'Kategori bulunamadı'
@@ -64,7 +65,7 @@ router.get('/:id', authenticateToken, async (req, res) => {
 
         res.json({
             success: true,
-            data: result[0]
+            data: result.rows[0]
         });
 
     } catch (error) {
@@ -91,33 +92,34 @@ router.post('/', authenticateToken, requireRole(['admin', 'operator']), async (r
         }
 
         // Kategori adı benzersizlik kontrolü
-        const [existingName] = await db.pool.execute(
-            'SELECT id FROM product_categories WHERE name = ? AND is_active = TRUE',
+        const existingNameResult = await query(
+            'SELECT id FROM product_categories WHERE name = $1 AND is_active = TRUE',
             [name]
         );
 
-        if (existingName.length > 0) {
+        if (existingNameResult.rows.length > 0) {
             return res.status(400).json({
                 success: false,
                 message: 'Bu kategori adı zaten kullanılıyor'
             });
         }
 
-        const [result] = await db.pool.execute(`
+        const result = await query(`
             INSERT INTO product_categories (name, description, parent_id)
-            VALUES (?, ?, ?)
+            VALUES ($1, $2, $3) RETURNING id
         `, [name, description, parent_id]);
 
         // Yeni eklenen kategoriyi getir
-        const [newCategory] = await db.pool.execute(
-            'SELECT * FROM product_categories WHERE id = ?',
-            [result.insertId]
+        const newCategoryResult = await query(
+            'SELECT * FROM product_categories WHERE id = $1',
+            [result.rows[0].id]
         );
+        const newCategory = newCategoryResult.rows[0];
 
         res.status(201).json({
             success: true,
             message: 'Kategori başarıyla eklendi',
-            data: newCategory[0]
+            data: newCategory
         });
 
     } catch (error) {
@@ -137,12 +139,12 @@ router.put('/:id', authenticateToken, requireRole(['admin', 'operator']), async 
         const { name, description, parent_id, is_active } = req.body;
 
         // Kategori var mı kontrol et
-        const [existing] = await db.pool.execute(
-            'SELECT id FROM product_categories WHERE id = ?',
+        const existingResult = await query(
+            'SELECT id FROM product_categories WHERE id = $1',
             [id]
         );
 
-        if (existing.length === 0) {
+        if (existingResult.rows.length === 0) {
             return res.status(404).json({
                 success: false,
                 message: 'Kategori bulunamadı'
@@ -151,12 +153,12 @@ router.put('/:id', authenticateToken, requireRole(['admin', 'operator']), async 
 
         // Kategori adı benzersizlik kontrolü (kendi ID'si hariç)
         if (name) {
-            const [existingName] = await db.pool.execute(
-                'SELECT id FROM product_categories WHERE name = ? AND id != ? AND is_active = TRUE',
+            const existingNameResult = await query(
+                'SELECT id FROM product_categories WHERE name = $1 AND id != $2 AND is_active = TRUE',
                 [name, id]
             );
 
-            if (existingName.length > 0) {
+            if (existingNameResult.rows.length > 0) {
                 return res.status(400).json({
                     success: false,
                     message: 'Bu kategori adı zaten kullanılıyor'
@@ -164,26 +166,26 @@ router.put('/:id', authenticateToken, requireRole(['admin', 'operator']), async 
             }
         }
 
-        await db.pool.execute(`
+        await query(`
             UPDATE product_categories SET
-                name = COALESCE(?, name),
-                description = ?,
-                parent_id = ?,
-                is_active = COALESCE(?, is_active),
-                updated_at = CURRENT_TIMESTAMP
-            WHERE id = ?
+                name = COALESCE($1, name),
+            description = $2,
+            parent_id = $3,
+            is_active = COALESCE($4, is_active),
+            updated_at = CURRENT_TIMESTAMP
+            WHERE id = $5
         `, [name, description, parent_id, is_active, id]);
 
         // Güncellenmiş kategoriyi getir
-        const [updatedCategory] = await db.pool.execute(
-            'SELECT * FROM product_categories WHERE id = ?',
+        const updatedCategoryResult = await query(
+            'SELECT * FROM product_categories WHERE id = $1',
             [id]
         );
 
         res.json({
             success: true,
             message: 'Kategori başarıyla güncellendi',
-            data: updatedCategory[0]
+            data: updatedCategoryResult.rows[0]
         });
 
     } catch (error) {
@@ -203,7 +205,7 @@ router.delete('/:id', authenticateToken, requireRole(['admin']), async (req, res
 
         // Kategori var mı kontrol et
         const [existing] = await db.pool.execute(
-            'SELECT id, name FROM product_categories WHERE id = ?',
+            'SELECT id, name FROM product_categories WHERE id = $1',
             [id]
         );
 
@@ -216,7 +218,7 @@ router.delete('/:id', authenticateToken, requireRole(['admin']), async (req, res
 
         // Bu kategoriye bağlı ürün var mı kontrol et
         const [connectedProducts] = await db.pool.execute(
-            'SELECT COUNT(*) as count FROM products WHERE category_id = ? AND is_active = TRUE',
+            'SELECT COUNT(*) as count FROM products WHERE category_id = $1 AND is_active = TRUE',
             [id]
         );
 
@@ -229,7 +231,7 @@ router.delete('/:id', authenticateToken, requireRole(['admin']), async (req, res
 
         // Soft delete
         await db.pool.execute(
-            'UPDATE product_categories SET is_active = FALSE, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
+            'UPDATE product_categories SET is_active = FALSE, updated_at = CURRENT_TIMESTAMP WHERE id = $1',
             [id]
         );
 
@@ -248,4 +250,4 @@ router.delete('/:id', authenticateToken, requireRole(['admin']), async (req, res
     }
 });
 
-module.exports = router; 
+module.exports = router;

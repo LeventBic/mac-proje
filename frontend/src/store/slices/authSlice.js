@@ -1,17 +1,17 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import authAPI from '../../services/authAPI';
+import AuthService from '../../services/authService';
 
 // Async thunks
 export const loginUser = createAsyncThunk(
   'auth/login',
   async ({ username, password }, { rejectWithValue }) => {
     try {
-      const response = await authAPI.login({ username, password });
+      const response = await AuthService.login({ username, password });
       // Store tokens and user in localStorage
-      localStorage.setItem('token', response.data.token);
-      localStorage.setItem('refreshToken', response.data.refreshToken);
-      localStorage.setItem('user', JSON.stringify(response.data.user));
-      return response.data;
+      localStorage.setItem('token', response.token);
+      localStorage.setItem('refreshToken', response.refreshToken);
+      localStorage.setItem('user', JSON.stringify(response.user));
+      return response;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || 'Login failed');
     }
@@ -42,11 +42,11 @@ export const refreshToken = createAsyncThunk(
         throw new Error('No refresh token');
       }
       
-      const response = await authAPI.refreshToken({ refreshToken });
-      localStorage.setItem('token', response.data.token);
-      localStorage.setItem('refreshToken', response.data.refreshToken);
-      localStorage.setItem('user', JSON.stringify(response.data.user));
-      return response.data;
+      const response = await AuthService.refreshToken({ refreshToken });
+      localStorage.setItem('token', response.token);
+      localStorage.setItem('refreshToken', response.refreshToken);
+      localStorage.setItem('user', JSON.stringify(response.user));
+      return response;
     } catch (error) {
       localStorage.removeItem('token');
       localStorage.removeItem('refreshToken');

@@ -1,3 +1,9 @@
+// DEPRECATED: This script is no longer needed as the project has been migrated to React Query and centralized Axios client
+// The new architecture uses:
+// - Centralized axiosClient (src/config/axiosClient.js)
+// - Service layer (src/services/)
+// - React Query hooks (src/hooks/)
+
 const fs = require('fs');
 const path = require('path');
 

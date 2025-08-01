@@ -3,8 +3,8 @@ const projectRepository = require('../repositories/projectRepository');
 const { AppError } = require('../utils/errors');
 
 class ProjectService {
-    async getAllProjects(filters, pagination) {
-        const { page, limit, search, status, customer_id } = filters;
+    async getAllProjects(filters) {
+        const { page = 1, limit = 10, search, status, customer_id } = filters;
         const offset = (page - 1) * limit;
 
         const projects = await projectRepository.findAllWithFilters({

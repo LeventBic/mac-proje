@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+// import { useNavigate } from 'react-router-dom';
 
 const OperationsPage = () => {
   const [operations, setOperations] = useState([]);
@@ -15,9 +15,9 @@ const OperationsPage = () => {
     estimated_duration: '',
     required_skills: '',
     equipment_needed: '',
-    safety_requirements: ''
+    safety_requirements: '',
   });
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   useEffect(() => {
     fetchOperationsData();
@@ -37,7 +37,7 @@ const OperationsPage = () => {
           required_skills: 'Montaj, Kalite Kontrol',
           equipment_needed: 'Montaj Tezgahı, Tornavida Seti',
           safety_requirements: 'Güvenlik Gözlüğü, İş Eldiveni',
-          created_at: new Date().toISOString()
+          created_at: new Date().toISOString(),
         },
         {
           id: 2,
@@ -49,7 +49,7 @@ const OperationsPage = () => {
           required_skills: 'Kalite Kontrol, Ölçüm',
           equipment_needed: 'Test Cihazları, Kumpas',
           safety_requirements: 'Güvenlik Gözlüğü',
-          created_at: new Date().toISOString()
+          created_at: new Date().toISOString(),
         },
         {
           id: 3,
@@ -61,8 +61,8 @@ const OperationsPage = () => {
           required_skills: 'Paketleme',
           equipment_needed: 'Paketleme Makinesi, Etiket Yazıcı',
           safety_requirements: 'İş Eldiveni',
-          created_at: new Date().toISOString()
-        }
+          created_at: new Date().toISOString(),
+        },
       ];
 
       const mockWorkOrders = [
@@ -80,7 +80,7 @@ const OperationsPage = () => {
           actual_start: new Date().toISOString(),
           actual_end: null,
           progress: 65,
-          notes: 'Montaj işlemi devam ediyor'
+          notes: 'Montaj işlemi devam ediyor',
         },
         {
           id: 2,
@@ -91,12 +91,14 @@ const OperationsPage = () => {
           assigned_to: 'Fatma Demir',
           status: 'pending',
           priority: 'medium',
-          planned_start: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(),
+          planned_start: new Date(
+            Date.now() + 2 * 60 * 60 * 1000
+          ).toISOString(),
           planned_end: new Date(Date.now() + 3 * 60 * 60 * 1000).toISOString(),
           actual_start: null,
           actual_end: null,
           progress: 0,
-          notes: 'Montaj tamamlandıktan sonra başlayacak'
+          notes: 'Montaj tamamlandıktan sonra başlayacak',
         },
         {
           id: 3,
@@ -107,13 +109,17 @@ const OperationsPage = () => {
           assigned_to: 'Mehmet Kaya',
           status: 'completed',
           priority: 'low',
-          planned_start: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
-          planned_end: new Date(Date.now() - 3.5 * 60 * 60 * 1000).toISOString(),
+          planned_start: new Date(
+            Date.now() - 4 * 60 * 60 * 1000
+          ).toISOString(),
+          planned_end: new Date(
+            Date.now() - 3.5 * 60 * 60 * 1000
+          ).toISOString(),
           actual_start: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
           actual_end: new Date(Date.now() - 3.5 * 60 * 60 * 1000).toISOString(),
           progress: 100,
-          notes: 'Başarıyla tamamlandı'
-        }
+          notes: 'Başarıyla tamamlandı',
+        },
       ];
 
       setOperations(mockOperations);
@@ -125,11 +131,11 @@ const OperationsPage = () => {
     }
   };
 
-  const handleFormChange = (e) => {
+  const handleFormChange = e => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
     try {
       // Yeni operasyon ekleme simülasyonu
@@ -137,7 +143,7 @@ const OperationsPage = () => {
         id: operations.length + 1,
         ...form,
         status: 'active',
-        created_at: new Date().toISOString()
+        created_at: new Date().toISOString(),
       };
       setOperations([...operations, newOperation]);
       setShowForm(false);
@@ -148,88 +154,100 @@ const OperationsPage = () => {
         estimated_duration: '',
         required_skills: '',
         equipment_needed: '',
-        safety_requirements: ''
+        safety_requirements: '',
       });
     } catch (err) {
       setError('Operasyon eklenemedi');
     }
   };
 
-  const getStatusBadge = (status) => {
+  const getStatusBadge = status => {
     const colors = {
-      'pending': 'bg-yellow-100 text-yellow-800',
-      'in_progress': 'bg-blue-100 text-blue-800',
-      'completed': 'bg-green-100 text-green-800',
-      'cancelled': 'bg-red-100 text-red-800',
-      'active': 'bg-green-100 text-green-800',
-      'inactive': 'bg-gray-100 text-gray-800'
+      pending: 'bg-yellow-100 text-yellow-800',
+      in_progress: 'bg-blue-100 text-blue-800',
+      completed: 'bg-green-100 text-green-800',
+      cancelled: 'bg-red-100 text-red-800',
+      active: 'bg-green-100 text-green-800',
+      inactive: 'bg-gray-100 text-gray-800',
     };
     const labels = {
-      'pending': 'Bekliyor',
-      'in_progress': 'Devam Ediyor',
-      'completed': 'Tamamlandı',
-      'cancelled': 'İptal Edildi',
-      'active': 'Aktif',
-      'inactive': 'Pasif'
+      pending: 'Bekliyor',
+      in_progress: 'Devam Ediyor',
+      completed: 'Tamamlandı',
+      cancelled: 'İptal Edildi',
+      active: 'Aktif',
+      inactive: 'Pasif',
     };
     return (
-      <span className={`px-2 py-1 rounded-full text-xs font-medium ${colors[status] || 'bg-gray-100 text-gray-800'}`}>
+      <span
+        className={`rounded-full px-2 py-1 text-xs font-medium ${colors[status] || 'bg-gray-100 text-gray-800'}`}
+      >
         {labels[status] || status}
       </span>
     );
   };
 
-  const getPriorityBadge = (priority) => {
+  const getPriorityBadge = priority => {
     const colors = {
-      'low': 'bg-gray-100 text-gray-800',
-      'medium': 'bg-yellow-100 text-yellow-800',
-      'high': 'bg-orange-100 text-orange-800',
-      'urgent': 'bg-red-100 text-red-800'
+      low: 'bg-gray-100 text-gray-800',
+      medium: 'bg-yellow-100 text-yellow-800',
+      high: 'bg-orange-100 text-orange-800',
+      urgent: 'bg-red-100 text-red-800',
     };
     const labels = {
-      'low': 'Düşük',
-      'medium': 'Orta',
-      'high': 'Yüksek',
-      'urgent': 'Acil'
+      low: 'Düşük',
+      medium: 'Orta',
+      high: 'Yüksek',
+      urgent: 'Acil',
     };
     return (
-      <span className={`px-2 py-1 rounded-full text-xs font-medium ${colors[priority] || 'bg-gray-100 text-gray-800'}`}>
+      <span
+        className={`rounded-full px-2 py-1 text-xs font-medium ${colors[priority] || 'bg-gray-100 text-gray-800'}`}
+      >
         {labels[priority] || priority}
       </span>
     );
   };
 
-  const getOperationTypeBadge = (type) => {
+  const getOperationTypeBadge = type => {
     const colors = {
-      'assembly': 'bg-blue-100 text-blue-800',
-      'machining': 'bg-purple-100 text-purple-800',
-      'quality_control': 'bg-green-100 text-green-800',
-      'packaging': 'bg-orange-100 text-orange-800',
-      'inspection': 'bg-yellow-100 text-yellow-800'
+      assembly: 'bg-blue-100 text-blue-800',
+      machining: 'bg-purple-100 text-purple-800',
+      quality_control: 'bg-green-100 text-green-800',
+      packaging: 'bg-orange-100 text-orange-800',
+      inspection: 'bg-yellow-100 text-yellow-800',
     };
     const labels = {
-      'assembly': 'Montaj',
-      'machining': 'İşleme',
-      'quality_control': 'Kalite Kontrol',
-      'packaging': 'Paketleme',
-      'inspection': 'Muayene'
+      assembly: 'Montaj',
+      machining: 'İşleme',
+      quality_control: 'Kalite Kontrol',
+      packaging: 'Paketleme',
+      inspection: 'Muayene',
     };
     return (
-      <span className={`px-2 py-1 rounded-full text-xs font-medium ${colors[type] || 'bg-gray-100 text-gray-800'}`}>
+      <span
+        className={`rounded-full px-2 py-1 text-xs font-medium ${colors[type] || 'bg-gray-100 text-gray-800'}`}
+      >
         {labels[type] || type}
       </span>
     );
   };
 
-  if (loading) return <div className="flex justify-center py-8">Yükleniyor...</div>;
-  if (error) return <div className="text-red-500 text-center py-8">{error}</div>;
+  if (loading)
+    return <div className="flex justify-center py-8">Yükleniyor...</div>;
+  if (error)
+    return <div className="py-8 text-center text-red-500">{error}</div>;
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-secondary-900">Operasyonlar</h1>
-          <p className="text-secondary-600">Üretim operasyonları ve iş emirlerini yönetin</p>
+          <h1 className="text-2xl font-bold text-secondary-900">
+            Operasyonlar
+          </h1>
+          <p className="text-secondary-600">
+            Üretim operasyonları ve iş emirlerini yönetin
+          </p>
         </div>
         {activeTab === 'operations' && (
           <button className="btn btn-primary" onClick={() => setShowForm(true)}>
@@ -244,15 +262,15 @@ const OperationsPage = () => {
           {[
             { key: 'operations', label: 'Operasyonlar' },
             { key: 'work-orders', label: 'İş Emirleri' },
-            { key: 'schedule', label: 'Planlama' }
+            { key: 'schedule', label: 'Planlama' },
           ].map(tab => (
             <button
               key={tab.key}
               onClick={() => setActiveTab(tab.key)}
-              className={`py-2 px-1 border-b-2 font-medium text-sm ${
+              className={`border-b-2 px-1 py-2 text-sm font-medium ${
                 activeTab === tab.key
                   ? 'border-blue-500 text-blue-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
               }`}
             >
               {tab.label}
@@ -262,12 +280,12 @@ const OperationsPage = () => {
       </div>
 
       {showForm && (
-        <form onSubmit={handleSubmit} className="card p-6 space-y-4">
-          <h3 className="font-semibold mb-4">Yeni Operasyon Ekle</h3>
-          
+        <form onSubmit={handleSubmit} className="card space-y-4 p-6">
+          <h3 className="mb-4 font-semibold">Yeni Operasyon Ekle</h3>
+
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block mb-1">Operasyon Adı *</label>
+              <label className="mb-1 block">Operasyon Adı *</label>
               <input
                 type="text"
                 name="name"
@@ -278,7 +296,7 @@ const OperationsPage = () => {
               />
             </div>
             <div>
-              <label className="block mb-1">Operasyon Tipi</label>
+              <label className="mb-1 block">Operasyon Tipi</label>
               <select
                 name="operation_type"
                 value={form.operation_type}
@@ -295,7 +313,7 @@ const OperationsPage = () => {
           </div>
 
           <div>
-            <label className="block mb-1">Açıklama</label>
+            <label className="mb-1 block">Açıklama</label>
             <textarea
               name="description"
               value={form.description}
@@ -307,7 +325,7 @@ const OperationsPage = () => {
 
           <div className="grid grid-cols-3 gap-4">
             <div>
-              <label className="block mb-1">Tahmini Süre (dakika)</label>
+              <label className="mb-1 block">Tahmini Süre (dakika)</label>
               <input
                 type="number"
                 name="estimated_duration"
@@ -318,7 +336,7 @@ const OperationsPage = () => {
               />
             </div>
             <div>
-              <label className="block mb-1">Gerekli Yetenekler</label>
+              <label className="mb-1 block">Gerekli Yetenekler</label>
               <input
                 type="text"
                 name="required_skills"
@@ -329,7 +347,7 @@ const OperationsPage = () => {
               />
             </div>
             <div>
-              <label className="block mb-1">Gerekli Ekipman</label>
+              <label className="mb-1 block">Gerekli Ekipman</label>
               <input
                 type="text"
                 name="equipment_needed"
@@ -342,7 +360,7 @@ const OperationsPage = () => {
           </div>
 
           <div>
-            <label className="block mb-1">Güvenlik Gereksinimleri</label>
+            <label className="mb-1 block">Güvenlik Gereksinimleri</label>
             <input
               type="text"
               name="safety_requirements"
@@ -354,8 +372,16 @@ const OperationsPage = () => {
           </div>
 
           <div className="flex gap-2">
-            <button type="submit" className="btn btn-success">Kaydet</button>
-            <button type="button" onClick={() => setShowForm(false)} className="btn btn-outline">İptal</button>
+            <button type="submit" className="btn btn-success">
+              Kaydet
+            </button>
+            <button
+              type="button"
+              onClick={() => setShowForm(false)}
+              className="btn btn-outline"
+            >
+              İptal
+            </button>
           </div>
         </form>
       )}
@@ -364,9 +390,9 @@ const OperationsPage = () => {
       <div className="space-y-6">
         {activeTab === 'operations' && (
           <div className="card p-6">
-            <h3 className="font-semibold mb-4">Operasyon Listesi</h3>
+            <h3 className="mb-4 font-semibold">Operasyon Listesi</h3>
             <div className="overflow-x-auto">
-              <table className="table-auto w-full text-sm">
+              <table className="w-full table-auto text-sm">
                 <thead>
                   <tr>
                     <th>Operasyon Adı</th>
@@ -380,17 +406,28 @@ const OperationsPage = () => {
                 </thead>
                 <tbody>
                   {operations.map(operation => (
-                    <tr key={operation.id} className="border-b hover:bg-gray-50">
+                    <tr
+                      key={operation.id}
+                      className="border-b hover:bg-gray-50"
+                    >
                       <td className="font-medium">{operation.name}</td>
                       <td>{getOperationTypeBadge(operation.operation_type)}</td>
                       <td>{operation.estimated_duration} dk</td>
                       <td>{getStatusBadge(operation.status)}</td>
-                      <td className="max-w-xs truncate">{operation.required_skills}</td>
-                      <td className="max-w-xs truncate">{operation.equipment_needed}</td>
+                      <td className="max-w-xs truncate">
+                        {operation.required_skills}
+                      </td>
+                      <td className="max-w-xs truncate">
+                        {operation.equipment_needed}
+                      </td>
                       <td>
                         <div className="flex gap-1">
-                          <button className="btn btn-xs btn-outline">Düzenle</button>
-                          <button className="btn btn-xs btn-outline">Detay</button>
+                          <button className="btn btn-xs btn-outline">
+                            Düzenle
+                          </button>
+                          <button className="btn btn-xs btn-outline">
+                            Detay
+                          </button>
                         </div>
                       </td>
                     </tr>
@@ -403,9 +440,9 @@ const OperationsPage = () => {
 
         {activeTab === 'work-orders' && (
           <div className="card p-6">
-            <h3 className="font-semibold mb-4">İş Emirleri</h3>
+            <h3 className="mb-4 font-semibold">İş Emirleri</h3>
             <div className="overflow-x-auto">
-              <table className="table-auto w-full text-sm">
+              <table className="w-full table-auto text-sm">
                 <thead>
                   <tr>
                     <th>İş Emri No</th>
@@ -428,9 +465,9 @@ const OperationsPage = () => {
                       <td>{getPriorityBadge(order.priority)}</td>
                       <td>
                         <div className="flex items-center">
-                          <div className="w-full bg-gray-200 rounded-full h-2 mr-2">
+                          <div className="mr-2 h-2 w-full rounded-full bg-gray-200">
                             <div
-                              className="bg-blue-600 h-2 rounded-full"
+                              className="h-2 rounded-full bg-blue-600"
                               style={{ width: `${order.progress}%` }}
                             ></div>
                           </div>
@@ -440,8 +477,12 @@ const OperationsPage = () => {
                       <td>{new Date(order.planned_start).toLocaleString()}</td>
                       <td>
                         <div className="flex gap-1">
-                          <button className="btn btn-xs btn-outline">Başlat</button>
-                          <button className="btn btn-xs btn-outline">Detay</button>
+                          <button className="btn btn-xs btn-outline">
+                            Başlat
+                          </button>
+                          <button className="btn btn-xs btn-outline">
+                            Detay
+                          </button>
                         </div>
                       </td>
                     </tr>
@@ -454,24 +495,24 @@ const OperationsPage = () => {
 
         {activeTab === 'schedule' && (
           <div className="card p-6">
-            <h3 className="font-semibold mb-4">Operasyon Planlaması</h3>
+            <h3 className="mb-4 font-semibold">Operasyon Planlaması</h3>
             <div className="space-y-4">
               <div className="grid grid-cols-3 gap-4">
-                <div className="bg-blue-50 p-4 rounded-lg">
+                <div className="rounded-lg bg-blue-50 p-4">
                   <h4 className="font-medium text-blue-800">Bugün</h4>
                   <div className="text-2xl font-bold text-blue-600">
                     {workOrders.filter(w => w.status === 'in_progress').length}
                   </div>
                   <div className="text-sm text-blue-600">Aktif İş Emri</div>
                 </div>
-                <div className="bg-yellow-50 p-4 rounded-lg">
+                <div className="rounded-lg bg-yellow-50 p-4">
                   <h4 className="font-medium text-yellow-800">Bekleyen</h4>
                   <div className="text-2xl font-bold text-yellow-600">
                     {workOrders.filter(w => w.status === 'pending').length}
                   </div>
                   <div className="text-sm text-yellow-600">İş Emri</div>
                 </div>
-                <div className="bg-green-50 p-4 rounded-lg">
+                <div className="rounded-lg bg-green-50 p-4">
                   <h4 className="font-medium text-green-800">Tamamlanan</h4>
                   <div className="text-2xl font-bold text-green-600">
                     {workOrders.filter(w => w.status === 'completed').length}
@@ -479,10 +520,13 @@ const OperationsPage = () => {
                   <div className="text-sm text-green-600">İş Emri</div>
                 </div>
               </div>
-              
-              <div className="text-center py-8 text-gray-500">
+
+              <div className="py-8 text-center text-gray-500">
                 <p>Detaylı planlama takvimi yakında eklenecek...</p>
-                <p className="text-sm mt-2">Gantt chart ve kaynak planlaması özellikleri geliştirilmektedir.</p>
+                <p className="mt-2 text-sm">
+                  Gantt chart ve kaynak planlaması özellikleri
+                  geliştirilmektedir.
+                </p>
               </div>
             </div>
           </div>
@@ -492,4 +536,4 @@ const OperationsPage = () => {
   );
 };
 
-export default OperationsPage; 
+export default OperationsPage;

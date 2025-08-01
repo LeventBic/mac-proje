@@ -226,7 +226,7 @@ docker-compose exec frontend ping backend
 docker-compose ps
 
 # Manuel health check
-curl http://localhost:3001/health
+curl http://localhost:3001
 curl http://localhost:3000
 ```
 
@@ -286,4 +286,4 @@ Eğer sorunlar devam ederse:
 
 3. **Issue açın** veya destek isteyin
 
-Bu rehber sayesinde Docker sorunlarınızı kolayca çözebilirsiniz! 🚀 
+Bu rehber sayesinde Docker sorunlarınızı kolayca çözebilirsiniz! 🚀

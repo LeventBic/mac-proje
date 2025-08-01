@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { FiPlus, FiEye, FiEdit2, FiUsers, FiMail, FiPhone } from 'react-icons/fi';
+import axiosClient from '../../config/axiosClient';
+// import { toast } from 'react-hot-toast';
 
 const CustomersPage = () => {
     const [filters, setFilters] = useState({
@@ -18,14 +20,8 @@ const CustomersPage = () => {
                 if (value) params.append(key, value);
             });
             
-            const response = await fetch(`/api/customers?${params}`, {
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getToken('token')}`
-                }
-            });
-            
-            if (!response.ok) throw new Error('Müşteriler getirilemedi');
-            return response.json();
+            const response = await axiosClient.get(`/customers?${params}`);
+            return response.data;
         }
     });
 
@@ -167,4 +163,4 @@ const CustomersPage = () => {
     );
 };
 
-export default CustomersPage; 
+export default CustomersPage;

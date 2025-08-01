@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Clear Storage & Test Login</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; }
+        .success { background-color: #d4edda; }
+        .error { background-color: #f8d7da; }
+        button { padding: 10px 20px; margin: 5px; }
+        .storage-info { background-color: #f8f9fa; padding: 10px; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <h1>Frontend Storage & Login Test</h1>
+    
+    <div class="section">
+        <h3>Current Storage Status</h3>
+        <div id="storage-status" class="storage-info"></div>
+        <button onclick="checkStorage()">Check Storage</button>
+        <button onclick="clearStorage()">Clear All Storage</button>
+    </div>
+    
+    <div class="section">
+        <h3>Login Test</h3>
+        <button onclick="testLogin()">Test Login</button>
+        <div id="login-result"></div>
+    </div>
+    
+    <div class="section">
+        <h3>Redux State Simulation</h3>
+        <button onclick="simulateReduxLogin()">Simulate Redux Login</button>
+        <div id="redux-result"></div>
+    </div>
+
+    <script>
+        // Check current storage
+        function checkStorage() {
+            const statusDiv = document.getElementById('storage-status');
+            const token = localStorage.getItem('token');
+            const refreshToken = localStorage.getItem('refreshToken');
+            const user = localStorage.getItem('user');
+            
+            statusDiv.innerHTML = `
+                <strong>LocalStorage Contents:</strong><br>
+                Token: ${token ? 'Present (' + token.substring(0, 20) + '...)' : 'Not found'}<br>
+                Refresh Token: ${refreshToken ? 'Present (' + refreshToken.substring(0, 20) + '...)' : 'Not found'}<br>
+                User: ${user ? 'Present' : 'Not found'}<br>
+                ${user ? '<br>User Data: ' + user : ''}
+            `;
+        }
+        
+        // Clear all storage
+        function clearStorage() {
+            localStorage.clear();
+            sessionStorage.clear();
+            document.getElementById('storage-status').innerHTML = '<strong>✅ All storage cleared!</strong>';
+        }
+        
+        // Test login
+        async function testLogin() {
+            const resultDiv = document.getElementById('login-result');
+            resultDiv.innerHTML = 'Testing login...';
+            
+            try {
+                const response = await fetch('http://localhost:3002/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        username: 'admin',
+                        password: 'admin2024'
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    // Simulate what frontend should do
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('refreshToken', data.refreshToken);
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    
+                    resultDiv.className = 'section success';
+                    resultDiv.innerHTML = `
+                        <h4>✅ Login Successful!</h4>
+                        <p>Token stored in localStorage</p>
+                        <p>User: ${data.user.username} (${data.user.role})</p>
+                        <p>Ready to redirect to dashboard</p>
+                    `;
+                } else {
+                    resultDiv.className = 'section error';
+                    resultDiv.innerHTML = `
+                        <h4>❌ Login Failed!</h4>
+                        <p>Status: ${response.status}</p>
+                        <p>Error: ${data.message || 'Unknown error'}</p>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.className = 'section error';
+                resultDiv.innerHTML = `
+                    <h4>❌ Network Error!</h4>
+                    <p>Error: ${error.message}</p>
+                `;
+            }
+        }
+        
+        // Simulate Redux login process
+        async function simulateReduxLogin() {
+            const resultDiv = document.getElementById('redux-result');
+            resultDiv.innerHTML = 'Simulating Redux login process...';
+            
+            try {
+                // Step 1: Clear any existing auth state
+                localStorage.removeItem('token');
+                localStorage.removeItem('refreshToken');
+                localStorage.removeItem('user');
+                
+                // Step 2: Make API call (like Redux thunk would do)
+                const response = await fetch('http://localhost:3002/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        username: 'admin',
+                        password: 'admin2024'
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    // Step 3: Store tokens (like authSlice would do)
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('refreshToken', data.refreshToken);
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    
+                    // Step 4: Simulate Redux state update
+                    const mockReduxState = {
+                        user: data.user,
+                        token: data.token,
+                        refreshToken: data.refreshToken,
+                        isAuthenticated: true,
+                        loading: false,
+                        error: null
+                    };
+                    
+                    resultDiv.className = 'section success';
+                    resultDiv.innerHTML = `
+                        <h4>✅ Redux Login Simulation Successful!</h4>
+                        <p>API Response: OK</p>
+                        <p>Tokens stored: ✅</p>
+                        <p>Mock Redux State:</p>
+                        <pre>${JSON.stringify(mockReduxState, null, 2)}</pre>
+                        <p><strong>This should trigger navigation to /dashboard</strong></p>
+                    `;
+                } else {
+                    // Simulate error handling
+                    const errorMessage = data.message || 'Login failed';
+                    
+                    resultDiv.className = 'section error';
+                    resultDiv.innerHTML = `
+                        <h4>❌ Redux Login Simulation Failed!</h4>
+                        <p>API Status: ${response.status}</p>
+                        <p>Error Message: ${errorMessage}</p>
+                        <p>This error should be shown to user via toast</p>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.className = 'section error';
+                resultDiv.innerHTML = `
+                    <h4>❌ Redux Simulation Network Error!</h4>
+                    <p>Error: ${error.message}</p>
+                    <p>This should be handled by axios interceptor</p>
+                `;
+            }
+        }
+        
+        // Auto-check storage on load
+        window.onload = function() {
+            checkStorage();
+        };
+    </script>
+</body>
+</html>

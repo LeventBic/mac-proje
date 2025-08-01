@@ -1,340 +1,133 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { 
   FiSettings,
   FiPlus,
   FiTrendingUp,
   FiTrendingDown,
-  FiSearch,
-  FiFilter,
-  FiDownload,
+  // FiSearch,
+  // FiFilter,
+  // FiDownload,
   FiEye,
   FiBarChart2,
   FiPackage,
   FiUser,
   FiCalendar,
-  FiAlertCircle,
+  // FiAlertCircle,
   FiCheckCircle
 } from 'react-icons/fi';
-import { toast } from 'react-hot-toast';
+// import { toast } from 'react-hot-toast';
+import { useStockAdjustments, useStockAdjustmentStats, useCreateStockAdjustment } from '../../hooks/useStock';
 
-// API Service
-const API_BASE = process.env.REACT_APP_API_URL || 'http://localhost:3001/api';
-
-class StockAdjustmentsService {
-  static async getAll(params = {}) {
-    const queryString = new URLSearchParams(params).toString();
-    const response = await fetch(`${API_BASE}/stock-adjustments?${queryString}`, {
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
-      }
-    });
-    if (!response.ok) throw new Error('Düzeltme verisi alınamadı');
-    return response.json();
-  }
-
-  static async create(data) {
-    const response = await fetch(`${API_BASE}/stock-adjustments`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
-      },
-      body: JSON.stringify(data)
-    });
-    if (!response.ok) throw new Error('Düzeltme oluşturulamadı');
-    return response.json();
-  }
-
-  static async getReasons() {
-    const response = await fetch(`${API_BASE}/stock-adjustments/reasons/list`, {
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
-      }
-    });
-    if (!response.ok) throw new Error('Sebep listesi alınamadı');
-    return response.json();
-  }
-
-  static async getStats(startDate, endDate) {
-    const params = new URLSearchParams();
-    if (startDate) params.append('start_date', startDate);
-    if (endDate) params.append('end_date', endDate);
-    
-    const response = await fetch(`${API_BASE}/stock-adjustments/stats/summary?${params}`, {
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
-      }
-    });
-    if (!response.ok) throw new Error('İstatistik verisi alınamadı');
-    return response.json();
-  }
-
-  static async getProducts() {
-    const response = await fetch(`${API_BASE}/current-stock`, {
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
-      }
-    });
-    if (!response.ok) throw new Error('Ürün listesi alınamadı');
-    return response.json();
-  }
-}
-
-// Create Adjustment Modal
+// Create Adjustment Modal Component
 const CreateAdjustmentModal = ({ isOpen, onClose, onSave }) => {
   const [formData, setFormData] = useState({
     product_id: '',
-    adjustment_type: '',
+    adjustment_type: 'increase',
     quantity: '',
     reason: '',
-    unit_cost: '',
     notes: ''
   });
-  const [products, setProducts] = useState([]);
-  const [reasons, setReasons] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [availableStock, setAvailableStock] = useState(0);
-
-  useEffect(() => {
-    if (isOpen) {
-      fetchInitialData();
-    }
-  }, [isOpen]);
-
-  useEffect(() => {
-    if (formData.product_id) {
-      const product = products.find(p => p.id == formData.product_id);
-      setAvailableStock(product ? product.available_quantity : 0);
-    } else {
-      setAvailableStock(0);
-    }
-  }, [formData.product_id, products]);
-
-  const fetchInitialData = async () => {
-    try {
-      const [productsResponse, reasonsResponse] = await Promise.all([
-        StockAdjustmentsService.getProducts(),
-        StockAdjustmentsService.getReasons()
-      ]);
-
-      setProducts(productsResponse.data.items || []);
-      setReasons(reasonsResponse.data);
-    } catch (error) {
-      toast.error(error.message);
-    }
-  };
+  
+  const createAdjustmentMutation = useCreateStockAdjustment();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
-
     try {
-      await StockAdjustmentsService.create({
-        product_id: parseInt(formData.product_id),
-        adjustment_type: formData.adjustment_type,
-        quantity: parseFloat(formData.quantity),
-        reason: formData.reason,
-        unit_cost: formData.unit_cost ? parseFloat(formData.unit_cost) : null,
-        notes: formData.notes
-      });
-      
-      toast.success('Stok düzeltmesi başarıyla oluşturuldu');
-      onSave();
+      await createAdjustmentMutation.mutateAsync(formData);
       onClose();
       setFormData({
         product_id: '',
-        adjustment_type: '',
+        adjustment_type: 'increase',
         quantity: '',
         reason: '',
-        unit_cost: '',
         notes: ''
       });
+      if (onSave) onSave();
     } catch (error) {
-      toast.error(error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-
-    // Sebep seçildiğinde düzeltme tipini otomatik belirle
-    if (name === 'reason') {
-      const selectedReason = reasons.find(r => r.code === value);
-      if (selectedReason && selectedReason.type !== 'both') {
-        setFormData(prev => ({
-          ...prev,
-          [name]: value,
-          adjustment_type: selectedReason.type
-        }));
-      }
+      // console.error('Error creating adjustment:', error);
     }
   };
 
   if (!isOpen) return null;
 
-  const selectedProduct = products.find(p => p.id == formData.product_id);
-  const selectedReason = reasons.find(r => r.code === formData.reason);
-
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto">
-      <div className="flex items-center justify-center min-h-screen p-4">
-        <div className="fixed inset-0 bg-black opacity-50" onClick={onClose}></div>
-        
-        <div className="relative bg-white rounded-lg max-w-2xl w-full">
-          <form onSubmit={handleSubmit} className="p-6">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-semibold text-gray-900">
-                Yeni Stok Düzeltmesi
-              </h2>
-              <button
-                type="button"
-                onClick={onClose}
-                className="p-2 hover:bg-gray-100 rounded-lg"
-              >
-                ✕
-              </button>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Ürün *
-                </label>
-                <select
-                  name="product_id"
-                  value={formData.product_id}
-                  onChange={handleChange}
-                  required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
-                >
-                  <option value="">Ürün Seçin</option>
-                  {products.map(product => (
-                    <option key={product.id} value={product.id}>
-                      {product.name} ({product.sku}) - Mevcut: {product.available_quantity} {product.unit}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Düzeltme Sebebi *
-                </label>
-                <select
-                  name="reason"
-                  value={formData.reason}
-                  onChange={handleChange}
-                  required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
-                >
-                  <option value="">Sebep Seçin</option>
-                  {reasons.map(reason => (
-                    <option key={reason.code} value={reason.code}>
-                      {reason.name}
-                    </option>
-                  ))}
-                </select>
-                {selectedReason && (
-                  <p className="text-sm text-gray-500 mt-1">
-                    {selectedReason.description}
-                  </p>
-                )}
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Düzeltme Tipi *
-                </label>
-                <select
-                  name="adjustment_type"
-                  value={formData.adjustment_type}
-                  onChange={handleChange}
-                  required
-                  disabled={selectedReason && selectedReason.type !== 'both'}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 disabled:bg-gray-100"
-                >
-                  <option value="">Tip Seçin</option>
-                  <option value="increase">Artış (+)</option>
-                  <option value="decrease">Azalış (-)</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Düzeltme Miktarı * {selectedProduct && `(${selectedProduct.unit})`}
-                </label>
-                <input
-                  type="number"
-                  step="0.001"
-                  name="quantity"
-                  value={formData.quantity}
-                  onChange={handleChange}
-                  max={formData.adjustment_type === 'decrease' ? availableStock : undefined}
-                  required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
-                />
-                {formData.adjustment_type === 'decrease' && availableStock > 0 && (
-                  <p className="text-sm text-gray-500 mt-1">
-                    Mevcut stok: {availableStock} {selectedProduct?.unit}
-                  </p>
-                )}
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Birim Maliyet (₺)
-                </label>
-                <input
-                  type="number"
-                  step="0.01"
-                  name="unit_cost"
-                  value={formData.unit_cost}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
-                  placeholder={selectedProduct ? selectedProduct.cost_price : ''}
-                />
-              </div>
-
-              <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Ek Notlar
-                </label>
-                <textarea
-                  name="notes"
-                  value={formData.notes}
-                  onChange={handleChange}
-                  rows={3}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
-                  placeholder="Düzeltme ile ilgili ek açıklamalar..."
-                />
-              </div>
-            </div>
-
-            <div className="flex justify-end space-x-4 mt-6 pt-6 border-t">
-              <button
-                type="button"
-                onClick={onClose}
-                className="px-4 py-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300"
-                disabled={loading}
-              >
-                İptal
-              </button>
-              <button
-                type="submit"
-                className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 disabled:opacity-50"
-                disabled={loading || (formData.adjustment_type === 'decrease' && availableStock < parseFloat(formData.quantity || 0))}
-              >
-                {loading ? 'Oluşturuluyor...' : 'Düzeltme Oluştur'}
-              </button>
-            </div>
-          </form>
+    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+      <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="text-lg font-medium text-gray-900">Yeni Stok Düzeltmesi</h3>
+          <button
+            onClick={onClose}
+            className="text-gray-400 hover:text-gray-600"
+          >
+            ×
+          </button>
         </div>
+        <form onSubmit={handleSubmit}>
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Düzeltme Tipi
+            </label>
+            <select
+              value={formData.adjustment_type}
+              onChange={(e) => setFormData({...formData, adjustment_type: e.target.value})}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="increase">Artış</option>
+              <option value="decrease">Azalış</option>
+            </select>
+          </div>
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Miktar
+            </label>
+            <input
+              type="number"
+              value={formData.quantity}
+              onChange={(e) => setFormData({...formData, quantity: e.target.value})}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            />
+          </div>
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Sebep
+            </label>
+            <input
+              type="text"
+              value={formData.reason}
+              onChange={(e) => setFormData({...formData, reason: e.target.value})}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            />
+          </div>
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Notlar
+            </label>
+            <textarea
+              value={formData.notes}
+              onChange={(e) => setFormData({...formData, notes: e.target.value})}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              rows="3"
+            />
+          </div>
+          <div className="flex justify-end space-x-3">
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300"
+            >
+              İptal
+            </button>
+            <button
+              type="submit"
+              disabled={createAdjustmentMutation.isLoading}
+              className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 disabled:opacity-50"
+            >
+              {createAdjustmentMutation.isLoading ? 'Oluşturuluyor...' : 'Oluştur'}
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );
@@ -342,52 +135,32 @@ const CreateAdjustmentModal = ({ isOpen, onClose, onSave }) => {
 
 // Main Component
 const StockAdjustmentsPage = () => {
-  const [adjustments, setAdjustments] = useState([]);
-  const [stats, setStats] = useState({});
-  const [loading, setLoading] = useState(true);
   const [adjustmentTypeFilter, setAdjustmentTypeFilter] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
   const [showCreateModal, setShowCreateModal] = useState(false);
+  
+  // React Query hooks
+  const { data: adjustmentsData, isLoading: adjustmentsLoading, error: adjustmentsError } = useStockAdjustments({
+    type: adjustmentTypeFilter,
+    page: currentPage,
+  });
+  
+  const { data: statsData, isLoading: statsLoading } = useStockAdjustmentStats();
+  
+  // Extract data from API responses
+  const adjustments = adjustmentsData?.data?.adjustments || adjustmentsData?.data || [];
+  const stats = statsData?.data || {};
+  const totalPages = adjustmentsData?.data?.pagination?.totalPages || 1;
+  const loading = adjustmentsLoading || statsLoading;
 
-  const fetchData = async () => {
-    try {
-      setLoading(true);
-      
-      const params = {
-        page: currentPage,
-        limit: 10,
-        adjustment_type: adjustmentTypeFilter
-      };
-
-      const [adjustmentsResponse, statsResponse] = await Promise.all([
-        StockAdjustmentsService.getAll(params),
-        StockAdjustmentsService.getStats()
-      ]);
-
-      setAdjustments(adjustmentsResponse.data.adjustments);
-      setTotalPages(adjustmentsResponse.data.pagination.totalPages);
-      setStats(statsResponse.data);
-
-    } catch (error) {
-      toast.error(error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchData();
-  }, [currentPage, adjustmentTypeFilter]);
-
-  const getAdjustmentTypeColor = (type) => {
+  const getAdjustmentTypeIcon = (type) => {
     switch (type) {
       case 'increase':
-        return 'text-green-600 bg-green-100';
+        return <FiTrendingUp className="h-4 w-4 text-green-600" />;
       case 'decrease':
-        return 'text-red-600 bg-red-100';
+        return <FiTrendingDown className="h-4 w-4 text-red-600" />;
       default:
-        return 'text-gray-600 bg-gray-100';
+        return <FiSettings className="h-4 w-4 text-gray-600" />;
     }
   };
 
@@ -398,47 +171,52 @@ const StockAdjustmentsPage = () => {
       case 'decrease':
         return 'Azalış';
       default:
-        return 'Bilinmeyen';
+        return 'Bilinmiyor';
     }
   };
 
-  const getAdjustmentTypeIcon = (type) => {
+  const getAdjustmentTypeBadge = (type) => {
+    const baseClasses = 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium';
     switch (type) {
       case 'increase':
-        return <FiTrendingUp className="w-4 h-4" />;
+        return `${baseClasses} bg-green-100 text-green-800`;
       case 'decrease':
-        return <FiTrendingDown className="w-4 h-4" />;
+        return `${baseClasses} bg-red-100 text-red-800`;
       default:
-        return <FiAlertCircle className="w-4 h-4" />;
+        return `${baseClasses} bg-gray-100 text-gray-800`;
     }
   };
 
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
+
+  if (adjustmentsError) {
+    return (
+      <div className="text-center py-8">
+        <p className="text-red-600">Stok düzeltmeleri yüklenirken hata oluştu: {adjustmentsError.message}</p>
+      </div>
+    );
+  }
+
   return (
-    <div className="space-y-6">
+    <div className="p-6 space-y-6">
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 flex items-center">
-            <FiSettings className="mr-3 text-red-600" />
-            Stok Düzeltmeleri
-          </h1>
-          <p className="text-gray-600 mt-1">Manuel stok düzeltmelerini görüntüleyin ve yönetin</p>
+          <h1 className="text-2xl font-bold text-gray-900">Stok Düzeltmeleri</h1>
+          <p className="text-gray-600">Stok seviyelerini düzeltin ve takip edin</p>
         </div>
-
-        <div className="flex space-x-3">
-          <button
-            onClick={() => setShowCreateModal(true)}
-            className="btn-primary flex items-center"
-          >
-            <FiPlus className="mr-2" />
-            Yeni Düzeltme
-          </button>
-          
-          <button className="btn-secondary flex items-center">
-            <FiDownload className="mr-2" />
-            Dışa Aktar
-          </button>
-        </div>
+        <button
+          onClick={() => setShowCreateModal(true)}
+          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2"
+        >
+          <FiPlus /> Yeni Düzeltme
+        </button>
       </div>
 
       {/* Stats Cards */}
@@ -450,7 +228,7 @@ const StockAdjustmentsPage = () => {
             </div>
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-600">Toplam Düzeltme</p>
-              <p className="text-2xl font-semibold text-gray-900">
+              <p className="text-2xl font-semibold text-blue-600">
                 {stats.summary?.total_adjustments || 0}
               </p>
             </div>
@@ -503,45 +281,50 @@ const StockAdjustmentsPage = () => {
       {/* Filters */}
       <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <select
-            value={adjustmentTypeFilter}
-            onChange={(e) => setAdjustmentTypeFilter(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-red-500 focus:border-red-500"
-          >
-            <option value="">Tüm Düzeltme Tipleri</option>
-            <option value="increase">Artış</option>
-            <option value="decrease">Azalış</option>
-          </select>
-
-          <div></div>
-          <div></div>
-
-          <button
-            onClick={() => {
-              setAdjustmentTypeFilter('');
-              setCurrentPage(1);
-            }}
-            className="btn-secondary flex items-center justify-center"
-          >
-            <FiFilter className="mr-2" />
-            Temizle
-          </button>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Düzeltme Tipi
+            </label>
+            <select
+              value={adjustmentTypeFilter}
+              onChange={(e) => setAdjustmentTypeFilter(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="">Tüm Tipler</option>
+              <option value="increase">Artış</option>
+              <option value="decrease">Azalış</option>
+            </select>
+          </div>
+          <div className="flex items-end">
+            <button
+              onClick={() => {
+                setAdjustmentTypeFilter('');
+                setCurrentPage(1);
+              }}
+              className="w-full px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300"
+            >
+              Filtreleri Temizle
+            </button>
+          </div>
         </div>
       </div>
 
       {/* Adjustments Table */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-        {loading ? (
-          <div className="flex justify-center items-center py-12">
-            <div className="text-gray-500">Yükleniyor...</div>
-          </div>
-        ) : adjustments.length === 0 ? (
+        {adjustments.length === 0 ? (
           <div className="text-center py-12">
             <FiSettings className="mx-auto h-12 w-12 text-gray-400" />
-            <h3 className="mt-2 text-sm font-medium text-gray-900">Düzeltme bulunamadı</h3>
-            <p className="mt-1 text-sm text-gray-500">
-              Belirtilen kriterlere uygun düzeltme bulunmuyor.
-            </p>
+            <h3 className="mt-2 text-sm font-medium text-gray-900">Stok düzeltmesi bulunamadı</h3>
+            <p className="mt-1 text-sm text-gray-500">Başlamak için yeni bir stok düzeltmesi oluşturun.</p>
+            <div className="mt-6">
+              <button
+                onClick={() => setShowCreateModal(true)}
+                className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
+              >
+                <FiPlus className="-ml-1 mr-2 h-5 w-5" />
+                Yeni Düzeltme
+              </button>
+            </div>
           </div>
         ) : (
           <>
@@ -577,42 +360,50 @@ const StockAdjustmentsPage = () => {
                     <tr key={adjustment.id} className="hover:bg-gray-50">
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
-                          <FiPackage className="h-5 w-5 text-gray-400 mr-3" />
-                          <div>
+                          <div className="flex-shrink-0 h-10 w-10">
+                            <div className="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center">
+                              <FiPackage className="h-5 w-5 text-gray-600" />
+                            </div>
+                          </div>
+                          <div className="ml-4">
                             <div className="text-sm font-medium text-gray-900">
-                              {adjustment.product_name}
+                              {adjustment.product_name || 'Ürün Adı'}
                             </div>
                             <div className="text-sm text-gray-500">
-                              {adjustment.sku}
+                              {adjustment.product_sku || 'SKU'}
                             </div>
                           </div>
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getAdjustmentTypeColor(adjustment.adjustment_type)}`}>
+                        <span className={getAdjustmentTypeBadge(adjustment.adjustment_type)}>
                           {getAdjustmentTypeIcon(adjustment.adjustment_type)}
                           <span className="ml-1">{getAdjustmentTypeText(adjustment.adjustment_type)}</span>
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {adjustment.adjusted_quantity} {adjustment.unit}
+                        {adjustment.quantity} {adjustment.unit || 'adet'}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {adjustment.notes?.split(' - ')[1]?.split(':')[0] || 'Belirtilmemiş'}
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {adjustment.reason || '-'}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center text-sm text-gray-900">
-                          <FiUser className="w-3 h-3 mr-1" />
-                          {adjustment.first_name} {adjustment.last_name}
+                        <div className="flex items-center">
+                          <FiUser className="h-4 w-4 text-gray-400 mr-2" />
+                          <span className="text-sm text-gray-900">
+                            {adjustment.created_by_name || 'Bilinmiyor'}
+                          </span>
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center text-sm text-gray-500">
-                          <FiCalendar className="w-3 h-3 mr-1" />
-                          {new Date(adjustment.created_at).toLocaleDateString('tr-TR')}
+                        <div className="flex items-center">
+                          <FiCalendar className="h-4 w-4 text-gray-400 mr-2" />
+                          <span className="text-sm text-gray-900">
+                            {adjustment.created_at ? new Date(adjustment.created_at).toLocaleDateString('tr-TR') : '-'}
+                          </span>
                         </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                         <button
                           className="text-blue-600 hover:text-blue-900"
                           title="Detayları Görüntüle"
@@ -680,10 +471,12 @@ const StockAdjustmentsPage = () => {
       <CreateAdjustmentModal
         isOpen={showCreateModal}
         onClose={() => setShowCreateModal(false)}
-        onSave={fetchData}
+        onSave={() => {
+          // Refresh data will be handled by React Query automatically
+        }}
       />
     </div>
   );
 };
 
-export default StockAdjustmentsPage; 
+export default StockAdjustmentsPage;

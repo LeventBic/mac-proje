@@ -1,67 +1,70 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { 
+  useProductionOrder, 
+  useStartProductionOrder, 
+  useCompleteProductionOrder, 
+  useAddProductionMovement 
+} from '../../hooks/useProduction';
+import { useProducts } from '../../hooks/useProducts';
+import toast from 'react-hot-toast';
 
 const ProductionDetailPage = () => {
   const { id } = useParams();
-  const [order, setOrder] = useState(null);
-  const [movements, setMovements] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [moveForm, setMoveForm] = useState({ product_id: '', movement_type: 'material_consumed', quantity: '', unit_cost: '', location: '', notes: '' });
-  const [products, setProducts] = useState([]);
-  const [actionLoading, setActionLoading] = useState(false);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    fetch(`/api/production/${id}`, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } })
-      .then(res => res.json())
-      .then(data => {
-        setOrder(data.data.order);
-        setMovements(data.data.movements);
-        setLoading(false);
-      })
-      .catch(() => { setError('Veri alınamadı'); setLoading(false); });
-    fetch('/api/products', { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } })
-      .then(res => res.json())
-      .then(data => setProducts(data.data.products || []));
-  }, [id]);
+  // React Query hooks
+  const { data: orderData, isLoading: orderLoading, error: orderError } = useProductionOrder(id);
+  const { data: productsData, isLoading: productsLoading } = useProducts();
+  const startMutation = useStartProductionOrder();
+  const completeMutation = useCompleteProductionOrder();
+  const addMovementMutation = useAddProductionMovement();
+
+  const order = orderData?.order;
+  const movements = orderData?.movements || [];
+  const products = productsData?.products || [];
+  const loading = orderLoading || productsLoading;
+  const error = orderError;
 
   const handleStart = () => {
-    setActionLoading(true);
-    fetch(`/api/production/${id}/start`, {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-    })
-      .then(res => res.json())
-      .then(() => window.location.reload())
-      .catch(() => setActionLoading(false));
+    startMutation.mutate(id, {
+      onSuccess: () => {
+        toast.success('Üretim başlatıldı');
+        window.location.reload();
+      },
+      onError: () => {
+        toast.error('Üretim başlatılamadı');
+      }
+    });
   };
 
   const handleComplete = () => {
-    setActionLoading(true);
-    fetch(`/api/production/${id}/complete`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${localStorage.getItem('token')}` },
-      body: JSON.stringify({ produced_quantity: order.planned_quantity })
-    })
-      .then(res => res.json())
-      .then(() => window.location.reload())
-      .catch(() => setActionLoading(false));
+    completeMutation.mutate({ id, produced_quantity: order.planned_quantity }, {
+      onSuccess: () => {
+        toast.success('Üretim tamamlandı');
+        window.location.reload();
+      },
+      onError: () => {
+        toast.error('Üretim tamamlanamadı');
+      }
+    });
   };
 
   const handleMoveChange = e => setMoveForm({ ...moveForm, [e.target.name]: e.target.value });
 
   const handleMoveSubmit = e => {
     e.preventDefault();
-    setActionLoading(true);
-    fetch(`/api/production/${id}/movement`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${localStorage.getItem('token')}` },
-      body: JSON.stringify(moveForm)
-    })
-      .then(res => res.json())
-      .then(() => window.location.reload())
-      .catch(() => setActionLoading(false));
+    addMovementMutation.mutate({ id, ...moveForm }, {
+      onSuccess: () => {
+        toast.success('Hareket eklendi');
+        setMoveForm({ product_id: '', movement_type: 'material_consumed', quantity: '', unit_cost: '', location: '', notes: '' });
+        window.location.reload();
+      },
+      onError: () => {
+        toast.error('Hareket eklenemedi');
+      }
+    });
   };
 
   if (loading) return <div>Yükleniyor...</div>;
@@ -85,8 +88,8 @@ const ProductionDetailPage = () => {
         <div><b>Başlangıç:</b> {order.actual_start_date ? new Date(order.actual_start_date).toLocaleString() : '-'}</div>
         <div><b>Bitiş:</b> {order.actual_end_date ? new Date(order.actual_end_date).toLocaleString() : '-'}</div>
         <div><b>Notlar:</b> {order.notes}</div>
-        {order.status === 'planned' && <button className="btn btn-success mt-2" onClick={handleStart} disabled={actionLoading}>Üretimi Başlat</button>}
-        {order.status === 'in_progress' && <button className="btn btn-primary mt-2" onClick={handleComplete} disabled={actionLoading}>Üretimi Tamamla</button>}
+        {order.status === 'planned' && <button className="btn btn-success mt-2" onClick={handleStart} disabled={startMutation.isLoading}>Üretimi Başlat</button>}
+        {order.status === 'in_progress' && <button className="btn btn-primary mt-2" onClick={handleComplete} disabled={completeMutation.isLoading}>Üretimi Tamamla</button>}
       </div>
       <div className="card p-4">
         <h2 className="font-semibold mb-2">Üretim Hareketleri</h2>
@@ -151,7 +154,7 @@ const ProductionDetailPage = () => {
             <label className="block mb-1">Not</label>
             <input type="text" name="notes" value={moveForm.notes} onChange={handleMoveChange} className="input w-full" />
           </div>
-          <button type="submit" className="btn btn-success" disabled={actionLoading}>Kaydet</button>
+          <button type="submit" className="btn btn-success" disabled={addMovementMutation.isLoading}>Kaydet</button>
         </form>
       )}
     </div>

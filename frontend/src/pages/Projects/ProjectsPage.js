@@ -1,19 +1,35 @@
-import React, { useState, useEffect } from 'react';
-import { toast } from 'react-hot-toast';
-import { apiCall } from '../../config/api';
+import React, { useState } from 'react';
+// import { toast } from 'react-hot-toast';
+import {
+  FiPlus,
+  FiEdit,
+  FiTrash2,
+  FiSearch,
+  FiFilter,
+  FiCalendar,
+  // FiUser,
+  FiDollarSign,
+  // FiClock,
+  FiChevronLeft,
+  FiChevronRight,
+} from 'react-icons/fi';
+import {
+  useProjects,
+  useCreateProject,
+  useUpdateProject,
+  useDeleteProject,
+} from '../../hooks/useProjects';
+import { useCustomers } from '../../hooks/useCustomers';
+import { useUsers } from '../../hooks/useUsers';
+import { formatCurrency } from '../../utils/formatters';
 
 const ProjectsPage = () => {
-  const [projects, setProjects] = useState([]);
-  const [customers, setCustomers] = useState([]);
-  const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingProject, setEditingProject] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [customerFilter, setCustomerFilter] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
 
   const [formData, setFormData] = useState({
     project_code: '',
@@ -26,120 +42,61 @@ const ProjectsPage = () => {
     start_date: '',
     planned_end_date: '',
     budget: '',
-    notes: ''
+    notes: '',
   });
 
+  // React Query hooks
+  const {
+    data: projectsData,
+    isLoading: projectsLoading,
+    error: projectsError,
+  } = useProjects({
+    search: searchTerm,
+    status: statusFilter,
+    customer_id: customerFilter,
+    page: currentPage,
+  });
+
+  const { data: customersData, isLoading: customersLoading } = useCustomers();
+  const { data: usersData, isLoading: usersLoading } = useUsers();
+
+  const createProjectMutation = useCreateProject();
+  const updateProjectMutation = useUpdateProject();
+  const deleteProjectMutation = useDeleteProject();
+
+  // Extract data from API responses
+  const projects = projectsData?.data?.projects || [];
+  const customers = customersData?.data || [];
+  const users = usersData?.data || [];
+  const totalPages = projectsData?.data?.pagination?.totalPages || 1;
+  const loading = projectsLoading || customersLoading || usersLoading;
+
   const statusOptions = [
-    { value: 'planning', label: 'Planlama', color: 'bg-gray-100 text-gray-800' },
+    {
+      value: 'planning',
+      label: 'Planlama',
+      color: 'bg-gray-100 text-gray-800',
+    },
     { value: 'active', label: 'Aktif', color: 'bg-blue-100 text-blue-800' },
-    { value: 'on_hold', label: 'Beklemede', color: 'bg-yellow-100 text-yellow-800' },
-    { value: 'completed', label: 'Tamamlandı', color: 'bg-green-100 text-green-800' },
-    { value: 'cancelled', label: 'İptal', color: 'bg-red-100 text-red-800' }
+    {
+      value: 'on_hold',
+      label: 'Beklemede',
+      color: 'bg-yellow-100 text-yellow-800',
+    },
+    {
+      value: 'completed',
+      label: 'Tamamlandı',
+      color: 'bg-green-100 text-green-800',
+    },
+    { value: 'cancelled', label: 'İptal', color: 'bg-red-100 text-red-800' },
   ];
 
   const priorityOptions = [
     { value: 'low', label: 'Düşük', color: 'bg-gray-100 text-gray-800' },
     { value: 'medium', label: 'Orta', color: 'bg-blue-100 text-blue-800' },
     { value: 'high', label: 'Yüksek', color: 'bg-orange-100 text-orange-800' },
-    { value: 'critical', label: 'Kritik', color: 'bg-red-100 text-red-800' }
+    { value: 'critical', label: 'Kritik', color: 'bg-red-100 text-red-800' },
   ];
-
-  useEffect(() => {
-    fetchData();
-  }, [currentPage, searchTerm, statusFilter, customerFilter]);
-
-  const fetchData = async () => {
-    try {
-      setLoading(true);
-      const [projectsResult, customersResult, usersResult] = await Promise.all([
-        apiCall(`/api/projects?page=${currentPage}&limit=10&search=${searchTerm}&status=${statusFilter}&customer_id=${customerFilter}`),
-        apiCall('/api/customers'),
-        apiCall('/api/users')
-      ]);
-
-      const projectsData = projectsResult.data;
-      const customersData = customersResult.data;
-      const usersData = usersResult.data;
-
-      if (projectsData.status === 'success') {
-        setProjects(projectsData.data.projects);
-        setTotalPages(projectsData.data.pagination.totalPages);
-      }
-
-      if (customersData.status === 'success') {
-        setCustomers(customersData.data.customers || customersData.data);
-      }
-
-      if (usersData.status === 'success') {
-        setUsers(usersData.data.users || usersData.data);
-      }
-    } catch (error) {
-      console.error('Veri yükleme hatası:', error);
-      toast.error('Veriler yüklenirken hata oluştu');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const method = editingProject ? 'PUT' : 'POST';
-      const url = editingProject ? `/api/projects/${editingProject.id}` : '/api/projects';
-      
-      const { data } = await apiCall(url, {
-        method,
-        body: JSON.stringify(formData)
-      });
-      
-      if (data.status === 'success') {
-        setShowForm(false);
-        setEditingProject(null);
-        resetForm();
-        fetchData();
-        toast.success(editingProject ? 'Proje güncellendi' : 'Proje eklendi');
-      }
-    } catch (error) {
-      console.error('Proje kaydetme hatası:', error);
-      toast.error('Proje kaydedilirken hata oluştu');
-    }
-  };
-
-  const handleEdit = (project) => {
-    setEditingProject(project);
-    setFormData({
-      project_code: project.project_code,
-      name: project.name,
-      description: project.description || '',
-      customer_id: project.customer_id || '',
-      project_manager_id: project.project_manager_id || '',
-      status: project.status,
-      priority: project.priority,
-      start_date: project.start_date || '',
-      planned_end_date: project.planned_end_date || '',
-      budget: project.budget || '',
-      notes: project.notes || ''
-    });
-    setShowForm(true);
-  };
-
-  const handleDelete = async (id) => {
-    if (window.confirm('Bu projeyi silmek istediğinizden emin misiniz?')) {
-      try {
-        const { data } = await apiCall(`/api/projects/${id}`, {
-          method: 'DELETE'
-        });
-        
-        if (data.status === 'success') {
-          fetchData();
-          toast.success('Proje silindi');
-        }
-      } catch (error) {
-        console.error('Proje silme hatası:', error);
-        toast.error('Proje silinirken hata oluştu');
-      }
-    }
-  };
 
   const resetForm = () => {
     setFormData({
@@ -153,399 +110,651 @@ const ProjectsPage = () => {
       start_date: '',
       planned_end_date: '',
       budget: '',
-      notes: ''
+      notes: '',
     });
+    setEditingProject(null);
   };
 
-  const getStatusBadge = (status) => {
-    const statusOption = statusOptions.find(opt => opt.value === status);
+  const handleSubmit = async e => {
+    e.preventDefault();
+
+    try {
+      if (editingProject) {
+        await updateProjectMutation.mutateAsync({
+          id: editingProject.id,
+          data: formData,
+        });
+      } else {
+        await createProjectMutation.mutateAsync(formData);
+      }
+      setShowForm(false);
+      resetForm();
+    } catch (error) {
+      // Error is handled by the mutation
+    }
+  };
+
+  const handleEdit = project => {
+    setEditingProject(project);
+    setFormData({
+      project_code: project.project_code || '',
+      name: project.name || '',
+      description: project.description || '',
+      customer_id: project.customer_id || '',
+      project_manager_id: project.project_manager_id || '',
+      status: project.status || 'planning',
+      priority: project.priority || 'medium',
+      start_date: project.start_date ? project.start_date.split('T')[0] : '',
+      planned_end_date: project.planned_end_date
+        ? project.planned_end_date.split('T')[0]
+        : '',
+      budget: project.budget || '',
+      notes: project.notes || '',
+    });
+    setShowForm(true);
+  };
+
+  const handleDelete = async project => {
+    if (
+      window.confirm(
+        `"${project.name}" projesini silmek istediğinizden emin misiniz?`
+      )
+    ) {
+      try {
+        await deleteProjectMutation.mutateAsync(project.id);
+      } catch (error) {
+        // Error is handled by the mutation
+      }
+    }
+  };
+
+  const handleSearch = () => {
+    setCurrentPage(1);
+  };
+
+  const handleReset = () => {
+    setSearchTerm('');
+    setStatusFilter('');
+    setCustomerFilter('');
+    setCurrentPage(1);
+  };
+
+  const getStatusOption = status => {
     return (
-      <span className={`px-2 py-1 rounded-full text-xs font-medium ${statusOption?.color || 'bg-gray-100 text-gray-800'}`}>
-        {statusOption?.label || status}
-      </span>
+      statusOptions.find(option => option.value === status) || statusOptions[0]
     );
   };
 
-  const getPriorityBadge = (priority) => {
-    const priorityOption = priorityOptions.find(opt => opt.value === priority);
+  const getPriorityOption = priority => {
     return (
-      <span className={`px-2 py-1 rounded-full text-xs font-medium ${priorityOption?.color || 'bg-gray-100 text-gray-800'}`}>
-        {priorityOption?.label || priority}
-      </span>
+      priorityOptions.find(option => option.value === priority) ||
+      priorityOptions[1]
     );
   };
 
-  const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('tr-TR', {
-      style: 'currency',
-      currency: 'TRY'
-    }).format(amount || 0);
+
+
+  const formatDate = dateString => {
+    if (!dateString) return '-';
+    return new Date(dateString).toLocaleDateString('tr-TR');
   };
 
-  const calculateProgress = (project) => {
-    if (project.total_tasks === 0) return 0;
-    return Math.round((project.completed_tasks / project.total_tasks) * 100);
-  };
-
-  if (loading) {
+  if (projectsError) {
     return (
-      <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-500"></div>
+      <div className="min-h-screen bg-gray-50 p-6">
+        <div className="mx-auto max-w-7xl">
+          <div className="rounded-lg border border-red-200 bg-red-50 p-4">
+            <div className="flex items-center">
+              <span className="text-red-700">
+                Veri yüklenirken hata oluştu: {projectsError.message}
+              </span>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Projeler</h1>
-        <button
-          onClick={() => {
-            setShowForm(true);
-            setEditingProject(null);
-            resetForm();
-          }}
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
-        >
-          Yeni Proje
-        </button>
-      </div>
-
-      {/* Filtreler */}
-      <div className="bg-white p-4 rounded-lg shadow mb-6">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+    <div className="min-h-screen bg-gray-50 p-6">
+      <div className="mx-auto max-w-7xl">
+        {/* Header */}
+        <div className="mb-8 flex items-center justify-between">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Arama</label>
-            <input
-              type="text"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Proje adı, kodu veya açıklama..."
-              className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
+            <h1 className="mb-2 text-3xl font-bold text-gray-900">Projeler</h1>
+            <p className="text-gray-600">
+              Tüm projeleri görüntüleyin ve yönetin
+            </p>
           </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Durum</label>
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">Tüm Durumlar</option>
-              {statusOptions.map(option => (
-                <option key={option.value} value={option.value}>{option.label}</option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Müşteri</label>
-            <select
-              value={customerFilter}
-              onChange={(e) => setCustomerFilter(e.target.value)}
-              className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">Tüm Müşteriler</option>
-              {customers.map(customer => (
-                <option key={customer.id} value={customer.id}>{customer.name}</option>
-              ))}
-            </select>
-          </div>
-        </div>
-      </div>
-
-      {/* Proje Listesi */}
-      <div className="bg-white rounded-lg shadow overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Proje</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Müşteri</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Proje Yöneticisi</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Durum</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Öncelik</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">İlerleme</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Bütçe</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">İşlemler</th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {projects.map((project) => {
-                const progress = calculateProgress(project);
-                return (
-                  <tr key={project.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div>
-                        <div className="text-sm font-medium text-gray-900">{project.name}</div>
-                        <div className="text-sm text-gray-500">{project.project_code}</div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">{project.customer_name || '-'}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">
-                        {project.manager_first_name && project.manager_last_name 
-                          ? `${project.manager_first_name} ${project.manager_last_name}` 
-                          : '-'
-                        }
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {getStatusBadge(project.status)}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {getPriorityBadge(project.priority)}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center">
-                        <div className="w-16 bg-gray-200 rounded-full h-2 mr-2">
-                          <div 
-                            className="bg-blue-600 h-2 rounded-full" 
-                            style={{ width: `${progress}%` }}
-                          ></div>
-                        </div>
-                        <span className="text-sm text-gray-600">{progress}%</span>
-                      </div>
-                      <div className="text-xs text-gray-500">
-                        {project.completed_tasks}/{project.total_tasks} görev
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">{formatCurrency(project.budget)}</div>
-                      <div className="text-xs text-gray-500">Harcanan: {formatCurrency(project.total_costs)}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <button
-                        onClick={() => handleEdit(project)}
-                        className="text-blue-600 hover:text-blue-900 mr-3"
-                      >
-                        Düzenle
-                      </button>
-                      <button
-                        onClick={() => handleDelete(project.id)}
-                        className="text-red-600 hover:text-red-900"
-                      >
-                        Sil
-                      </button>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+          <button
+            onClick={() => {
+              resetForm();
+              setShowForm(true);
+            }}
+            className="flex items-center rounded-lg bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700"
+          >
+            <FiPlus className="mr-2" />
+            Yeni Proje
+          </button>
         </div>
 
-        {/* Pagination */}
-        {totalPages > 1 && (
-          <div className="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200">
-            <div className="flex-1 flex justify-between sm:hidden">
-              <button
-                onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-                disabled={currentPage === 1}
-                className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
+        {/* Filters */}
+        <div className="mb-6 rounded-lg bg-white p-6 shadow-sm">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
+            <div>
+              <label className="mb-2 block text-sm font-medium text-gray-700">
+                Proje Ara
+              </label>
+              <div className="relative">
+                <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 transform text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Proje adı veya kodu..."
+                  className="w-full rounded-lg border border-gray-300 py-2 pl-10 pr-4 focus:border-transparent focus:ring-2 focus:ring-blue-500"
+                  value={searchTerm}
+                  onChange={e => setSearchTerm(e.target.value)}
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="mb-2 block text-sm font-medium text-gray-700">
+                Durum
+              </label>
+              <select
+                className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500"
+                value={statusFilter}
+                onChange={e => setStatusFilter(e.target.value)}
               >
-                Önceki
+                <option value="">Tüm Durumlar</option>
+                {statusOptions.map(option => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="mb-2 block text-sm font-medium text-gray-700">
+                Müşteri
+              </label>
+              <select
+                className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500"
+                value={customerFilter}
+                onChange={e => setCustomerFilter(e.target.value)}
+              >
+                <option value="">Tüm Müşteriler</option>
+                {customers.map(customer => (
+                  <option key={customer.id} value={customer.id}>
+                    {customer.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="flex items-end space-x-2">
+              <button
+                onClick={handleSearch}
+                className="flex flex-1 items-center justify-center rounded-lg bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700"
+              >
+                <FiSearch className="mr-2" />
+                Ara
               </button>
               <button
-                onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
-                disabled={currentPage === totalPages}
-                className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
+                onClick={handleReset}
+                className="rounded-lg border border-gray-300 px-4 py-2 text-gray-700 transition-colors hover:bg-gray-50"
               >
-                Sonraki
+                <FiFilter />
               </button>
             </div>
-            <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
-              <div>
-                <p className="text-sm text-gray-700">
-                  Sayfa <span className="font-medium">{currentPage}</span> / <span className="font-medium">{totalPages}</span>
-                </p>
+          </div>
+        </div>
+
+        {/* Projects Table */}
+        <div className="overflow-hidden rounded-lg bg-white shadow-sm">
+          {loading ? (
+            <div className="p-8 text-center">
+              <div className="mx-auto h-8 w-8 animate-spin rounded-full border-b-2 border-blue-600"></div>
+              <p className="mt-2 text-gray-600">Yükleniyor...</p>
+            </div>
+          ) : projects.length === 0 ? (
+            <div className="p-8 text-center">
+              <p className="text-gray-500">Proje bulunamadı</p>
+            </div>
+          ) : (
+            <>
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                        Proje
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                        Müşteri
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                        Proje Yöneticisi
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                        Durum
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                        Öncelik
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                        Tarihler
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                        Bütçe
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                        İşlemler
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-200 bg-white">
+                    {projects.map(project => {
+                      const statusOption = getStatusOption(project.status);
+                      const priorityOption = getPriorityOption(
+                        project.priority
+                      );
+                      const customer = customers.find(
+                        c => c.id === project.customer_id
+                      );
+                      const manager = users.find(
+                        u => u.id === project.project_manager_id
+                      );
+
+                      return (
+                        <tr key={project.id} className="hover:bg-gray-50">
+                          <td className="whitespace-nowrap px-6 py-4">
+                            <div>
+                              <div className="text-sm font-medium text-gray-900">
+                                {project.name}
+                              </div>
+                              <div className="text-sm text-gray-500">
+                                {project.project_code}
+                              </div>
+                            </div>
+                          </td>
+                          <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-900">
+                            {customer?.name || '-'}
+                          </td>
+                          <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-900">
+                            {manager?.name || '-'}
+                          </td>
+                          <td className="whitespace-nowrap px-6 py-4">
+                            <span
+                              className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${statusOption.color}`}
+                            >
+                              {statusOption.label}
+                            </span>
+                          </td>
+                          <td className="whitespace-nowrap px-6 py-4">
+                            <span
+                              className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${priorityOption.color}`}
+                            >
+                              {priorityOption.label}
+                            </span>
+                          </td>
+                          <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-900">
+                            <div className="flex items-center">
+                              <FiCalendar className="mr-1 text-gray-400" />
+                              <span>
+                                {formatDate(project.start_date)} -{' '}
+                                {formatDate(project.planned_end_date)}
+                              </span>
+                            </div>
+                          </td>
+                          <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-900">
+                            <div className="flex items-center">
+                              <FiDollarSign className="mr-1 text-gray-400" />
+                              <span>
+                                {project.budget
+                                  ? formatCurrency(project.budget)
+                                  : '-'}
+                              </span>
+                            </div>
+                          </td>
+                          <td className="whitespace-nowrap px-6 py-4 text-sm font-medium">
+                            <div className="flex space-x-2">
+                              <button
+                                onClick={() => handleEdit(project)}
+                                className="text-blue-600 hover:text-blue-900"
+                              >
+                                <FiEdit />
+                              </button>
+                              <button
+                                onClick={() => handleDelete(project)}
+                                className="text-red-600 hover:text-red-900"
+                              >
+                                <FiTrash2 />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
               </div>
-              <div>
-                <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
-                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+
+              {/* Pagination */}
+              {totalPages > 1 && (
+                <div className="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6">
+                  <div className="flex flex-1 justify-between sm:hidden">
                     <button
-                      key={page}
-                      onClick={() => setCurrentPage(page)}
-                      className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
-                        page === currentPage
-                          ? 'z-10 bg-blue-50 border-blue-500 text-blue-600'
-                          : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
-                      }`}
+                      onClick={() =>
+                        setCurrentPage(Math.max(1, currentPage - 1))
+                      }
+                      disabled={currentPage === 1}
+                      className="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
                     >
-                      {page}
+                      Önceki
                     </button>
-                  ))}
-                </nav>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Proje Formu Modal */}
-      {showForm && (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-          <div className="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 shadow-lg rounded-md bg-white">
-            <div className="mt-3">
-              <h3 className="text-lg font-medium text-gray-900 mb-4">
-                {editingProject ? 'Proje Düzenle' : 'Yeni Proje'}
-              </h3>
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Proje Kodu *</label>
-                    <input
-                      type="text"
-                      value={formData.project_code}
-                      onChange={(e) => setFormData({ ...formData, project_code: e.target.value })}
-                      className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Proje Adı *</label>
-                    <input
-                      type="text"
-                      value={formData.name}
-                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Açıklama</label>
-                  <textarea
-                    value={formData.description}
-                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                    rows={3}
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Müşteri</label>
-                    <select
-                      value={formData.customer_id}
-                      onChange={(e) => setFormData({ ...formData, customer_id: e.target.value })}
-                      className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    <button
+                      onClick={() =>
+                        setCurrentPage(Math.min(totalPages, currentPage + 1))
+                      }
+                      disabled={currentPage === totalPages}
+                      className="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
                     >
-                      <option value="">Müşteri Seçin</option>
-                      {customers.map(customer => (
-                        <option key={customer.id} value={customer.id}>{customer.name}</option>
-                      ))}
-                    </select>
+                      Sonraki
+                    </button>
                   </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Proje Yöneticisi</label>
-                    <select
-                      value={formData.project_manager_id}
-                      onChange={(e) => setFormData({ ...formData, project_manager_id: e.target.value })}
-                      className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    >
-                      <option value="">Yönetici Seçin</option>
-                      {users.map(user => (
-                        <option key={user.id} value={user.id}>{user.first_name} {user.last_name}</option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Durum</label>
-                    <select
-                      value={formData.status}
-                      onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                      className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    >
-                      {statusOptions.map(option => (
-                        <option key={option.value} value={option.value}>{option.label}</option>
-                      ))}
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Öncelik</label>
-                    <select
-                      value={formData.priority}
-                      onChange={(e) => setFormData({ ...formData, priority: e.target.value })}
-                      className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    >
-                      {priorityOptions.map(option => (
-                        <option key={option.value} value={option.value}>{option.label}</option>
-                      ))}
-                    </select>
+                  <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+                    <div>
+                      <p className="text-sm text-gray-700">
+                        Sayfa <span className="font-medium">{currentPage}</span>{' '}
+                        / <span className="font-medium">{totalPages}</span>
+                      </p>
+                    </div>
+                    <div>
+                      <nav
+                        className="relative z-0 inline-flex -space-x-px rounded-md shadow-sm"
+                        aria-label="Pagination"
+                      >
+                        <button
+                          onClick={() =>
+                            setCurrentPage(Math.max(1, currentPage - 1))
+                          }
+                          disabled={currentPage === 1}
+                          className="relative inline-flex items-center rounded-l-md border border-gray-300 bg-white px-2 py-2 text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+                        >
+                          <FiChevronLeft className="h-5 w-5" />
+                        </button>
+                        <button
+                          onClick={() =>
+                            setCurrentPage(
+                              Math.min(totalPages, currentPage + 1)
+                            )
+                          }
+                          disabled={currentPage === totalPages}
+                          className="relative inline-flex items-center rounded-r-md border border-gray-300 bg-white px-2 py-2 text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+                        >
+                          <FiChevronRight className="h-5 w-5" />
+                        </button>
+                      </nav>
+                    </div>
                   </div>
                 </div>
+              )}
+            </>
+          )}
+        </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Başlangıç Tarihi</label>
-                    <input
-                      type="date"
-                      value={formData.start_date}
-                      onChange={(e) => setFormData({ ...formData, start_date: e.target.value })}
-                      className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Planlanan Bitiş Tarihi</label>
-                    <input
-                      type="date"
-                      value={formData.planned_end_date}
-                      onChange={(e) => setFormData({ ...formData, planned_end_date: e.target.value })}
-                      className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Bütçe (TL)</label>
-                    <input
-                      type="number"
-                      step="0.01"
-                      value={formData.budget}
-                      onChange={(e) => setFormData({ ...formData, budget: e.target.value })}
-                      className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Notlar</label>
-                  <textarea
-                    value={formData.notes}
-                    onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                    rows={3}
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-
-                <div className="flex justify-end space-x-3 pt-4">
+        {/* Project Form Modal */}
+        {showForm && (
+          <div className="fixed inset-0 z-50 h-full w-full overflow-y-auto bg-gray-600 bg-opacity-50">
+            <div className="relative top-20 mx-auto w-full max-w-2xl rounded-md border bg-white p-5 shadow-lg">
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-lg font-medium text-gray-900">
+                    {editingProject ? 'Proje Düzenle' : 'Yeni Proje'}
+                  </h3>
                   <button
                     type="button"
                     onClick={() => {
                       setShowForm(false);
-                      setEditingProject(null);
                       resetForm();
                     }}
-                    className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+                    className="text-gray-400 hover:text-gray-600"
+                  >
+                    ✕
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                  <div>
+                    <label className="mb-2 block text-sm font-medium text-gray-700">
+                      Proje Kodu *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500"
+                      value={formData.project_code}
+                      onChange={e =>
+                        setFormData({
+                          ...formData,
+                          project_code: e.target.value,
+                        })
+                      }
+                    />
+                  </div>
+
+                  <div>
+                    <label className="mb-2 block text-sm font-medium text-gray-700">
+                      Proje Adı *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500"
+                      value={formData.name}
+                      onChange={e =>
+                        setFormData({ ...formData, name: e.target.value })
+                      }
+                    />
+                  </div>
+
+                  <div className="md:col-span-2">
+                    <label className="mb-2 block text-sm font-medium text-gray-700">
+                      Açıklama
+                    </label>
+                    <textarea
+                      rows={3}
+                      className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500"
+                      value={formData.description}
+                      onChange={e =>
+                        setFormData({
+                          ...formData,
+                          description: e.target.value,
+                        })
+                      }
+                    />
+                  </div>
+
+                  <div>
+                    <label className="mb-2 block text-sm font-medium text-gray-700">
+                      Müşteri *
+                    </label>
+                    <select
+                      required
+                      className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500"
+                      value={formData.customer_id}
+                      onChange={e =>
+                        setFormData({
+                          ...formData,
+                          customer_id: e.target.value,
+                        })
+                      }
+                    >
+                      <option value="">Müşteri Seçin</option>
+                      {customers.map(customer => (
+                        <option key={customer.id} value={customer.id}>
+                          {customer.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="mb-2 block text-sm font-medium text-gray-700">
+                      Proje Yöneticisi
+                    </label>
+                    <select
+                      className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500"
+                      value={formData.project_manager_id}
+                      onChange={e =>
+                        setFormData({
+                          ...formData,
+                          project_manager_id: e.target.value,
+                        })
+                      }
+                    >
+                      <option value="">Yönetici Seçin</option>
+                      {users.map(user => (
+                        <option key={user.id} value={user.id}>
+                          {user.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="mb-2 block text-sm font-medium text-gray-700">
+                      Durum
+                    </label>
+                    <select
+                      className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500"
+                      value={formData.status}
+                      onChange={e =>
+                        setFormData({ ...formData, status: e.target.value })
+                      }
+                    >
+                      {statusOptions.map(option => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="mb-2 block text-sm font-medium text-gray-700">
+                      Öncelik
+                    </label>
+                    <select
+                      className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500"
+                      value={formData.priority}
+                      onChange={e =>
+                        setFormData({ ...formData, priority: e.target.value })
+                      }
+                    >
+                      {priorityOptions.map(option => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="mb-2 block text-sm font-medium text-gray-700">
+                      Başlangıç Tarihi
+                    </label>
+                    <input
+                      type="date"
+                      className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500"
+                      value={formData.start_date}
+                      onChange={e =>
+                        setFormData({ ...formData, start_date: e.target.value })
+                      }
+                    />
+                  </div>
+
+                  <div>
+                    <label className="mb-2 block text-sm font-medium text-gray-700">
+                      Planlanan Bitiş Tarihi
+                    </label>
+                    <input
+                      type="date"
+                      className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500"
+                      value={formData.planned_end_date}
+                      onChange={e =>
+                        setFormData({
+                          ...formData,
+                          planned_end_date: e.target.value,
+                        })
+                      }
+                    />
+                  </div>
+
+                  <div>
+                    <label className="mb-2 block text-sm font-medium text-gray-700">
+                      Bütçe (₺)
+                    </label>
+                    <input
+                      type="number"
+                      step="0.01"
+                      className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500"
+                      value={formData.budget}
+                      onChange={e =>
+                        setFormData({ ...formData, budget: e.target.value })
+                      }
+                    />
+                  </div>
+
+                  <div className="md:col-span-2">
+                    <label className="mb-2 block text-sm font-medium text-gray-700">
+                      Notlar
+                    </label>
+                    <textarea
+                      rows={3}
+                      className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500"
+                      value={formData.notes}
+                      onChange={e =>
+                        setFormData({ ...formData, notes: e.target.value })
+                      }
+                    />
+                  </div>
+                </div>
+
+                <div className="flex justify-end space-x-3">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowForm(false);
+                      resetForm();
+                    }}
+                    className="rounded-lg border border-gray-300 px-4 py-2 text-gray-700 transition-colors hover:bg-gray-50"
                   >
                     İptal
                   </button>
                   <button
                     type="submit"
-                    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                    disabled={
+                      createProjectMutation.isLoading ||
+                      updateProjectMutation.isLoading
+                    }
+                    className="rounded-lg bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700 disabled:opacity-50"
                   >
-                    {editingProject ? 'Güncelle' : 'Kaydet'}
+                    {createProjectMutation.isLoading ||
+                    updateProjectMutation.isLoading
+                      ? 'Kaydediliyor...'
+                      : editingProject
+                        ? 'Güncelle'
+                        : 'Kaydet'}
                   </button>
                 </div>
               </form>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };

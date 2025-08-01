@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const db = require('../config/database');
+const { query } = require('../config/database');
 const { requireAuth: authenticateToken, requireRole } = require('../middleware/auth');
 
 // Tüm satın alma tekliflerini listele
@@ -13,18 +13,18 @@ router.get('/', authenticateToken, async (req, res) => {
         let queryParams = [];
 
         if (status) {
-            whereConditions.push('pq.status = ?');
+            whereConditions.push(`pq.status = $${queryParams.length + 1}`);
             queryParams.push(status);
         }
 
         if (supplier_id) {
-            whereConditions.push('pq.supplier_id = ?');
+            whereConditions.push(`pq.supplier_id = $${queryParams.length + 1}`);
             queryParams.push(supplier_id);
         }
 
         const whereClause = whereConditions.join(' AND ');
 
-        const query = `
+        const queryText = `
             SELECT 
                 pq.id,
                 pq.quote_number,
@@ -47,14 +47,15 @@ router.get('/', authenticateToken, async (req, res) => {
             WHERE ${whereClause}
             GROUP BY pq.id
             ORDER BY pq.request_date DESC
-            LIMIT ? OFFSET ?
+            LIMIT $${queryParams.length + 1} OFFSET $${queryParams.length + 2}
         `;
 
         queryParams.push(parseInt(limit), parseInt(offset));
-        const [quotes] = await db.pool.execute(query, queryParams);
+        const quotesResult = await query(queryText, queryParams);
+        const quotes = quotesResult.rows;
 
         const countQuery = `SELECT COUNT(DISTINCT pq.id) as total FROM purchase_quotes pq WHERE ${whereClause}`;
-        const [countResult] = await db.pool.execute(countQuery, queryParams.slice(0, -2));
+        const countResult = await query(countQuery, queryParams.slice(0, -2));
 
         res.json({
             success: true,
@@ -62,8 +63,8 @@ router.get('/', authenticateToken, async (req, res) => {
                 quotes,
                 pagination: {
                     currentPage: parseInt(page),
-                    totalPages: Math.ceil(countResult[0].total / limit),
-                    totalItems: countResult[0].total,
+                    totalPages: Math.ceil(countResult.rows[0].total / limit),
+                    totalItems: countResult.rows[0].total,
                     itemsPerPage: parseInt(limit)
                 }
             }
@@ -131,26 +132,26 @@ router.get('/:id', authenticateToken, async (req, res) => {
     try {
         const { id } = req.params;
         
-        const [quoteResult] = await db.pool.execute(`
+        const quoteResult = await query(`
             SELECT pq.*, s.name as supplier_name, s.email, s.phone
             FROM purchase_quotes pq
             LEFT JOIN suppliers s ON pq.supplier_id = s.id
-            WHERE pq.id = ?
+            WHERE pq.id = $1
         `, [id]);
 
-        if (quoteResult.length === 0) {
+        if (quoteResult.rows.length === 0) {
             return res.status(404).json({ success: false, message: 'Teklif bulunamadı' });
         }
 
-        const [items] = await db.pool.execute(`
+        const itemsResult = await query(`
             SELECT pqi.*, p.name as product_name, p.sku, p.unit
             FROM purchase_quote_items pqi
             LEFT JOIN products p ON pqi.product_id = p.id
-            WHERE pqi.purchase_quote_id = ?
+            WHERE pqi.purchase_quote_id = $1
         `, [id]);
 
-        const quote = quoteResult[0];
-        quote.items = items;
+        const quote = quoteResult.rows[0];
+        quote.items = itemsResult.rows;
 
         res.json({ success: true, data: quote });
     } catch (error) {
@@ -299,4 +300,4 @@ router.post('/:id/convert-to-order', authenticateToken, requireRole(['admin', 'o
     }
 });
 
-module.exports = router; 
+module.exports = router;

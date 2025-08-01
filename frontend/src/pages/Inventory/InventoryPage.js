@@ -1,388 +1,441 @@
-import React, { useEffect, useState } from 'react';
-import { apiCall } from '../../config/api';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useInventoryAnalysis, useInventoryAlerts, useInventoryValuation } from '../../hooks/useStock';
+import { FiPackage, FiAlertTriangle, FiDollarSign, FiBarChart2 } from 'react-icons/fi';
+import { formatCurrency } from '../../utils/formatters';
 
 const InventoryPage = () => {
-  const [summary, setSummary] = useState(null);
-  const [alerts, setAlerts] = useState([]);
-  const [analysis, setAnalysis] = useState(null);
-  const [valuation, setValuation] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('overview');
   const navigate = useNavigate();
 
-  useEffect(() => {
-    fetchInventoryData();
-  }, []);
+  // React Query hooks
+  const { data: analysisData, isLoading: analysisLoading, error: analysisError } = useInventoryAnalysis();
+  const { data: alertsData, isLoading: alertsLoading } = useInventoryAlerts();
+  const { data: valuationData, isLoading: valuationLoading } = useInventoryValuation();
 
-  const fetchInventoryData = async () => {
-    try {
-      const [inventoryResult, alertsResult, analysisResult, valuationResult] = await Promise.all([
-        apiCall('/api/inventory'),
-        apiCall('/api/inventory/alerts'),
-        apiCall('/api/inventory/analysis'),
-        apiCall('/api/inventory/valuation')
-      ]);
-
-      const summaryData = inventoryResult.data;
-      const alertsData = alertsResult.data;
-      const analysisData = analysisResult.data;
-      const valuationData = valuationResult.data;
-
-      if (summaryData.status === 'success') {
-        setSummary(summaryData.data);
-        setAlerts(alertsData.data || []);
-        setAnalysis(analysisData.data || null);
-        setValuation(valuationData.data || []);
-      } else {
-        setError('Veri alınamadı');
-      }
-      setLoading(false);
-    } catch (err) {
-      setError('Veri alınamadı');
-      setLoading(false);
-    }
-  };
+  // Extract data
+  const summary = analysisData?.data;
+  const alerts = alertsData?.data || [];
+  const valuation = valuationData?.data || [];
+  const loading = analysisLoading || alertsLoading || valuationLoading;
 
   const getAlertBadge = (level) => {
-    const colors = {
-      'critical': 'bg-red-100 text-red-800',
-      'urgent': 'bg-orange-100 text-orange-800',
-      'warning': 'bg-yellow-100 text-yellow-800'
+    const badges = {
+      critical: (
+        <span className="px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
+          Kritik
+        </span>
+      ),
+      urgent: (
+        <span className="px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+          Acil
+        </span>
+      ),
+      warning: (
+        <span className="px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+          Uyarı
+        </span>
+      )
     };
-    const labels = {
-      'critical': 'Kritik',
-      'urgent': 'Acil',
-      'warning': 'Uyarı'
-    };
-    return (
-      <span className={`px-2 py-1 rounded-full text-xs font-medium ${colors[level] || 'bg-gray-100 text-gray-800'}`}>
-        {labels[level] || level}
-      </span>
-    );
+    return badges[level] || badges.warning;
   };
 
-  if (loading) return <div className="flex justify-center py-8">Yükleniyor...</div>;
-  if (error) return <div className="text-red-500 text-center py-8">{error}</div>;
+
+
+  if (analysisError) {
+    return (
+      <div className="min-h-screen bg-gray-50 p-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+            <div className="flex items-center">
+              <FiAlertTriangle className="text-red-500 mr-2" />
+              <span className="text-red-700">Stok verileri yüklenirken hata oluştu: {analysisError.message}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 p-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="animate-pulse">
+            <div className="h-8 bg-gray-200 rounded mb-4"></div>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+              <div className="h-32 bg-gray-200 rounded"></div>
+              <div className="h-32 bg-gray-200 rounded"></div>
+              <div className="h-32 bg-gray-200 rounded"></div>
+              <div className="h-32 bg-gray-200 rounded"></div>
+            </div>
+            <div className="h-64 bg-gray-200 rounded"></div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-secondary-900">Stok Yönetimi</h1>
-        <p className="text-secondary-600">Stok durumunu takip edin ve yönetin</p>
-      </div>
+    <div className="min-h-screen bg-gray-50 p-6">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900">Stok Yönetimi</h1>
+          <p className="text-gray-600">Stok durumunu takip edin ve yönetin</p>
+        </div>
 
-      {/* Tabs */}
-      <div className="border-b border-gray-200">
-        <nav className="-mb-px flex space-x-8">
-          {[
-            { key: 'overview', label: 'Genel Bakış' },
-            { key: 'alerts', label: 'Uyarılar' },
-            { key: 'analysis', label: 'Analiz' },
-            { key: 'valuation', label: 'Değerlendirme' }
-          ].map(tab => (
-            <button
-              key={tab.key}
-              onClick={() => setActiveTab(tab.key)}
-              className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                activeTab === tab.key
-                  ? 'border-blue-500 text-blue-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-              }`}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </nav>
-      </div>
-
-      {/* Tab Content */}
-      <div className="space-y-6">
-        {activeTab === 'overview' && summary && (
-          <>
-            {/* Summary Cards */}
-            <div className="grid grid-cols-4 gap-6">
-              <div className="card p-6 text-center">
-                <h3 className="font-semibold mb-2">Toplam Ürün</h3>
-                <div className="text-3xl font-bold text-blue-600 mb-2">
-                  {summary.summary.total_products}
+        {/* Tabs */}
+        <div className="bg-white rounded-lg shadow-sm mb-6">
+          <div className="border-b border-gray-200">
+            <nav className="-mb-px flex">
+              <button
+                onClick={() => setActiveTab('overview')}
+                className={`py-4 px-6 border-b-2 font-medium text-sm ${
+                  activeTab === 'overview'
+                    ? 'border-blue-500 text-blue-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                }`}
+              >
+                <div className="flex items-center space-x-2">
+                  <FiPackage className="w-4 h-4" />
+                  <span>Genel Bakış</span>
                 </div>
-                <div className="text-sm text-gray-600">Aktif ürün sayısı</div>
-              </div>
-
-              <div className="card p-6 text-center">
-                <h3 className="font-semibold mb-2">Stok Değeri</h3>
-                <div className="text-3xl font-bold text-green-600 mb-2">
-                  ₺{(summary.summary.stock_value.total_value || 0).toLocaleString()}
+              </button>
+              <button
+                onClick={() => setActiveTab('alerts')}
+                className={`py-4 px-6 border-b-2 font-medium text-sm ${
+                  activeTab === 'alerts'
+                    ? 'border-blue-500 text-blue-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                }`}
+              >
+                <div className="flex items-center space-x-2">
+                  <FiAlertTriangle className="w-4 h-4" />
+                  <span>Uyarılar ({alerts.length})</span>
                 </div>
-                <div className="text-sm text-gray-600">Toplam piyasa değeri</div>
-              </div>
-
-              <div className="card p-6 text-center">
-                <h3 className="font-semibold mb-2">Düşük Stok</h3>
-                <div className="text-3xl font-bold text-orange-600 mb-2">
-                  {summary.summary.stock_status.low_stock}
+              </button>
+              <button
+                onClick={() => setActiveTab('analysis')}
+                className={`py-4 px-6 border-b-2 font-medium text-sm ${
+                  activeTab === 'analysis'
+                    ? 'border-blue-500 text-blue-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                }`}
+              >
+                <div className="flex items-center space-x-2">
+                  <FiBarChart2 className="w-4 h-4" />
+                  <span>Analiz</span>
                 </div>
-                <div className="text-sm text-gray-600">Uyarı seviyesinde</div>
-              </div>
-
-              <div className="card p-6 text-center">
-                <h3 className="font-semibold mb-2">Stok Yok</h3>
-                <div className="text-3xl font-bold text-red-600 mb-2">
-                  {summary.summary.stock_status.out_of_stock}
+              </button>
+              <button
+                onClick={() => setActiveTab('valuation')}
+                className={`py-4 px-6 border-b-2 font-medium text-sm ${
+                  activeTab === 'valuation'
+                    ? 'border-blue-500 text-blue-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                }`}
+              >
+                <div className="flex items-center space-x-2">
+                  <FiDollarSign className="w-4 h-4" />
+                  <span>Değerlendirme</span>
                 </div>
-                <div className="text-sm text-gray-600">Tükenen ürünler</div>
-              </div>
-            </div>
+              </button>
+            </nav>
+          </div>
 
-            {/* Stock Status Distribution */}
-            <div className="grid grid-cols-2 gap-6">
-              <div className="card p-6">
-                <h3 className="font-semibold mb-4">Stok Durumu Dağılımı</h3>
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center">
-                      <div className="w-4 h-4 bg-green-500 rounded mr-2"></div>
-                      <span>Stokta</span>
+          {/* Tab Content */}
+          <div className="p-6">
+            {activeTab === 'overview' && summary && (
+              <div className="space-y-6">
+                {/* Summary Cards */}
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                  <div className="bg-white border border-gray-200 rounded-lg p-6 text-center">
+                    <h3 className="text-sm font-medium text-gray-500 mb-2">Toplam Ürün</h3>
+                    <div className="text-3xl font-bold text-blue-600 mb-2">
+                      {summary.summary?.total_products || 0}
                     </div>
-                    <span className="font-medium">{summary.summary.stock_status.in_stock}</span>
+                    <div className="text-sm text-gray-600">Aktif ürün sayısı</div>
                   </div>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center">
-                      <div className="w-4 h-4 bg-yellow-500 rounded mr-2"></div>
-                      <span>Düşük Stok</span>
+
+                  <div className="bg-white border border-gray-200 rounded-lg p-6 text-center">
+                    <h3 className="text-sm font-medium text-gray-500 mb-2">Stok Değeri</h3>
+                    <div className="text-3xl font-bold text-green-600 mb-2">
+                      {formatCurrency(summary.summary?.stock_value?.total_value || 0)}
                     </div>
-                    <span className="font-medium">{summary.summary.stock_status.low_stock}</span>
+                    <div className="text-sm text-gray-600">Toplam piyasa değeri</div>
                   </div>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center">
-                      <div className="w-4 h-4 bg-red-500 rounded mr-2"></div>
-                      <span>Stok Yok</span>
+
+                  <div className="bg-white border border-gray-200 rounded-lg p-6 text-center">
+                    <h3 className="text-sm font-medium text-gray-500 mb-2">Düşük Stok</h3>
+                    <div className="text-3xl font-bold text-orange-600 mb-2">
+                      {summary.summary?.stock_status?.low_stock || 0}
                     </div>
-                    <span className="font-medium">{summary.summary.stock_status.out_of_stock}</span>
+                    <div className="text-sm text-gray-600">Uyarı seviyesinde</div>
                   </div>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center">
-                      <div className="w-4 h-4 bg-blue-500 rounded mr-2"></div>
-                      <span>Fazla Stok</span>
+
+                  <div className="bg-white border border-gray-200 rounded-lg p-6 text-center">
+                    <h3 className="text-sm font-medium text-gray-500 mb-2">Stok Yok</h3>
+                    <div className="text-3xl font-bold text-red-600 mb-2">
+                      {summary.summary?.stock_status?.out_of_stock || 0}
                     </div>
-                    <span className="font-medium">{summary.summary.stock_status.overstock}</span>
+                    <div className="text-sm text-gray-600">Tükenen ürünler</div>
+                  </div>
+                </div>
+
+                {/* Stock Status Distribution */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="bg-white border border-gray-200 rounded-lg p-6">
+                    <h3 className="text-lg font-medium text-gray-900 mb-4">Stok Durumu Dağılımı</h3>
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center">
+                          <div className="w-4 h-4 bg-green-500 rounded mr-2"></div>
+                          <span>Stokta</span>
+                        </div>
+                        <span className="font-medium">{summary.summary?.stock_status?.in_stock || 0}</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center">
+                          <div className="w-4 h-4 bg-yellow-500 rounded mr-2"></div>
+                          <span>Düşük Stok</span>
+                        </div>
+                        <span className="font-medium">{summary.summary?.stock_status?.low_stock || 0}</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center">
+                          <div className="w-4 h-4 bg-red-500 rounded mr-2"></div>
+                          <span>Stok Yok</span>
+                        </div>
+                        <span className="font-medium">{summary.summary?.stock_status?.out_of_stock || 0}</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center">
+                          <div className="w-4 h-4 bg-blue-500 rounded mr-2"></div>
+                          <span>Fazla Stok</span>
+                        </div>
+                        <span className="font-medium">{summary.summary?.stock_status?.overstock || 0}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-white border border-gray-200 rounded-lg p-6">
+                    <h3 className="text-lg font-medium text-gray-900 mb-4">Son 30 Gün Hareketler</h3>
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span>Toplam Hareket</span>
+                        <span className="font-medium">{summary.summary?.recent_movements?.total_movements || 0}</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-green-600">Giriş</span>
+                        <span className="font-medium text-green-600">{summary.summary?.recent_movements?.inbound || 0}</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-red-600">Çıkış</span>
+                        <span className="font-medium text-red-600">{summary.summary?.recent_movements?.outbound || 0}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Low Stock Products */}
+                {summary.low_stock_products && summary.low_stock_products.length > 0 && (
+                  <div className="bg-white border border-gray-200 rounded-lg p-6">
+                    <h3 className="text-lg font-medium text-gray-900 mb-4">Düşük Stoklu Ürünler</h3>
+                    <div className="overflow-x-auto">
+                      <table className="min-w-full divide-y divide-gray-200">
+                        <thead className="bg-gray-50">
+                          <tr>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ürün</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">SKU</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Mevcut Stok</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Min. Seviye</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Eksik</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">İşlem</th>
+                          </tr>
+                        </thead>
+                        <tbody className="bg-white divide-y divide-gray-200">
+                          {summary.low_stock_products.map(product => (
+                            <tr key={product.id} className="hover:bg-gray-50">
+                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{product.name}</td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm font-mono text-gray-900">{product.sku}</td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm text-red-600">{product.current_stock}</td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{product.min_stock_level}</td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm text-red-600 font-medium">{product.shortage}</td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                <button 
+                                  onClick={() => navigate(`/products/${product.id}`)}
+                                  className="px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-xs"
+                                >
+                                  Detay
+                                </button>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {activeTab === 'alerts' && (
+              <div className="bg-white border border-gray-200 rounded-lg p-6">
+                <h3 className="text-lg font-medium text-gray-900 mb-4">Stok Uyarıları ({alerts.length})</h3>
+                {alerts.length > 0 ? (
+                  <div className="overflow-x-auto">
+                    <table className="min-w-full divide-y divide-gray-200">
+                      <thead className="bg-gray-50">
+                        <tr>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Seviye</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ürün</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">SKU</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kategori</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Mevcut</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Min. Seviye</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Eksik</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tedarikçi</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">İşlem</th>
+                        </tr>
+                      </thead>
+                      <tbody className="bg-white divide-y divide-gray-200">
+                        {alerts.map(alert => (
+                          <tr key={alert.id} className="hover:bg-gray-50">
+                            <td className="px-6 py-4 whitespace-nowrap">{getAlertBadge(alert.alert_level)}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{alert.name}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm font-mono text-gray-900">{alert.sku}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{alert.category_name || '-'}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-red-600">{alert.current_stock} {alert.unit}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{alert.min_stock_level}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-red-600 font-medium">{alert.shortage}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{alert.supplier_name || '-'}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                              <div className="flex space-x-2">
+                                <button 
+                                  onClick={() => navigate(`/products/${alert.id}`)}
+                                  className="px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-xs"
+                                >
+                                  Detay
+                                </button>
+                                <button 
+                                  onClick={() => navigate(`/stock-reorder?product_id=${alert.id}`)}
+                                  className="px-3 py-1 bg-green-600 text-white rounded-md hover:bg-green-700 text-xs"
+                                >
+                                  Sipariş
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                ) : (
+                  <div className="text-center py-12">
+                    <FiAlertTriangle className="mx-auto h-12 w-12 text-gray-400" />
+                    <h3 className="mt-2 text-sm font-medium text-gray-900">Stok uyarısı yok</h3>
+                    <p className="mt-1 text-sm text-gray-500">Şu anda stok uyarısı bulunmuyor</p>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {activeTab === 'analysis' && summary && (
+              <div className="space-y-6">
+                {/* Category Analysis */}
+                <div className="bg-white border border-gray-200 rounded-lg p-6">
+                  <h3 className="text-lg font-medium text-gray-900 mb-4">Kategori Bazında Stok Analizi</h3>
+                  <div className="overflow-x-auto">
+                    <table className="min-w-full divide-y divide-gray-200">
+                      <thead className="bg-gray-50">
+                        <tr>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kategori</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ürün Sayısı</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Toplam Miktar</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Toplam Değer</th>
+                        </tr>
+                      </thead>
+                      <tbody className="bg-white divide-y divide-gray-200">
+                        {summary.category_analysis?.map((cat, index) => (
+                          <tr key={index} className="hover:bg-gray-50">
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{cat.category_name || 'Kategori Yok'}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{cat.product_count}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{cat.total_quantity}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{formatCurrency(cat.total_value || 0)}</td>
+                          </tr>
+                        )) || []}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                {/* Top Moving Products */}
+                <div className="bg-white border border-gray-200 rounded-lg p-6">
+                  <h3 className="text-lg font-medium text-gray-900 mb-4">En Çok Hareket Gören Ürünler</h3>
+                  <div className="overflow-x-auto">
+                    <table className="min-w-full divide-y divide-gray-200">
+                      <thead className="bg-gray-50">
+                        <tr>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ürün</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">SKU</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Hareket Sayısı</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Toplam Giriş</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Toplam Çıkış</th>
+                        </tr>
+                      </thead>
+                      <tbody className="bg-white divide-y divide-gray-200">
+                        {summary.top_moving_products?.map((product, index) => (
+                          <tr key={index} className="hover:bg-gray-50">
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{product.name}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm font-mono text-gray-900">{product.sku}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{product.movement_count}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-green-600">{product.total_in}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-red-600">{product.total_out}</td>
+                          </tr>
+                        )) || []}
+                      </tbody>
+                    </table>
                   </div>
                 </div>
               </div>
+            )}
 
-              <div className="card p-6">
-                <h3 className="font-semibold mb-4">Son 30 Gün Hareketler</h3>
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span>Toplam Hareket</span>
-                    <span className="font-medium">{summary.summary.recent_movements.total_movements}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-green-600">Giriş</span>
-                    <span className="font-medium text-green-600">{summary.summary.recent_movements.inbound}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-red-600">Çıkış</span>
-                    <span className="font-medium text-red-600">{summary.summary.recent_movements.outbound}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Low Stock Products */}
-            {summary.low_stock_products.length > 0 && (
-              <div className="card p-6">
-                <h3 className="font-semibold mb-4">Düşük Stoklu Ürünler</h3>
+            {activeTab === 'valuation' && (
+              <div className="bg-white border border-gray-200 rounded-lg p-6">
+                <h3 className="text-lg font-medium text-gray-900 mb-4">Stok Değerlendirme Raporu</h3>
                 <div className="overflow-x-auto">
-                  <table className="table-auto w-full text-sm">
-                    <thead>
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-50">
                       <tr>
-                        <th>Ürün</th>
-                        <th>SKU</th>
-                        <th>Mevcut Stok</th>
-                        <th>Min. Seviye</th>
-                        <th>Eksik</th>
-                        <th>İşlem</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kategori</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ürün Sayısı</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Toplam Miktar</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Maliyet Değeri</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Piyasa Değeri</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Potansiyel Kar</th>
                       </tr>
                     </thead>
-                    <tbody>
-                      {summary.low_stock_products.map(product => (
-                        <tr key={product.id} className="border-b hover:bg-gray-50">
-                          <td>{product.name}</td>
-                          <td className="font-mono">{product.sku}</td>
-                          <td className="text-red-600">{product.current_stock}</td>
-                          <td>{product.min_stock_level}</td>
-                          <td className="text-red-600 font-medium">{product.shortage}</td>
-                          <td>
-                            <button 
-                              onClick={() => navigate(`/products/${product.id}`)}
-                              className="btn btn-xs btn-outline"
-                            >
-                              Detay
-                            </button>
-                          </td>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      {valuation?.map((item, index) => (
+                        <tr key={index} className={`hover:bg-gray-50 ${
+                          item.category_name === 'TOPLAM' ? 'font-bold bg-gray-100' : ''
+                        }`}>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.category_name}</td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.product_count}</td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.total_quantity}</td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{formatCurrency(item.cost_value || 0)}</td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{formatCurrency(item.market_value || 0)}</td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-green-600">{formatCurrency(item.potential_profit || 0)}</td>
                         </tr>
-                      ))}
+                      )) || []}
                     </tbody>
                   </table>
                 </div>
               </div>
             )}
-          </>
-        )}
-
-        {activeTab === 'alerts' && (
-          <div className="card p-6">
-            <h3 className="font-semibold mb-4">Stok Uyarıları ({alerts.length})</h3>
-            {alerts.length > 0 ? (
-              <div className="overflow-x-auto">
-                <table className="table-auto w-full text-sm">
-                  <thead>
-                    <tr>
-                      <th>Seviye</th>
-                      <th>Ürün</th>
-                      <th>SKU</th>
-                      <th>Kategori</th>
-                      <th>Mevcut</th>
-                      <th>Min. Seviye</th>
-                      <th>Eksik</th>
-                      <th>Tedarikçi</th>
-                      <th>İşlem</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {alerts.map(alert => (
-                      <tr key={alert.id} className="border-b hover:bg-gray-50">
-                        <td>{getAlertBadge(alert.alert_level)}</td>
-                        <td>{alert.name}</td>
-                        <td className="font-mono">{alert.sku}</td>
-                        <td>{alert.category_name || '-'}</td>
-                        <td className="text-red-600">{alert.current_stock} {alert.unit}</td>
-                        <td>{alert.min_stock_level}</td>
-                        <td className="text-red-600 font-medium">{alert.shortage}</td>
-                        <td>{alert.supplier_name || '-'}</td>
-                        <td>
-                          <div className="flex gap-1">
-                            <button 
-                              onClick={() => navigate(`/products/${alert.id}`)}
-                              className="btn btn-xs btn-outline"
-                            >
-                              Detay
-                            </button>
-                            <button 
-                              onClick={() => navigate(`/stock-reorder?product_id=${alert.id}`)}
-                              className="btn btn-xs btn-primary"
-                            >
-                              Sipariş
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            ) : (
-              <div className="text-center py-8 text-gray-500">
-                Şu anda stok uyarısı bulunmuyor
-              </div>
-            )}
           </div>
-        )}
-
-        {activeTab === 'analysis' && analysis && (
-          <div className="space-y-6">
-            {/* Category Analysis */}
-            <div className="card p-6">
-              <h3 className="font-semibold mb-4">Kategori Bazında Stok Analizi</h3>
-              <div className="overflow-x-auto">
-                <table className="table-auto w-full text-sm">
-                  <thead>
-                    <tr>
-                      <th>Kategori</th>
-                      <th>Ürün Sayısı</th>
-                      <th>Toplam Miktar</th>
-                      <th>Toplam Değer</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {analysis.category_analysis.map((cat, index) => (
-                      <tr key={index} className="border-b hover:bg-gray-50">
-                        <td>{cat.category_name || 'Kategori Yok'}</td>
-                        <td>{cat.product_count}</td>
-                        <td>{cat.total_quantity}</td>
-                        <td>₺{(cat.total_value || 0).toLocaleString()}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-
-            {/* Top Moving Products */}
-            <div className="card p-6">
-              <h3 className="font-semibold mb-4">En Çok Hareket Gören Ürünler</h3>
-              <div className="overflow-x-auto">
-                <table className="table-auto w-full text-sm">
-                  <thead>
-                    <tr>
-                      <th>Ürün</th>
-                      <th>SKU</th>
-                      <th>Hareket Sayısı</th>
-                      <th>Toplam Giriş</th>
-                      <th>Toplam Çıkış</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {analysis.top_moving_products.map((product, index) => (
-                      <tr key={index} className="border-b hover:bg-gray-50">
-                        <td>{product.name}</td>
-                        <td className="font-mono">{product.sku}</td>
-                        <td>{product.movement_count}</td>
-                        <td className="text-green-600">{product.total_in}</td>
-                        <td className="text-red-600">{product.total_out}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {activeTab === 'valuation' && (
-          <div className="card p-6">
-            <h3 className="font-semibold mb-4">Stok Değerlendirme Raporu</h3>
-            <div className="overflow-x-auto">
-              <table className="table-auto w-full text-sm">
-                <thead>
-                  <tr>
-                    <th>Kategori</th>
-                    <th>Ürün Sayısı</th>
-                    <th>Toplam Miktar</th>
-                    <th>Maliyet Değeri</th>
-                    <th>Piyasa Değeri</th>
-                    <th>Potansiyel Kar</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {valuation.map((item, index) => (
-                    <tr key={index} className={`border-b hover:bg-gray-50 ${item.category_name === 'TOPLAM' ? 'font-bold bg-gray-100' : ''}`}>
-                      <td>{item.category_name}</td>
-                      <td>{item.product_count}</td>
-                      <td>{item.total_quantity}</td>
-                      <td>₺{(item.cost_value || 0).toLocaleString()}</td>
-                      <td>₺{(item.market_value || 0).toLocaleString()}</td>
-                      <td className="text-green-600">₺{(item.potential_profit || 0).toLocaleString()}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        )}
+        </div>
       </div>
     </div>
   );

@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const db = require('../config/database');
+const { query } = require('../config/database');
 const { requireAuth: authenticateToken, requireRole } = require('../middleware/auth');
 
 // Tüm satış tekliflerini listele
@@ -13,18 +13,18 @@ router.get('/', authenticateToken, async (req, res) => {
         let queryParams = [];
 
         if (status) {
-            whereConditions.push('sq.status = ?');
+            whereConditions.push(`sq.status = $${queryParams.length + 1}`);
             queryParams.push(status);
         }
 
         if (customer_id) {
-            whereConditions.push('sq.customer_id = ?');
+            whereConditions.push(`sq.customer_id = $${queryParams.length + 1}`);
             queryParams.push(customer_id);
         }
 
         const whereClause = whereConditions.join(' AND ');
 
-        const query = `
+        const queryText = `
             SELECT 
                 sq.id,
                 sq.quote_number,
@@ -46,14 +46,15 @@ router.get('/', authenticateToken, async (req, res) => {
             WHERE ${whereClause}
             GROUP BY sq.id
             ORDER BY sq.quote_date DESC
-            LIMIT ? OFFSET ?
+            LIMIT $${queryParams.length + 1} OFFSET $${queryParams.length + 2}
         `;
 
         queryParams.push(parseInt(limit), parseInt(offset));
-        const [quotes] = await db.pool.execute(query, queryParams);
+        const quotesResult = await query(queryText, queryParams);
+        const quotes = quotesResult.rows;
 
         const countQuery = `SELECT COUNT(DISTINCT sq.id) as total FROM sales_quotes sq WHERE ${whereClause}`;
-        const [countResult] = await db.pool.execute(countQuery, queryParams.slice(0, -2));
+        const countResult = await query(countQuery, queryParams.slice(0, -2));
 
         res.json({
             success: true,
@@ -61,8 +62,8 @@ router.get('/', authenticateToken, async (req, res) => {
                 quotes,
                 pagination: {
                     currentPage: parseInt(page),
-                    totalPages: Math.ceil(countResult[0].total / limit),
-                    totalItems: countResult[0].total,
+                    totalPages: Math.ceil(countResult.rows[0].total / limit),
+                    totalItems: countResult.rows[0].total,
                     itemsPerPage: parseInt(limit)
                 }
             }
@@ -75,10 +76,7 @@ router.get('/', authenticateToken, async (req, res) => {
 
 // Yeni satış teklifi oluştur
 router.post('/', authenticateToken, requireRole(['admin', 'operator']), async (req, res) => {
-    const connection = await db.pool.getConnection();
     try {
-        await connection.beginTransaction();
-        
         const { customer_id, quote_date, valid_until, notes, items } = req.body;
 
         if (!customer_id || !quote_date || !Array.isArray(items) || items.length === 0) {
@@ -95,38 +93,33 @@ router.post('/', authenticateToken, requireRole(['admin', 'operator']), async (r
             totalAmount += (item.quantity * item.unit_price);
         }
 
-        const [quoteResult] = await connection.execute(`
+        const quoteResult = await query(`
             INSERT INTO sales_quotes (
                 quote_number, customer_id, quote_date, valid_until, 
                 status, total_amount, notes, created_by
             )
-            VALUES (?, ?, ?, ?, 'draft', ?, ?, ?)
+            VALUES ($1, $2, $3, $4, 'draft', $5, $6, $7) RETURNING id
         `, [quoteNumber, customer_id, quote_date, valid_until, totalAmount, notes, req.user.id]);
 
-        const salesQuoteId = quoteResult.insertId;
+        const salesQuoteId = quoteResult.rows[0].id;
 
         for (const item of items) {
-            await connection.execute(`
+            await query(`
                 INSERT INTO sales_quote_items (
                     sales_quote_id, product_id, quantity, unit_price, total_price
                 )
-                VALUES (?, ?, ?, ?, ?)
+                VALUES ($1, $2, $3, $4, $5)
             `, [salesQuoteId, item.product_id, item.quantity, item.unit_price, item.quantity * item.unit_price]);
         }
 
-        await connection.commit();
-
         res.status(201).json({ 
             success: true, 
-            message: 'Satış teklifi oluşturuldu', 
-            data: { id: salesQuoteId, quote_number: quoteNumber } 
+            message: 'Satış teklifi oluşturuldu',
+            data: { id: salesQuoteId, quote_number: quoteNumber }
         });
     } catch (error) {
-        await connection.rollback();
         console.error('Satış teklifi oluşturma hatası:', error);
         res.status(500).json({ success: false, message: 'Sunucu hatası', error: error.message });
-    } finally {
-        connection.release();
     }
 });
 
@@ -141,10 +134,10 @@ router.patch('/:id/status', authenticateToken, requireRole(['admin', 'operator']
             return res.status(400).json({ success: false, message: 'Geçersiz durum' });
         }
 
-        await db.pool.execute(`
+        await query(`
             UPDATE sales_quotes 
-            SET status = ?, updated_at = NOW() 
-            WHERE id = ?
+            SET status = $1, updated_at = CURRENT_TIMESTAMP 
+            WHERE id = $2
         `, [status, id]);
 
         res.json({ success: true, message: 'Teklif durumu güncellendi' });
@@ -154,4 +147,4 @@ router.patch('/:id/status', authenticateToken, requireRole(['admin', 'operator']
     }
 });
 
-module.exports = router; 
+module.exports = router;

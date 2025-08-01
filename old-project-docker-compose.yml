@@ -1,0 +1,70 @@
+version: '3.4'
+services:
+  mongodb_replica:
+    build: ./mongodb_replica
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: password
+      MONGO_REPLICA_HOST: mongodb_replica
+      MONGO_REPLICA_PORT: 27017
+    ports:
+      - '27018:27017'  # Port değiştirildi çakışma olmasın
+    restart: always
+    healthcheck:
+      test: ['CMD', 'mongo', 'admin', '--port', '27017', '--eval', "db.adminCommand('ping')"]
+      interval: 5s
+      timeout: 2s
+      retries: 20
+    networks:
+      - app_network
+  db:
+    image: 'postgres:latest'
+    environment:
+      POSTGRES_USER: supertokens_user
+      POSTGRES_PASSWORD: somePassword
+      POSTGRES_DB: supertokens
+    ports:
+      - 5434:5432  # Port değiştirildi çakışma olmasın
+    networks:
+      - app_network
+    restart: unless-stopped
+    healthcheck:
+      test: ['CMD', 'pg_isready', '-U', 'supertokens_user', '-d', 'supertokens']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+  supertokens:
+    image: registry.supertokens.io/supertokens/supertokens-postgresql:7.0
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - 3567:3567
+    environment:
+      REFRESH_TOKEN_VALIDITY: 144000
+      ACCESS_TOKEN_VALIDITY: 36000
+      POSTGRESQL_CONNECTION_URI: "postgresql://supertokens_user:somePassword@db:5432/supertokens"
+    networks:
+      - app_network
+    restart: unless-stopped
+    healthcheck:
+      test: >
+        bash -c 'exec 3<>/dev/tcp/127.0.0.1/3567 && echo -e "GET /hello HTTP/1.1\r\nhost: 127.0.0.1:3567\r\nConnection: close\r\n\r\n" >&3 && cat <&3 | grep "Hello"'
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  my-app:
+    image: my-app
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    environment:
+      NODE_ENV: production
+    ports:
+      - 3003:3001  # Port değiştirildi çakışma olmasın
+    restart: unless-stopped
+    networks:
+      - app_network
+networks:
+  app_network:
+    driver: bridge

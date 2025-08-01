@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from 'react';
-import { apiCall } from '../../config/api';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { 
   FiSettings, 
@@ -14,10 +13,23 @@ import {
   FiUsers,
   FiFileText,
   FiTrendingUp,
-  FiPieChart
+  FiPieChart,
+  FiAlertTriangle
 } from 'react-icons/fi';
+import { useDashboard, useRecentActivities, useAlerts } from '../../hooks/useDashboard';
 
 const DashboardPage = () => {
+  // React Query hooks
+  const { data: statsData, isLoading: statsLoading, error: statsError } = useDashboard();
+  const { data: activitiesData, isLoading: activitiesLoading } = useRecentActivities();
+  const { data: alertsData, isLoading: alertsLoading } = useAlerts();
+
+  // Extract data from API responses
+  const stats = statsData?.data || {};
+  const activities = activitiesData?.data || [];
+  const alerts = alertsData?.data || [];
+  const loading = statsLoading || activitiesLoading || alertsLoading;
+
   const mainCategories = [
     {
       title: "Üretim",
@@ -50,126 +62,238 @@ const DashboardPage = () => {
       colorDark: "text-blue-600",
       items: [
         { name: "Ürünler", icon: <FiPackage className="w-4 h-4" />, link: "/products" },
-        { name: "Stok yeniden sipariş", icon: <FiRefreshCw className="w-4 h-4" />, link: "/reorder-stock" },
         { name: "Mevcut stok", icon: <FiArchive className="w-4 h-4" />, link: "/current-stock" },
         { name: "Stok transferleri", icon: <FiTruck className="w-4 h-4" />, link: "/stock-transfers" },
-        { name: "Stok düzeltmeleri", icon: <FiSettings className="w-4 h-4" />, link: "/stock-adjustments" },
-        { name: "Stok sayımları", icon: <FiBarChart2 className="w-4 h-4" />, link: "/stock-counts" },
-        { name: "Depo taramaları", icon: <FiClipboard className="w-4 h-4" />, link: "/stockroom-scans" }
+        { name: "Stok düzeltmeleri", icon: <FiRefreshCw className="w-4 h-4" />, link: "/stock-adjustments" },
+        { name: "Stok yeniden siparişi", icon: <FiPlus className="w-4 h-4" />, link: "/stock-reorder" },
+        { name: "Depo taramaları", icon: <FiBarChart2 className="w-4 h-4" />, link: "/stockroom-scans" }
       ]
     },
     {
-      title: "Satış",
+      title: "Projeler",
       color: "bg-green-600",
       colorHover: "hover:bg-green-700", 
       colorLight: "bg-green-50",
       colorDark: "text-green-600",
       items: [
-        { name: "Satış siparişleri", icon: <FiDollarSign className="w-4 h-4" />, link: "/sales-orders" },
-        { name: "Satış teklifleri", icon: <FiFileText className="w-4 h-4" />, link: "/sales-quotes" },
-        { name: "Müşteriler", icon: <FiUsers className="w-4 h-4" />, link: "/customers" }
+        { name: "Projeler", icon: <FiClipboard className="w-4 h-4" />, link: "/projects" }
+      ]
+    },
+    {
+      title: "Raporlar",
+      color: "bg-indigo-600",
+      colorHover: "hover:bg-indigo-700",
+      colorLight: "bg-indigo-50", 
+      colorDark: "text-indigo-600",
+      items: [
+        { name: "Satış raporları", icon: <FiTrendingUp className="w-4 h-4" />, link: "/sales-reports" },
+        { name: "Envanter raporları", icon: <FiPieChart className="w-4 h-4" />, link: "/inventory-reports" }
       ]
     }
   ];
 
-  const reportsCategories = [
-    {
-      title: "Üretim",
-      icon: <FiSettings className="w-4 h-4" />,
-      link: "/reports/manufacturing"
-    },
-    {
-      title: "Satın Alma", 
-      icon: <FiTruck className="w-4 h-4" />,
-      link: "/reports/purchasing"
-    },
-    {
-      title: "Satış",
-      icon: <FiDollarSign className="w-4 h-4" />,
-      link: "/reports/sales"
-    },
-    {
-      title: "Yeniden sipariş ve tahmin",
-      icon: <FiTrendingUp className="w-4 h-4" />,
-      link: "/reports/reordering"
-    },
-    {
-      title: "Denetim kaydı",
-      icon: <FiFileText className="w-4 h-4" />,
-      link: "/reports/audit"
-    },
-    {
-      title: "Ödeme ve muhasebe", 
-      icon: <FiPieChart className="w-4 h-4" />,
-      link: "/reports/accounting"
-    },
-    {
-      title: "Stok seviyeleri",
-      icon: <FiBarChart2 className="w-4 h-4" />,
-      link: "/reports/stock-levels"
-    }
-  ];
+  const formatCurrency = (amount) => {
+    return new Intl.NumberFormat('tr-TR', {
+      style: 'currency',
+      currency: 'TRY'
+    }).format(amount || 0);
+  };
+
+  const formatDate = (dateString) => {
+    if (!dateString) return '-';
+    return new Date(dateString).toLocaleDateString('tr-TR', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
+
+  if (statsError) {
+    return (
+      <div className="min-h-screen bg-gray-50 p-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+            <div className="flex items-center">
+              <FiAlertTriangle className="text-red-500 mr-2" />
+              <span className="text-red-700">Dashboard verileri yüklenirken hata oluştu: {statsError.message}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
       <div className="max-w-7xl mx-auto">
-        
-        {/* Main Categories Section */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          {mainCategories.map((category, index) => (
-            <div key={category.title} className="relative">
-              {/* Category Header */}
-              <div className={`${category.color} ${category.colorHover} text-white p-4 rounded-t-lg relative transition-colors duration-200 cursor-pointer group`}>
-                <div className="flex items-center justify-between">
-                  <h3 className="font-semibold text-lg">{category.title}</h3>
-                  <FiPlus className="w-5 h-5 opacity-70 group-hover:opacity-100 transition-opacity" />
-                </div>
-              </div>
-              
-              {/* Category Content */}
-              <div className="bg-white border border-gray-200 rounded-b-lg p-4 h-96 flex flex-col">
-                <ul className="space-y-3 flex-1">
-                  {category.items.map((item, itemIndex) => (
-                    <li key={itemIndex}>
-                      <Link
-                        to={item.link}
-                        className={`flex items-center space-x-3 p-2 rounded-lg ${category.colorLight} ${category.colorDark} hover:shadow-sm transition-all duration-200 group`}
-                      >
-                        <span className="opacity-70 group-hover:opacity-100">{item.icon}</span>
-                        <span className="text-sm font-medium group-hover:font-semibold">{item.name}</span>
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          ))}
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Dashboard</h1>
+          <p className="text-gray-600">Sistem genel durumu ve hızlı erişim</p>
         </div>
 
-        {/* Reports Section */}
-        <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
-          {/* Reports Header */}
-          <div className="bg-purple-600 text-white p-6">
-            <div className="flex items-center space-x-3">
-              <FiBarChart2 className="w-6 h-6" />
-              <h2 className="text-xl font-bold">Raporlar</h2>
+        {/* Stats Cards */}
+        {loading ? (
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="bg-white rounded-lg shadow-sm p-6 animate-pulse">
+                <div className="h-4 bg-gray-200 rounded mb-2"></div>
+                <div className="h-8 bg-gray-200 rounded"></div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div className="bg-white rounded-lg shadow-sm p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">Toplam Ürün</p>
+                  <p className="text-2xl font-bold text-gray-900">{stats.totalProducts || 0}</p>
+                </div>
+                <div className="p-3 bg-blue-100 rounded-full">
+                  <FiPackage className="text-blue-600 text-xl" />
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-lg shadow-sm p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">Aktif Projeler</p>
+                  <p className="text-2xl font-bold text-gray-900">{stats.activeProjects || 0}</p>
+                </div>
+                <div className="p-3 bg-green-100 rounded-full">
+                  <FiClipboard className="text-green-600 text-xl" />
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-lg shadow-sm p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">Düşük Stok</p>
+                  <p className="text-2xl font-bold text-gray-900">{stats.lowStockCount || 0}</p>
+                </div>
+                <div className="p-3 bg-yellow-100 rounded-full">
+                  <FiAlertTriangle className="text-yellow-600 text-xl" />
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-lg shadow-sm p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">Aylık Satış</p>
+                  <p className="text-2xl font-bold text-gray-900">{formatCurrency(stats.monthlySales)}</p>
+                </div>
+                <div className="p-3 bg-purple-100 rounded-full">
+                  <FiDollarSign className="text-purple-600 text-xl" />
+                </div>
+              </div>
             </div>
           </div>
-          
-          {/* Reports Content */}
-          <div className="p-6">
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-4">
-              {reportsCategories.map((report, index) => (
-                <div key={index} className="group h-20">
-                  <Link
-                    to={report.link}
-                    className="flex flex-col items-center justify-center p-3 bg-gray-50 hover:bg-purple-50 border border-gray-200 hover:border-purple-200 rounded-lg transition-colors duration-200 text-sm h-full"
-                  >
-                    <span className="opacity-70 group-hover:opacity-100 mb-2 text-purple-600">{report.icon}</span>
-                    <span className="font-medium group-hover:font-semibold text-center text-gray-700 group-hover:text-purple-700 text-xs leading-tight">{report.title}</span>
-                  </Link>
+        )}
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Main Categories */}
+          <div className="lg:col-span-2">
+            <h2 className="text-xl font-semibold text-gray-900 mb-6">Ana Modüller</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {mainCategories.map((category, index) => (
+                <div key={index} className="bg-white rounded-lg shadow-sm overflow-hidden">
+                  <div className={`${category.color} px-6 py-4`}>
+                    <h3 className="text-lg font-semibold text-white">{category.title}</h3>
+                  </div>
+                  <div className="p-4">
+                    <div className="space-y-2">
+                      {category.items.map((item, itemIndex) => (
+                        <Link
+                          key={itemIndex}
+                          to={item.link}
+                          className={`flex items-center p-3 rounded-lg ${category.colorLight} ${category.colorHover} transition-colors group`}
+                        >
+                          <div className={`${category.colorDark} mr-3 group-hover:text-white`}>
+                            {item.icon}
+                          </div>
+                          <span className={`text-sm font-medium ${category.colorDark} group-hover:text-white`}>
+                            {item.name}
+                          </span>
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               ))}
+            </div>
+          </div>
+
+          {/* Sidebar */}
+          <div className="space-y-6">
+            {/* Recent Activities */}
+            <div className="bg-white rounded-lg shadow-sm p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Son Aktiviteler</h3>
+              {activitiesLoading ? (
+                <div className="space-y-3">
+                  {[1, 2, 3].map((i) => (
+                    <div key={i} className="animate-pulse">
+                      <div className="h-4 bg-gray-200 rounded mb-2"></div>
+                      <div className="h-3 bg-gray-200 rounded w-3/4"></div>
+                    </div>
+                  ))}
+                </div>
+              ) : activities.length > 0 ? (
+                <div className="space-y-3">
+                  {activities.slice(0, 5).map((activity, index) => (
+                    <div key={index} className="border-l-4 border-blue-500 pl-4 py-2">
+                      <p className="text-sm font-medium text-gray-900">{activity.title}</p>
+                      <p className="text-xs text-gray-500">{formatDate(activity.created_at)}</p>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-gray-500 text-sm">Henüz aktivite bulunmuyor</p>
+              )}
+            </div>
+
+            {/* Alerts */}
+            <div className="bg-white rounded-lg shadow-sm p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Uyarılar</h3>
+              {alertsLoading ? (
+                <div className="space-y-3">
+                  {[1, 2, 3].map((i) => (
+                    <div key={i} className="animate-pulse">
+                      <div className="h-4 bg-gray-200 rounded mb-2"></div>
+                      <div className="h-3 bg-gray-200 rounded w-2/3"></div>
+                    </div>
+                  ))}
+                </div>
+              ) : alerts.length > 0 ? (
+                <div className="space-y-3">
+                  {alerts.slice(0, 5).map((alert, index) => (
+                    <div key={index} className={`p-3 rounded-lg ${
+                      alert.type === 'error' ? 'bg-red-50 border border-red-200' :
+                      alert.type === 'warning' ? 'bg-yellow-50 border border-yellow-200' :
+                      'bg-blue-50 border border-blue-200'
+                    }`}>
+                      <div className="flex items-start">
+                        <FiAlertTriangle className={`mt-0.5 mr-2 ${
+                          alert.type === 'error' ? 'text-red-500' :
+                          alert.type === 'warning' ? 'text-yellow-500' :
+                          'text-blue-500'
+                        }`} size={16} />
+                        <div>
+                          <p className="text-sm font-medium text-gray-900">{alert.title}</p>
+                          <p className="text-xs text-gray-600">{alert.message}</p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-gray-500 text-sm">Uyarı bulunmuyor</p>
+              )}
             </div>
           </div>
         </div>

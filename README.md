@@ -48,22 +48,34 @@ Bu uygulama, şirketlerin stok takibi, reçete (BOM) yönetimi ve proje süreçl
 
 ## 🛠 Teknoloji Stack
 
-### Backend
-- **Framework**: Node.js + Express.js
-- **Veritabanı**: PostgreSQL
-- **Authentication**: JWT
-- **API**: RESTful API
+### 💻 Programlama Dilleri
+- **JavaScript**, **TypeScript**, **SQL**, **HTML5**, **CSS3**
 
-### Frontend
-- **Framework**: React 18
-- **Styling**: Tailwind CSS
-- **State Management**: Redux Toolkit (opsiyonel)
-- **HTTP Client**: Axios
-- **Charts**: Recharts
+### 🏗️ Framework'ler
+- **Frontend**: React 18 Ekosistemi
+- **Backend**: Node.js + Express.js
+- **CSS**: Tailwind CSS
 
-### DevOps
-- **Containerization**: Docker
-- **Process Manager**: PM2
+### 🔄 State Management
+- **Redux Toolkit**, **React Query (@tanstack/react-query)**
+
+### 🔐 Güvenlik ve Kimlik Doğrulama
+- **JWT**, **bcryptjs**, **helmet**, **CORS**
+
+### 🗄️ Veritabanı
+- **PostgreSQL**
+
+### 🐳 DevOps ve Deployment
+- **Docker**, **Docker Compose**, **Nginx**
+
+### 🛠️ Geliştirme Araçları
+- **NPM**, **ESLint**, **Prettier**, **Jest**
+
+### 📊 Veri Görselleştirme
+- **Recharts**, **QR Code**
+
+### 🌐 HTTP ve API
+- **Axios**, **Swagger**, **RESTful API**
 
 ## 📁 Proje Yapısı
 
@@ -142,7 +154,7 @@ docker-compose up -d
 
 ## 📖 API Dokümantasyonu
 
-API dokümantasyonu: `http://localhost:3000/api/docs`
+API dokümantasyonu: `http://localhost:3001/api/docs`
 
 ## 🧪 Test
 
