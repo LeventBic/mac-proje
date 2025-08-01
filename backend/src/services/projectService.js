@@ -4,13 +4,14 @@ const { AppError } = require('../utils/errors');
 
 class ProjectService {
     async getAllProjects(filters) {
-        const { page = 1, limit = 10, search, status, customer_id } = filters;
+        const { page = 1, limit = 10, search, status, customer_id, is_active } = filters;
         const offset = (page - 1) * limit;
 
         const projects = await projectRepository.findAllWithFilters({
             search,
             status,
             customer_id,
+            is_active,
             limit: parseInt(limit),
             offset: parseInt(offset)
         });
@@ -18,7 +19,8 @@ class ProjectService {
         const totalCount = await projectRepository.countWithFilters({
             search,
             status,
-            customer_id
+            customer_id,
+            is_active
         });
 
         return {

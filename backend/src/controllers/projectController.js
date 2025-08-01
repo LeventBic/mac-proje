@@ -4,7 +4,23 @@ const { AppError } = require('../utils/errors')
 class ProjectController {
   async getAllProjects(req, res, next) {
     try {
-      const result = await projectService.getAllProjects(req.query)
+      // Status parametresini işle
+      const { status, ...otherParams } = req.query;
+      
+      // Status parametresine göre is_active değerini belirle
+      let is_active;
+      if (status === 'all') {
+        is_active = undefined; // Tüm kayıtları getir
+      } else if (status === 'inactive') {
+        is_active = false; // Sadece pasif kayıtları getir
+      } else {
+        is_active = true; // Varsayılan: sadece aktif kayıtları getir
+      }
+      
+      const result = await projectService.getAllProjects({
+        ...otherParams,
+        is_active
+      });
 
       res.json({
         status: 'success',

@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 import {
   FiPlus,
   FiEdit,
-  FiTrash2,
   FiSearch,
   FiFilter,
   FiCalendar,
@@ -22,6 +21,7 @@ import {
 import { useCustomers } from '../../hooks/useCustomers';
 import { useUsers } from '../../hooks/useUsers';
 import { formatCurrency } from '../../utils/formatters';
+import DeleteButton from '../../components/DeleteButton';
 
 const ProjectsPage = () => {
   const [showForm, setShowForm] = useState(false);
@@ -426,12 +426,13 @@ const ProjectsPage = () => {
                               >
                                 <FiEdit />
                               </button>
-                              <button
+                              <DeleteButton
                                 onClick={() => handleDelete(project)}
-                                className="text-red-600 hover:text-red-900"
-                              >
-                                <FiTrash2 />
-                              </button>
+                                isLoading={deleteProjectMutation.isPending}
+                                size="sm"
+                                variant="outline"
+                                className="p-1"
+                              />
                             </div>
                           </td>
                         </tr>

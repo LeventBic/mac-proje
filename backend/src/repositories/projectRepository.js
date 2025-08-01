@@ -1,10 +1,22 @@
 const db = require('../config/database');
 
 class ProjectRepository {
-    async findAllWithFilters({ search, status, customer_id, limit, offset }) {
+    async findAllWithFilters({ search, status, customer_id, is_active, limit, offset }) {
         let whereConditions = ['1=1'];
         let queryParams = [];
         let paramIndex = 1;
+
+        // is_active filtresi - varsayılan olarak sadece aktif kayıtları getir
+        if (is_active !== undefined) {
+            whereConditions.push(`is_active = $${paramIndex}`);
+            queryParams.push(is_active);
+            paramIndex++;
+        } else {
+            // is_active belirtilmemişse varsayılan olarak aktif kayıtları getir
+            whereConditions.push(`is_active = $${paramIndex}`);
+            queryParams.push(true);
+            paramIndex++;
+        }
 
         if (search) {
             whereConditions.push(`(name ILIKE $${paramIndex} OR project_code ILIKE $${paramIndex + 1} OR description ILIKE $${paramIndex + 2})`);
@@ -37,10 +49,22 @@ class ProjectRepository {
         return result.rows;
     }
 
-    async countWithFilters({ search, status, customer_id }) {
+    async countWithFilters({ search, status, customer_id, is_active }) {
         let whereConditions = ['1=1'];
         let queryParams = [];
         let paramIndex = 1;
+
+        // is_active filtresi - varsayılan olarak sadece aktif kayıtları say
+        if (is_active !== undefined) {
+            whereConditions.push(`is_active = $${paramIndex}`);
+            queryParams.push(is_active);
+            paramIndex++;
+        } else {
+            // is_active belirtilmemişse varsayılan olarak aktif kayıtları say
+            whereConditions.push(`is_active = $${paramIndex}`);
+            queryParams.push(true);
+            paramIndex++;
+        }
 
         if (search) {
             whereConditions.push(`(name ILIKE $${paramIndex} OR project_code ILIKE $${paramIndex + 1} OR description ILIKE $${paramIndex + 2})`);

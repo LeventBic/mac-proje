@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import {
   FiPlus,
   FiEdit,
-  FiTrash2,
   FiPackage,
   FiX,
   FiEye,
@@ -18,6 +17,7 @@ import {
   useCreateProduct,
   useDeleteProduct,
 } from '../../hooks/useProducts';
+import DeleteButton from '../../components/DeleteButton';
 
 const ProductsPage = () => {
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -312,13 +312,13 @@ const ProductsPage = () => {
                       >
                         <FiEdit className="h-4 w-4" />
                       </button>
-                      <button
+                      <DeleteButton
                         onClick={() => openDeleteModal(product)}
-                        className="text-red-600 hover:text-red-900"
-                        title="Sil"
-                      >
-                        <FiTrash2 className="h-4 w-4" />
-                      </button>
+                        isLoading={deleteProductMutation.isLoading}
+                        size="sm"
+                        variant="outline"
+                        className="p-1"
+                      />
                     </div>
                   </td>
                 </tr>

@@ -19,10 +19,20 @@ class ProductsController {
         category_id, 
         product_type_id,
         supplier_id,
-        is_active,
+        status, // Yeni status parametresi
         is_raw_material,
         is_finished_product
       } = req.query;
+      
+      // Status parametresine göre is_active değerini belirle
+      let is_active;
+      if (status === 'all') {
+        is_active = undefined; // Tüm kayıtları getir
+      } else if (status === 'inactive') {
+        is_active = false; // Sadece pasif kayıtları getir
+      } else {
+        is_active = true; // Varsayılan: sadece aktif kayıtları getir
+      }
       
       const result = await productsService.getProducts({
         page: parseInt(page),
@@ -31,7 +41,7 @@ class ProductsController {
         category_id,
         product_type_id,
         supplier_id,
-        is_active: is_active !== undefined ? is_active === 'true' : undefined,
+        is_active,
         is_raw_material: is_raw_material ? is_raw_material === 'true' : undefined,
         is_finished_product: is_finished_product ? is_finished_product === 'true' : undefined
       });

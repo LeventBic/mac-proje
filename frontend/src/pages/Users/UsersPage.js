@@ -10,6 +10,7 @@ import {
   useChangeUserPassword,
 } from '../../hooks/useUsers';
 import toast from 'react-hot-toast';
+import DeleteButton from '../../components/DeleteButton';
 
 const UsersPage = () => {
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -272,13 +273,13 @@ const UsersPage = () => {
                       </button>
 
                       {currentUser?.id !== user.id && (
-                        <button
+                        <DeleteButton
                           onClick={() => handleDeleteClick(user)}
-                          className="text-error-600 hover:text-error-900"
-                          title="Kullanıcıyı Sil"
-                        >
-                          <FiTrash2 className="h-4 w-4" />
-                        </button>
+                          isLoading={deleteUserMutation.isLoading}
+                          size="sm"
+                          variant="outline"
+                          className="p-1"
+                        />
                       )}
                       {currentUser?.id === user.id && (
                         <button

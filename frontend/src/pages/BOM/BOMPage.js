@@ -19,6 +19,7 @@ import {
   FiAlertTriangle,
 } from 'react-icons/fi';
 import { formatCurrency } from '../../utils/formatters';
+import DeleteButton from '../../components/DeleteButton';
 
 const BOMPage = () => {
   const [showForm, setShowForm] = useState(false);
@@ -379,13 +380,11 @@ const BOMPage = () => {
                               <FiEdit className="h-3 w-3" />
                               <span>Düzenle</span>
                             </button>
-                            <button
+                            <DeleteButton
                               onClick={() => handleDelete(bom.id)}
-                              className="flex items-center space-x-1 rounded bg-red-600 px-2 py-1 text-xs text-white hover:bg-red-700"
-                            >
-                              <FiTrash2 className="h-3 w-3" />
-                              <span>Sil</span>
-                            </button>
+                              isLoading={deleteBomMutation.isPending}
+                              size="sm"
+                            />
                           </div>
                         </td>
                       </tr>
