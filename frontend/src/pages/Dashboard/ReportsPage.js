@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useDashboardReports, useExportReport } from '../../hooks/useReports';
 import { FiDownload, FiAlertTriangle, FiBarChart2 } from 'react-icons/fi';
+import { formatCurrency } from '../../utils/formatters';
 
 const tabs = [
   { key: 'stock', label: 'Stok Raporu' },
@@ -28,12 +29,7 @@ const ReportsPage = () => {
     }
   };
 
-  const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('tr-TR', {
-      style: 'currency',
-      currency: 'TRY'
-    }).format(amount || 0);
-  };
+
 
   const formatDate = (dateString) => {
     if (!dateString) return '-';

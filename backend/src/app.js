@@ -40,6 +40,7 @@ const customerRoutes = require('./routes/customers')
 const projectRoutes = require('./routes/projects')
 const hashAdminRoutes = require('./routes/hashAdmin')
 const settingsRoutes = require('./routes/settings')
+const lookupRoutes = require('./routes/lookup')
 
 // Import middleware
 const errorHandler = require('./middleware/errorHandler')
@@ -166,6 +167,7 @@ app.use('/api/sales-quotes', authMiddleware.verifyToken, salesQuoteRoutes)
 app.use('/api/customers', authMiddleware.verifyToken, customerRoutes)
 app.use('/api/projects', authMiddleware.verifyToken, projectRoutes)
 app.use('/api/admin', authMiddleware.verifyToken, hashAdminRoutes)
+app.use('/api/lookup', authMiddleware.verifyToken, lookupRoutes)
 
 app.use('/api/settings', authMiddleware.verifyToken, settingsRoutes)
 

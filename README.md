@@ -5,6 +5,7 @@ Bu uygulama, şirketlerin stok takibi, reçete (BOM) yönetimi ve proje süreçl
 ## 🚀 Ana Özellikler
 
 ### 📦 Stok Yönetimi
+
 - Ürün ekleme/düzenleme/silme (SKU, barkod, konum bilgileriyle)
 - Gerçek zamanlı stok takibi ve düşük stok uyarıları
 - Stok hareketleri ve geçmiş takibi
@@ -12,6 +13,7 @@ Bu uygulama, şirketlerin stok takibi, reçete (BOM) yönetimi ve proje süreçl
 - Barkod tarayıcı desteği
 
 ### 🔧 Reçete (BOM) Yönetimi
+
 - Malzeme Listesi (Bill of Materials) oluşturma ve yönetimi
 - Çok seviyeli BOM yapısı desteği
 - Maliyet hesaplama ve analizi
@@ -19,6 +21,7 @@ Bu uygulama, şirketlerin stok takibi, reçete (BOM) yönetimi ve proje süreçl
 - Üretim planlaması entegrasyonu
 
 ### 📋 Proje Yönetimi
+
 - Proje oluşturma ve takibi
 - Görev atama ve ilerleme takibi
 - Proje maliyetleri ve bütçe kontrolü
@@ -27,6 +30,7 @@ Bu uygulama, şirketlerin stok takibi, reçete (BOM) yönetimi ve proje süreçl
 - Proje raporlama ve analitik
 
 ### 🏭 Üretim Modülü
+
 - Üretim emri oluşturma ve takibi
 - BOM bazlı malzeme ihtiyaç planlaması
 - Devam eden üretim (WIP) takibi
@@ -34,12 +38,14 @@ Bu uygulama, şirketlerin stok takibi, reçete (BOM) yönetimi ve proje süreçl
 - Kalite kontrol entegrasyonu
 
 ### 👥 Kullanıcı ve Müşteri Yönetimi
+
 - Rol tabanlı erişim kontrolü (Admin, Operatör, Görüntüleyici)
 - Müşteri bilgileri ve CRM entegrasyonu
 - Kullanıcı girişi ve yetkilendirme
 - Güvenli oturum yönetimi
 
 ### 📊 Dashboard ve Raporlama
+
 - Gerçek zamanlı stok ve üretim göstergeleri
 - Proje performans metrikleri
 - Maliyet analizi ve karlılık raporları
@@ -49,32 +55,41 @@ Bu uygulama, şirketlerin stok takibi, reçete (BOM) yönetimi ve proje süreçl
 ## 🛠 Teknoloji Stack
 
 ### 💻 Programlama Dilleri
+
 - **JavaScript**, **TypeScript**, **SQL**, **HTML5**, **CSS3**
 
 ### 🏗️ Framework'ler
+
 - **Frontend**: React 18 Ekosistemi
 - **Backend**: Node.js + Express.js
 - **CSS**: Tailwind CSS
 
 ### 🔄 State Management
+
 - **Redux Toolkit**, **React Query (@tanstack/react-query)**
 
 ### 🔐 Güvenlik ve Kimlik Doğrulama
+
 - **JWT**, **bcryptjs**, **helmet**, **CORS**
 
 ### 🗄️ Veritabanı
+
 - **PostgreSQL**
 
 ### 🐳 DevOps ve Deployment
+
 - **Docker**, **Docker Compose**, **Nginx**
 
 ### 🛠️ Geliştirme Araçları
+
 - **NPM**, **ESLint**, **Prettier**, **Jest**
 
 ### 📊 Veri Görselleştirme
+
 - **Recharts**, **QR Code**
 
 ### 🌐 HTTP ve API
+
 - **Axios**, **Swagger**, **RESTful API**
 
 ## 📁 Proje Yapısı
@@ -109,6 +124,7 @@ inflow-app/
 ## 🚦 Kurulum
 
 ### Gereksinimler
+
 - Node.js 18+
 - PostgreSQL 14+
 - npm veya yarn
@@ -116,12 +132,14 @@ inflow-app/
 ### Adım Adım Kurulum
 
 1. **Repository'yi klonlayın:**
+
 ```bash
 git clone <repository-url>
 cd inflow-app
 ```
 
 2. **Backend kurulumu:**
+
 ```bash
 cd backend
 npm install
@@ -133,6 +151,7 @@ npm run dev
 ```
 
 3. **Frontend kurulumu:**
+
 ```bash
 cd frontend
 npm install
@@ -142,15 +161,10 @@ npm start
 ```
 
 4. **Docker ile kurulum (opsiyonel):**
+
 ```bash
 docker-compose up -d
 ```
-
-## 🔐 Varsayılan Kullanıcılar
-
-- **Admin**: admin@inflow.com / admin123
-- **Operatör**: operator@inflow.com / operator123
-- **Görüntüleyici**: viewer@inflow.com / viewer123
 
 ## 📖 API Dokümantasyonu
 

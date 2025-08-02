@@ -19,6 +19,7 @@ import {
 } from '../../hooks/useStock';
 import { useSuppliers } from '../../hooks/useSuppliers';
 import { useCategories } from '../../hooks/useProducts';
+import { formatCurrency } from '../../utils/formatters';
 
 const SettingsModal = ({ isOpen, onClose, item, onSave }) => {
   const [settings, setSettings] = useState({
@@ -296,12 +297,7 @@ const StockReorderPage = () => {
     }
   };
 
-  const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('tr-TR', {
-      style: 'currency',
-      currency: 'TRY'
-    }).format(amount || 0);
-  };
+
 
   const formatDate = (dateString) => {
     if (!dateString) return '-';

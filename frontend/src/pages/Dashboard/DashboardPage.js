@@ -17,6 +17,7 @@ import {
   FiAlertTriangle
 } from 'react-icons/fi';
 import { useDashboard, useRecentActivities, useAlerts } from '../../hooks/useDashboard';
+import { formatCurrency } from '../../utils/formatters';
 
 const DashboardPage = () => {
   // React Query hooks
@@ -92,12 +93,7 @@ const DashboardPage = () => {
     }
   ];
 
-  const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('tr-TR', {
-      style: 'currency',
-      currency: 'TRY'
-    }).format(amount || 0);
-  };
+
 
   const formatDate = (dateString) => {
     if (!dateString) return '-';

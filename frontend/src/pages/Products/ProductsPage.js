@@ -7,23 +7,22 @@ import {
   FiX,
   FiEye,
 } from 'react-icons/fi';
-import { useForm } from 'react-hook-form';
-// import toast from 'react-hot-toast';
 import {
   useProducts,
   useCategories,
   useProductTypes,
-  // useSuppliers,
   useCreateProduct,
+  useUpdateProduct,
   useDeleteProduct,
 } from '../../hooks/useProducts';
 import DeleteButton from '../../components/DeleteButton';
+import ProductForm from '../../components/ProductForm';
+import { formatCurrency, formatQuantity } from '../../utils/formatters';
 
 const ProductsPage = () => {
-  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showProductForm, setShowProductForm] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  // const [showCategoryModal, setShowCategoryModal] = useState(false);
-  // const [showProductTypeModal, setShowProductTypeModal] = useState(false);
   const [productToDelete, setProductToDelete] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
@@ -48,6 +47,7 @@ const ProductsPage = () => {
   // const { data: suppliersData, isLoading: suppliersLoading } = useSuppliers();
 
   const createProductMutation = useCreateProduct();
+  const updateProductMutation = useUpdateProduct();
   const deleteProductMutation = useDeleteProduct();
 
   // Extract data from API responses
@@ -60,35 +60,31 @@ const ProductsPage = () => {
 
   const loading = productsLoading || categoriesLoading || productTypesLoading;
 
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors },
-  } = useForm();
-
-  // const {
-  //   register: registerCategory,
-  //   handleSubmit: handleSubmitCategory,
-  //   reset: resetCategory,
-  //   formState: { errors: errorsCategory },
-  // } = useForm();
-
-  // const {
-  //   register: registerProductType,
-  //   handleSubmit: handleSubmitProductType,
-  //   reset: resetProductType,
-  //   formState: { errors: errorsProductType },
-  // } = useForm();
-
-  const handleCreateProduct = async data => {
+  const handleProductSubmit = async (data) => {
     try {
-      await createProductMutation.mutateAsync(data);
-      setShowCreateModal(false);
-      reset();
+      if (selectedProduct) {
+        await updateProductMutation.mutateAsync({
+          id: selectedProduct.id,
+          ...data
+        });
+      } else {
+        await createProductMutation.mutateAsync(data);
+      }
+      setShowProductForm(false);
+      setSelectedProduct(null);
     } catch (error) {
       // Error is handled by the mutation
     }
+  };
+
+  const handleCreateProduct = () => {
+    setSelectedProduct(null);
+    setShowProductForm(true);
+  };
+
+  const handleEditProduct = (product) => {
+    setSelectedProduct(product);
+    setShowProductForm(true);
   };
 
   const handleDeleteProduct = async () => {
@@ -153,7 +149,7 @@ const ProductsPage = () => {
       <div className="mb-6 flex items-center justify-between">
         <h1 className="text-2xl font-bold text-gray-900">Ürünler</h1>
         <button
-          onClick={() => setShowCreateModal(true)}
+          onClick={handleCreateProduct}
           className="flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
         >
           <FiPlus /> Yeni Ürün
@@ -213,26 +209,38 @@ const ProductsPage = () => {
       </div>
 
       {/* Products Table */}
-      <div className="overflow-hidden rounded-lg bg-white shadow">
+      <div className="overflow-x-auto rounded-lg bg-white shadow">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+              <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                 Ürün
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+              <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                Marka
+              </th>
+              <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                 Kategori
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                Fiyat
+              <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                Satış Fiyatı
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+              <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                Alış Fiyatı
+              </th>
+              <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                 Stok
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+              <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                Tedarikçi
+              </th>
+              <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                Barkod
+              </th>
+              <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                 Durum
               </th>
-              <th className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500">
+              <th className="px-4 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500">
                 İşlemler
               </th>
             </tr>
@@ -240,19 +248,19 @@ const ProductsPage = () => {
           <tbody className="divide-y divide-gray-200 bg-white">
             {products.length === 0 ? (
               <tr>
-                <td colSpan="6" className="px-6 py-4 text-center text-gray-500">
+                <td colSpan="10" className="px-6 py-4 text-center text-gray-500">
                   Ürün bulunamadı
                 </td>
               </tr>
             ) : (
               products.map(product => (
                 <tr key={product.id} className="hover:bg-gray-50">
-                  <td className="whitespace-nowrap px-6 py-4">
+                  <td className="whitespace-nowrap px-4 py-4">
                     <div className="flex items-center">
-                      <div className="h-10 w-10 flex-shrink-0">
+                      <div className="h-8 w-8 flex-shrink-0">
                         {product.image_url ? (
                           <img
-                            className="h-10 w-10 rounded-full object-cover"
+                            className="h-8 w-8 rounded-full object-cover"
                             src={
                               product.image_url.startsWith('http')
                                 ? product.image_url
@@ -261,31 +269,58 @@ const ProductsPage = () => {
                             alt={product.name}
                           />
                         ) : (
-                          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-300">
-                            <FiPackage className="h-5 w-5 text-gray-600" />
+                          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-300">
+                            <FiPackage className="h-4 w-4 text-gray-600" />
                           </div>
                         )}
                       </div>
-                      <div className="ml-4">
+                      <div className="ml-3">
                         <div className="text-sm font-medium text-gray-900">
                           {product.name}
                         </div>
-                        <div className="text-sm text-gray-500">
+                        <div className="text-xs text-gray-500">
                           {product.sku}
                         </div>
                       </div>
                     </div>
                   </td>
-                  <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-900">
+                  <td className="whitespace-nowrap px-4 py-4 text-sm text-gray-900">
+                    {product.brand || '-'}
+                  </td>
+                  <td className="whitespace-nowrap px-4 py-4 text-sm text-gray-900">
                     {product.category?.name || 'Kategori Yok'}
                   </td>
-                  <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-900">
-                    ₺{parseFloat(product.unit_price || 0).toFixed(2)}
+                  <td className="whitespace-nowrap px-4 py-4 text-sm text-gray-900">
+                    {formatCurrency(product.unit_price)}
                   </td>
-                  <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-900">
-                    {product.current_stock || 0}
+                  <td className="whitespace-nowrap px-4 py-4 text-sm text-gray-900">
+                    {formatCurrency(product.purchase_price)}
                   </td>
-                  <td className="whitespace-nowrap px-6 py-4">
+                  <td className="whitespace-nowrap px-4 py-4">
+                    <div className="text-sm text-gray-900">
+                      <span className="font-medium">{formatQuantity(product.current_stock)}</span>
+                      {product.reserved_stock > 0 && (
+                        <div className="text-xs text-orange-600">
+                          Rezerve: {formatQuantity(product.reserved_stock)}
+                        </div>
+                      )}
+                    </div>
+                  </td>
+                  <td className="whitespace-nowrap px-4 py-4 text-sm text-gray-900">
+                    {product.supplier?.name || '-'}
+                  </td>
+                  <td className="whitespace-nowrap px-4 py-4 text-sm text-gray-900">
+                    <div>
+                      {product.barcode && (
+                        <div className="text-xs font-mono">{product.barcode}</div>
+                      )}
+                      {product.qr_code && (
+                        <div className="text-xs text-gray-500">QR: {product.qr_code}</div>
+                      )}
+                      {!product.barcode && !product.qr_code && '-'}
+                    </div>
+                  </td>
+                  <td className="whitespace-nowrap px-4 py-4">
                     <span
                       className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${
                         product.is_active
@@ -296,18 +331,18 @@ const ProductsPage = () => {
                       {product.is_active ? 'Aktif' : 'Pasif'}
                     </span>
                   </td>
-                  <td className="whitespace-nowrap px-6 py-4 text-right text-sm font-medium">
-                    <div className="flex justify-end space-x-2">
+                  <td className="whitespace-nowrap px-4 py-4 text-right text-sm font-medium">
+                    <div className="flex justify-end space-x-1">
                       <button
                         onClick={() => navigate(`/products/${product.id}`)}
-                        className="text-blue-600 hover:text-blue-900"
+                        className="text-blue-600 hover:text-blue-900 p-1"
                         title="Görüntüle"
                       >
                         <FiEye className="h-4 w-4" />
                       </button>
                       <button
-                        onClick={() => navigate(`/products/${product.id}/edit`)}
-                        className="text-indigo-600 hover:text-indigo-900"
+                        onClick={() => handleEditProduct(product)}
+                        className="text-indigo-600 hover:text-indigo-900 p-1"
                         title="Düzenle"
                       >
                         <FiEdit className="h-4 w-4" />
@@ -328,107 +363,17 @@ const ProductsPage = () => {
         </table>
       </div>
 
-      {/* Create Product Modal */}
-      {showCreateModal && (
-        <div className="fixed inset-0 z-50 h-full w-full overflow-y-auto bg-gray-600 bg-opacity-50">
-          <div className="relative top-20 mx-auto w-96 rounded-md border bg-white p-5 shadow-lg">
-            <div className="mb-4 flex items-center justify-between">
-              <h3 className="text-lg font-medium text-gray-900">
-                Yeni Ürün Oluştur
-              </h3>
-              <button
-                onClick={() => {
-                  setShowCreateModal(false);
-                  reset();
-                }}
-                className="text-gray-400 hover:text-gray-600"
-              >
-                <FiX className="h-6 w-6" />
-              </button>
-            </div>
-            <form onSubmit={handleSubmit(handleCreateProduct)}>
-              <div className="mb-4">
-                <label className="mb-1 block text-sm font-medium text-gray-700">
-                  Ürün Adı *
-                </label>
-                <input
-                  type="text"
-                  {...register('name', { required: 'Ürün adı gereklidir' })}
-                  className="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-                {errors.name && (
-                  <p className="mt-1 text-sm text-red-600">
-                    {errors.name.message}
-                  </p>
-                )}
-              </div>
-              <div className="mb-4">
-                <label className="mb-1 block text-sm font-medium text-gray-700">
-                  SKU *
-                </label>
-                <input
-                  type="text"
-                  {...register('sku', { required: 'SKU gereklidir' })}
-                  className="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-                {errors.sku && (
-                  <p className="mt-1 text-sm text-red-600">
-                    {errors.sku.message}
-                  </p>
-                )}
-              </div>
-              <div className="mb-4">
-                <label className="mb-1 block text-sm font-medium text-gray-700">
-                  Kategori
-                </label>
-                <select
-                  {...register('category_id')}
-                  className="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="">Kategori Seçin</option>
-                  {categories.map(category => (
-                    <option key={category.id} value={category.id}>
-                      {category.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="mb-4">
-                <label className="mb-1 block text-sm font-medium text-gray-700">
-                  Birim Fiyat
-                </label>
-                <input
-                  type="number"
-                  step="0.01"
-                  {...register('unit_price')}
-                  className="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              <div className="flex justify-end space-x-3">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setShowCreateModal(false);
-                    reset();
-                  }}
-                  className="rounded-md bg-gray-200 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-300"
-                >
-                  İptal
-                </button>
-                <button
-                  type="submit"
-                  disabled={createProductMutation.isLoading}
-                  className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
-                >
-                  {createProductMutation.isLoading
-                    ? 'Oluşturuluyor...'
-                    : 'Oluştur'}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+      {/* Product Form Modal */}
+      <ProductForm
+        isOpen={showProductForm}
+        onClose={() => {
+          setShowProductForm(false);
+          setSelectedProduct(null);
+        }}
+        onSubmit={handleProductSubmit}
+        product={selectedProduct}
+        isLoading={selectedProduct ? updateProductMutation.isPending : createProductMutation.isPending}
+      />
 
       {/* Delete Confirmation Modal */}
       {showDeleteModal && productToDelete && (

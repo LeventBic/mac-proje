@@ -14,6 +14,7 @@ import {
 } from 'react-icons/fi';
 import { toast } from 'react-hot-toast';
 import { useCurrentStock, useStockStats } from '../../hooks/useStock';
+import { formatCurrency } from '../../utils/formatters';
 
 // Main Component
 const CurrentStockPage = () => {
@@ -75,12 +76,7 @@ const CurrentStockPage = () => {
     return { status: 'Normal', color: 'text-green-600', bgColor: 'bg-green-100' };
   };
 
-  const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('tr-TR', {
-      style: 'currency',
-      currency: 'TRY'
-    }).format(amount);
-  };
+
 
   if (stockError) {
     return (

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useProductionOrders, useProductionBOMs, useCreateProductionOrder } from '../../hooks/useProduction';
 import { FiPlus, FiEye, FiPlay, FiCheck, FiClock, FiAlertTriangle } from 'react-icons/fi';
+import { formatCurrency, formatQuantity } from '../../utils/formatters';
 
 const ProductionPage = () => {
   const [showForm, setShowForm] = useState(false);
@@ -183,7 +184,7 @@ const ProductionPage = () => {
                           {order.bom_name || '-'}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          {order.planned_quantity}
+                          {formatQuantity(order.planned_quantity)}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           {getStatusBadge(order.status)}

@@ -7,6 +7,8 @@ import {
   useAddProductionMovement 
 } from '../../hooks/useProduction';
 import { useProducts } from '../../hooks/useProducts';
+import { FiArrowLeft, FiPlay, FiCheck, FiPlus } from 'react-icons/fi';
+import { formatCurrency, formatQuantity } from '../../utils/formatters';
 import toast from 'react-hot-toast';
 
 const ProductionDetailPage = () => {
@@ -111,8 +113,8 @@ const ProductionDetailPage = () => {
                 <td>{new Date(mv.created_at).toLocaleString()}</td>
                 <td>{mv.product_name}</td>
                 <td>{mv.movement_type}</td>
-                <td>{mv.quantity}</td>
-                <td>{mv.unit_cost}</td>
+                <td>{formatQuantity(mv.quantity)}</td>
+                <td>{formatCurrency(mv.unit_cost)}</td>
                 <td>{mv.location}</td>
                 <td>{mv.notes}</td>
               </tr>

@@ -93,8 +93,52 @@ class ProductsController {
       console.log('Request body:', JSON.stringify(req.body, null, 2));
       console.log('User:', req.user);
       
-      const productData = req.body;
-      productData.created_by = req.user.id;
+      const productData = {
+        // Temel bilgiler
+        name: req.body.name,
+        sku: req.body.sku,
+        description: req.body.description,
+        brand: req.body.brand,
+        
+        // Kategori ve tip
+        category_id: req.body.category_id || null,
+        product_type_id: req.body.product_type_id || null,
+        
+        // Fiyat bilgileri
+        unit_price: parseFloat(req.body.unit_price) || 0,
+        purchase_price: parseFloat(req.body.purchase_price) || 0,
+        currency_id: req.body.currency_id || null,
+        
+        // Birim ve stok
+        unit_id: req.body.unit_id || null,
+        current_stock: parseFloat(req.body.current_stock) || 0,
+        reserved_stock: parseFloat(req.body.reserved_stock) || 0,
+        ordered_stock: parseFloat(req.body.ordered_stock) || 0,
+        
+        // Tedarikçi bilgileri
+        supplier_id: req.body.supplier_id || null,
+        last_supplier_id: req.body.last_supplier_id || null,
+        supplier_product_code: req.body.supplier_product_code,
+        lead_time_days: parseInt(req.body.lead_time_days) || 0,
+        
+        // Lokasyon ve kodlar
+        location_id: req.body.location_id || null,
+        barcode: req.body.barcode,
+        qr_code: req.body.qr_code,
+        
+        // Özellikler
+        is_popular: req.body.is_popular === true || req.body.is_popular === 'true',
+        is_raw_material: req.body.is_raw_material === true || req.body.is_raw_material === 'true',
+        is_finished_product: req.body.is_finished_product === true || req.body.is_finished_product === 'true',
+        
+        // Fiyat artış bilgileri
+        price_increase_percentage: parseFloat(req.body.price_increase_percentage) || 0,
+        last_price_update: req.body.last_price_update || null,
+        
+        // Sistem alanları
+        created_by: req.user.id,
+        is_active: true
+      };
       
       console.log('Product data with created_by:', JSON.stringify(productData, null, 2));
       
@@ -118,8 +162,62 @@ class ProductsController {
   async updateProduct(req, res, next) {
     try {
       const { id } = req.params;
-      const updateData = req.body;
-      updateData.updated_by = req.user.id;
+      
+      const updateData = {
+        // Temel bilgiler
+        name: req.body.name,
+        sku: req.body.sku,
+        description: req.body.description,
+        brand: req.body.brand,
+        
+        // Kategori ve tip
+        category_id: req.body.category_id || null,
+        product_type_id: req.body.product_type_id || null,
+        
+        // Fiyat bilgileri
+        unit_price: req.body.unit_price ? parseFloat(req.body.unit_price) : undefined,
+        purchase_price: req.body.purchase_price ? parseFloat(req.body.purchase_price) : undefined,
+        currency_id: req.body.currency_id || null,
+        
+        // Birim ve stok
+        unit_id: req.body.unit_id || null,
+        current_stock: req.body.current_stock !== undefined ? parseFloat(req.body.current_stock) : undefined,
+        reserved_stock: req.body.reserved_stock !== undefined ? parseFloat(req.body.reserved_stock) : undefined,
+        ordered_stock: req.body.ordered_stock !== undefined ? parseFloat(req.body.ordered_stock) : undefined,
+        
+        // Tedarikçi bilgileri
+        supplier_id: req.body.supplier_id || null,
+        last_supplier_id: req.body.last_supplier_id || null,
+        supplier_product_code: req.body.supplier_product_code,
+        lead_time_days: req.body.lead_time_days ? parseInt(req.body.lead_time_days) : undefined,
+        
+        // Lokasyon ve kodlar
+        location_id: req.body.location_id || null,
+        barcode: req.body.barcode,
+        qr_code: req.body.qr_code,
+        
+        // Özellikler
+        is_popular: req.body.is_popular !== undefined ? (req.body.is_popular === true || req.body.is_popular === 'true') : undefined,
+        is_raw_material: req.body.is_raw_material !== undefined ? (req.body.is_raw_material === true || req.body.is_raw_material === 'true') : undefined,
+        is_finished_product: req.body.is_finished_product !== undefined ? (req.body.is_finished_product === true || req.body.is_finished_product === 'true') : undefined,
+        
+        // Fiyat artış bilgileri
+        price_increase_percentage: req.body.price_increase_percentage ? parseFloat(req.body.price_increase_percentage) : undefined,
+        last_price_update: req.body.last_price_update || null,
+        
+        // Aktiflik durumu
+        is_active: req.body.is_active !== undefined ? (req.body.is_active === true || req.body.is_active === 'true') : undefined,
+        
+        // Sistem alanları
+        updated_by: req.user.id
+      };
+      
+      // Undefined değerleri temizle
+      Object.keys(updateData).forEach(key => {
+        if (updateData[key] === undefined) {
+          delete updateData[key];
+        }
+      });
       
       const updatedProduct = await productsService.updateProduct(id, updateData);
       
@@ -127,7 +225,7 @@ class ProductsController {
         return next(new AppError('Product not found', 404));
       }
 
-      winston.info(`Product updated: ${id} by user ${req.user.id}`);
+      winston.info(`Product updated: ${updatedProduct.sku} by user ${req.user.id}`);
       
       res.json({
         status: 'success',
