@@ -45,7 +45,6 @@ import SettingsPage from "./pages/Settings/SettingsPage";
 import NotFoundPage from "./pages/NotFoundPage";
 import ReportsPage from "./pages/Dashboard/ReportsPage";
 import OperationsPage from "./pages/Operations/OperationsPage";
-import DataTableDemo from "./components/DataTableDemo";
 
 // QueryClient is imported from config/queryClient.js
 
@@ -158,9 +157,6 @@ function App() {
 
                 {/* Settings */}
                 <Route path="settings" element={<SettingsPage />} />
-                
-                {/* DataTable Demo */}
-                <Route path="datatable-demo" element={<DataTableDemo />} />
               </Route>
 
               {/* 404 page */}
