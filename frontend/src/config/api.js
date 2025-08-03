@@ -6,7 +6,7 @@
 // This file is kept for backward compatibility but should not be used in new code
 
 // API Configuration
-export const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3002/api';
+export const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3003/api';
 
 // Remove trailing /api if it exists to prevent double /api/api
 const cleanBaseUrl = API_BASE_URL.replace(/\/api$/, '');

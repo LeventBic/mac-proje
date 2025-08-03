@@ -244,24 +244,23 @@ router.get(
       const alertsResult = await query(`
       SELECT 
         p.id, p.name, p.sku, p.unit,
-        COALESCE(i.available_quantity, 0) as current_stock,
+        COALESCE(p.current_stock, 0) as current_stock,
         p.min_stock_level,
         p.reorder_point,
         p.reorder_quantity,
-        (p.min_stock_level - COALESCE(i.available_quantity, 0)) as shortage,
+        (p.min_stock_level - COALESCE(p.current_stock, 0)) as shortage,
         pc.name as category_name,
         s.name as supplier_name,
         CASE 
-          WHEN COALESCE(i.available_quantity, 0) = 0 THEN 'critical'
-          WHEN COALESCE(i.available_quantity, 0) <= (p.min_stock_level * 0.5) THEN 'urgent'
+          WHEN COALESCE(p.current_stock, 0) = 0 THEN 'critical'
+          WHEN COALESCE(p.current_stock, 0) <= (p.min_stock_level * 0.5) THEN 'urgent'
           ELSE 'warning'
         END as alert_level
       FROM products p
-      LEFT JOIN inventory i ON p.id = i.product_id AND i.location = 'MAIN'
       LEFT JOIN product_categories pc ON p.category_id = pc.id
       LEFT JOIN suppliers s ON p.supplier_id = s.id
       WHERE p.is_active = TRUE 
-        AND COALESCE(i.available_quantity, 0) <= p.min_stock_level
+        AND COALESCE(p.current_stock, 0) <= p.min_stock_level
       ORDER BY alert_level DESC, shortage DESC
     `)
       const alerts = alertsResult.rows

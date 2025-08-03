@@ -38,12 +38,14 @@ import CustomersPage from "./pages/Customers/CustomersPage";
 import ProductionPage from "./pages/Production/ProductionPage";
 import ProductionDetailPage from "./pages/Production/ProductionDetailPage";
 import BOMPage from "./pages/BOM/BOMPage";
+import InteractiveBOMPage from "./pages/BOM/InteractiveBOMPage";
 import ProjectsPage from "./pages/Projects/ProjectsPage";
 import UsersPage from "./pages/Users/UsersPage";
 import SettingsPage from "./pages/Settings/SettingsPage";
 import NotFoundPage from "./pages/NotFoundPage";
 import ReportsPage from "./pages/Dashboard/ReportsPage";
 import OperationsPage from "./pages/Operations/OperationsPage";
+import DataTableDemo from "./components/DataTableDemo";
 
 // QueryClient is imported from config/queryClient.js
 
@@ -139,6 +141,7 @@ function App() {
 
                 {/* BOM (Bill of Materials) */}
                 <Route path="bom" element={<BOMPage />} />
+                <Route path="interactive-bom" element={<InteractiveBOMPage />} />
 
                 {/* Projects */}
                 <Route path="projects" element={<ProjectsPage />} />
@@ -155,6 +158,9 @@ function App() {
 
                 {/* Settings */}
                 <Route path="settings" element={<SettingsPage />} />
+                
+                {/* DataTable Demo */}
+                <Route path="datatable-demo" element={<DataTableDemo />} />
               </Route>
 
               {/* 404 page */}

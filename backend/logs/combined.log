@@ -1781,3 +1781,119 @@
 {"level":"info","message":"📊 Environment: development","service":"inflow-backend","timestamp":"2025-08-02 08:26:55"}
 {"level":"info","message":"🏥 Health Check: http://localhost:3001/health","service":"inflow-backend","timestamp":"2025-08-02 08:26:55"}
 {"level":"info","message":"📚 API Documentation: http://localhost:3001/api/docs","service":"inflow-backend","timestamp":"2025-08-02 08:26:55"}
+{"level":"info","message":"🚀 inFlow Backend Server started on port 3001","service":"inflow-backend","timestamp":"2025-08-02 09:32:58"}
+{"level":"info","message":"📊 Environment: development","service":"inflow-backend","timestamp":"2025-08-02 09:32:58"}
+{"level":"info","message":"🏥 Health Check: http://localhost:3001/health","service":"inflow-backend","timestamp":"2025-08-02 09:32:58"}
+{"level":"info","message":"📚 API Documentation: http://localhost:3001/api/docs","service":"inflow-backend","timestamp":"2025-08-02 09:32:58"}
+{"level":"info","message":"🚀 inFlow Backend Server started on port 3001","service":"inflow-backend","timestamp":"2025-08-02 09:33:06"}
+{"level":"info","message":"📊 Environment: development","service":"inflow-backend","timestamp":"2025-08-02 09:33:06"}
+{"level":"info","message":"🏥 Health Check: http://localhost:3001/health","service":"inflow-backend","timestamp":"2025-08-02 09:33:06"}
+{"level":"info","message":"📚 API Documentation: http://localhost:3001/api/docs","service":"inflow-backend","timestamp":"2025-08-02 09:33:06"}
+{"level":"info","message":"🚀 inFlow Backend Server started on port 3003","service":"inflow-backend","timestamp":"2025-08-02 12:33:25"}
+{"level":"info","message":"📊 Environment: development","service":"inflow-backend","timestamp":"2025-08-02 12:33:25"}
+{"level":"info","message":"🏥 Health Check: http://localhost:3003/health","service":"inflow-backend","timestamp":"2025-08-02 12:33:25"}
+{"level":"info","message":"📚 API Documentation: http://localhost:3003/api/docs","service":"inflow-backend","timestamp":"2025-08-02 12:33:25"}
+{"level":"info","message":"🚀 inFlow Backend Server started on port 3001","service":"inflow-backend","timestamp":"2025-08-02 09:48:11"}
+{"level":"info","message":"📊 Environment: development","service":"inflow-backend","timestamp":"2025-08-02 09:48:11"}
+{"level":"info","message":"🏥 Health Check: http://localhost:3001/health","service":"inflow-backend","timestamp":"2025-08-02 09:48:11"}
+{"level":"info","message":"📚 API Documentation: http://localhost:3001/api/docs","service":"inflow-backend","timestamp":"2025-08-02 09:48:11"}
+{"level":"info","message":"🚀 inFlow Backend Server started on port 3001","service":"inflow-backend","timestamp":"2025-08-02 09:48:20"}
+{"level":"info","message":"📊 Environment: development","service":"inflow-backend","timestamp":"2025-08-02 09:48:20"}
+{"level":"info","message":"🏥 Health Check: http://localhost:3001/health","service":"inflow-backend","timestamp":"2025-08-02 09:48:20"}
+{"level":"info","message":"📚 API Documentation: http://localhost:3001/api/docs","service":"inflow-backend","timestamp":"2025-08-02 09:48:20"}
+{"level":"info","message":"🚀 inFlow Backend Server started on port 3001","service":"inflow-backend","timestamp":"2025-08-02 09:48:45"}
+{"level":"info","message":"📊 Environment: development","service":"inflow-backend","timestamp":"2025-08-02 09:48:45"}
+{"level":"info","message":"🏥 Health Check: http://localhost:3001/health","service":"inflow-backend","timestamp":"2025-08-02 09:48:45"}
+{"level":"info","message":"📚 API Documentation: http://localhost:3001/api/docs","service":"inflow-backend","timestamp":"2025-08-02 09:48:45"}
+{"level":"info","message":"🚀 inFlow Backend Server started on port 3001","service":"inflow-backend","timestamp":"2025-08-02 09:51:07"}
+{"level":"info","message":"📊 Environment: development","service":"inflow-backend","timestamp":"2025-08-02 09:51:07"}
+{"level":"info","message":"🏥 Health Check: http://localhost:3001/health","service":"inflow-backend","timestamp":"2025-08-02 09:51:07"}
+{"level":"info","message":"📚 API Documentation: http://localhost:3001/api/docs","service":"inflow-backend","timestamp":"2025-08-02 09:51:07"}
+{"level":"info","message":"🚀 inFlow Backend Server started on port 3001","service":"inflow-backend","timestamp":"2025-08-02 09:51:16"}
+{"level":"info","message":"📊 Environment: development","service":"inflow-backend","timestamp":"2025-08-02 09:51:16"}
+{"level":"info","message":"🏥 Health Check: http://localhost:3001/health","service":"inflow-backend","timestamp":"2025-08-02 09:51:16"}
+{"level":"info","message":"📚 API Documentation: http://localhost:3001/api/docs","service":"inflow-backend","timestamp":"2025-08-02 09:51:16"}
+{"level":"info","message":"🚀 inFlow Backend Server started on port 3001","service":"inflow-backend","timestamp":"2025-08-02 09:51:41"}
+{"level":"info","message":"📊 Environment: development","service":"inflow-backend","timestamp":"2025-08-02 09:51:41"}
+{"level":"info","message":"🏥 Health Check: http://localhost:3001/health","service":"inflow-backend","timestamp":"2025-08-02 09:51:41"}
+{"level":"info","message":"📚 API Documentation: http://localhost:3001/api/docs","service":"inflow-backend","timestamp":"2025-08-02 09:51:41"}
+{"level":"info","message":"🚀 inFlow Backend Server started on port 3001","service":"inflow-backend","timestamp":"2025-08-02 10:16:12"}
+{"level":"info","message":"📊 Environment: development","service":"inflow-backend","timestamp":"2025-08-02 10:16:12"}
+{"level":"info","message":"🏥 Health Check: http://localhost:3001/health","service":"inflow-backend","timestamp":"2025-08-02 10:16:12"}
+{"level":"info","message":"📚 API Documentation: http://localhost:3001/api/docs","service":"inflow-backend","timestamp":"2025-08-02 10:16:12"}
+{"level":"info","message":"🚀 inFlow Backend Server started on port 3001","service":"inflow-backend","timestamp":"2025-08-02 10:16:31"}
+{"level":"info","message":"📊 Environment: development","service":"inflow-backend","timestamp":"2025-08-02 10:16:31"}
+{"level":"info","message":"🏥 Health Check: http://localhost:3001/health","service":"inflow-backend","timestamp":"2025-08-02 10:16:31"}
+{"level":"info","message":"📚 API Documentation: http://localhost:3001/api/docs","service":"inflow-backend","timestamp":"2025-08-02 10:16:31"}
+{"level":"info","message":"🚀 inFlow Backend Server started on port 3001","service":"inflow-backend","timestamp":"2025-08-02 11:26:23"}
+{"level":"info","message":"📊 Environment: development","service":"inflow-backend","timestamp":"2025-08-02 11:26:23"}
+{"level":"info","message":"🏥 Health Check: http://localhost:3001/health","service":"inflow-backend","timestamp":"2025-08-02 11:26:23"}
+{"level":"info","message":"📚 API Documentation: http://localhost:3001/api/docs","service":"inflow-backend","timestamp":"2025-08-02 11:26:23"}
+{"level":"info","message":"🚀 inFlow Backend Server started on port 3001","service":"inflow-backend","timestamp":"2025-08-02 11:26:53"}
+{"level":"info","message":"📊 Environment: development","service":"inflow-backend","timestamp":"2025-08-02 11:26:53"}
+{"level":"info","message":"🏥 Health Check: http://localhost:3001/health","service":"inflow-backend","timestamp":"2025-08-02 11:26:53"}
+{"level":"info","message":"📚 API Documentation: http://localhost:3001/api/docs","service":"inflow-backend","timestamp":"2025-08-02 11:26:53"}
+{"level":"info","message":"🚀 inFlow Backend Server started on port 3001","service":"inflow-backend","timestamp":"2025-08-02 11:27:06"}
+{"level":"info","message":"📊 Environment: development","service":"inflow-backend","timestamp":"2025-08-02 11:27:06"}
+{"level":"info","message":"🏥 Health Check: http://localhost:3001/health","service":"inflow-backend","timestamp":"2025-08-02 11:27:06"}
+{"level":"info","message":"📚 API Documentation: http://localhost:3001/api/docs","service":"inflow-backend","timestamp":"2025-08-02 11:27:06"}
+{"level":"info","message":"🚀 inFlow Backend Server started on port 3001","service":"inflow-backend","timestamp":"2025-08-02 11:27:12"}
+{"level":"info","message":"📊 Environment: development","service":"inflow-backend","timestamp":"2025-08-02 11:27:12"}
+{"level":"info","message":"🏥 Health Check: http://localhost:3001/health","service":"inflow-backend","timestamp":"2025-08-02 11:27:12"}
+{"level":"info","message":"📚 API Documentation: http://localhost:3001/api/docs","service":"inflow-backend","timestamp":"2025-08-02 11:27:12"}
+{"level":"info","message":"🚀 inFlow Backend Server started on port 3001","service":"inflow-backend","timestamp":"2025-08-02 12:08:03"}
+{"level":"info","message":"📊 Environment: development","service":"inflow-backend","timestamp":"2025-08-02 12:08:03"}
+{"level":"info","message":"🏥 Health Check: http://localhost:3001/health","service":"inflow-backend","timestamp":"2025-08-02 12:08:03"}
+{"level":"info","message":"📚 API Documentation: http://localhost:3001/api/docs","service":"inflow-backend","timestamp":"2025-08-02 12:08:03"}
+{"level":"info","message":"🚀 inFlow Backend Server started on port 3001","service":"inflow-backend","timestamp":"2025-08-02 12:08:11"}
+{"level":"info","message":"📊 Environment: development","service":"inflow-backend","timestamp":"2025-08-02 12:08:11"}
+{"level":"info","message":"🏥 Health Check: http://localhost:3001/health","service":"inflow-backend","timestamp":"2025-08-02 12:08:11"}
+{"level":"info","message":"📚 API Documentation: http://localhost:3001/api/docs","service":"inflow-backend","timestamp":"2025-08-02 12:08:11"}
+{"level":"info","message":"🚀 inFlow Backend Server started on port 3001","service":"inflow-backend","timestamp":"2025-08-02 12:08:59"}
+{"level":"info","message":"📊 Environment: development","service":"inflow-backend","timestamp":"2025-08-02 12:08:59"}
+{"level":"info","message":"🏥 Health Check: http://localhost:3001/health","service":"inflow-backend","timestamp":"2025-08-02 12:08:59"}
+{"level":"info","message":"📚 API Documentation: http://localhost:3001/api/docs","service":"inflow-backend","timestamp":"2025-08-02 12:08:59"}
+{"level":"info","message":"🚀 inFlow Backend Server started on port 3001","service":"inflow-backend","timestamp":"2025-08-02 12:10:14"}
+{"level":"info","message":"📊 Environment: development","service":"inflow-backend","timestamp":"2025-08-02 12:10:14"}
+{"level":"info","message":"🏥 Health Check: http://localhost:3001/health","service":"inflow-backend","timestamp":"2025-08-02 12:10:14"}
+{"level":"info","message":"📚 API Documentation: http://localhost:3001/api/docs","service":"inflow-backend","timestamp":"2025-08-02 12:10:14"}
+{"level":"info","message":"🚀 inFlow Backend Server started on port 3001","service":"inflow-backend","timestamp":"2025-08-02 12:30:51"}
+{"level":"info","message":"📊 Environment: development","service":"inflow-backend","timestamp":"2025-08-02 12:30:51"}
+{"level":"info","message":"🏥 Health Check: http://localhost:3001/health","service":"inflow-backend","timestamp":"2025-08-02 12:30:52"}
+{"level":"info","message":"📚 API Documentation: http://localhost:3001/api/docs","service":"inflow-backend","timestamp":"2025-08-02 12:30:52"}
+{"level":"info","message":"🚀 inFlow Backend Server started on port 3001","service":"inflow-backend","timestamp":"2025-08-02 12:33:04"}
+{"level":"info","message":"📊 Environment: development","service":"inflow-backend","timestamp":"2025-08-02 12:33:04"}
+{"level":"info","message":"🏥 Health Check: http://localhost:3001/health","service":"inflow-backend","timestamp":"2025-08-02 12:33:04"}
+{"level":"info","message":"📚 API Documentation: http://localhost:3001/api/docs","service":"inflow-backend","timestamp":"2025-08-02 12:33:04"}
+{"level":"info","message":"🚀 inFlow Backend Server started on port 3001","service":"inflow-backend","timestamp":"2025-08-02 12:33:11"}
+{"level":"info","message":"📊 Environment: development","service":"inflow-backend","timestamp":"2025-08-02 12:33:11"}
+{"level":"info","message":"🏥 Health Check: http://localhost:3001/health","service":"inflow-backend","timestamp":"2025-08-02 12:33:11"}
+{"level":"info","message":"📚 API Documentation: http://localhost:3001/api/docs","service":"inflow-backend","timestamp":"2025-08-02 12:33:11"}
+{"level":"info","message":"🚀 inFlow Backend Server started on port 3001","service":"inflow-backend","timestamp":"2025-08-02 12:34:29"}
+{"level":"info","message":"📊 Environment: development","service":"inflow-backend","timestamp":"2025-08-02 12:34:29"}
+{"level":"info","message":"🏥 Health Check: http://localhost:3001/health","service":"inflow-backend","timestamp":"2025-08-02 12:34:29"}
+{"level":"info","message":"📚 API Documentation: http://localhost:3001/api/docs","service":"inflow-backend","timestamp":"2025-08-02 12:34:29"}
+{"level":"info","message":"🚀 inFlow Backend Server started on port 3001","service":"inflow-backend","timestamp":"2025-08-02 12:35:15"}
+{"level":"info","message":"📊 Environment: development","service":"inflow-backend","timestamp":"2025-08-02 12:35:15"}
+{"level":"info","message":"🏥 Health Check: http://localhost:3001/health","service":"inflow-backend","timestamp":"2025-08-02 12:35:15"}
+{"level":"info","message":"📚 API Documentation: http://localhost:3001/api/docs","service":"inflow-backend","timestamp":"2025-08-02 12:35:15"}
+{"level":"info","message":"🚀 inFlow Backend Server started on port 3001","service":"inflow-backend","timestamp":"2025-08-02 12:37:02"}
+{"level":"info","message":"📊 Environment: development","service":"inflow-backend","timestamp":"2025-08-02 12:37:02"}
+{"level":"info","message":"🏥 Health Check: http://localhost:3001/health","service":"inflow-backend","timestamp":"2025-08-02 12:37:02"}
+{"level":"info","message":"📚 API Documentation: http://localhost:3001/api/docs","service":"inflow-backend","timestamp":"2025-08-02 12:37:02"}
+{"level":"info","message":"🚀 inFlow Backend Server started on port 3001","service":"inflow-backend","timestamp":"2025-08-02 12:37:12"}
+{"level":"info","message":"📊 Environment: development","service":"inflow-backend","timestamp":"2025-08-02 12:37:12"}
+{"level":"info","message":"🏥 Health Check: http://localhost:3001/health","service":"inflow-backend","timestamp":"2025-08-02 12:37:12"}
+{"level":"info","message":"📚 API Documentation: http://localhost:3001/api/docs","service":"inflow-backend","timestamp":"2025-08-02 12:37:12"}
+{"level":"info","message":"🚀 inFlow Backend Server started on port 3001","service":"inflow-backend","timestamp":"2025-08-02 12:37:41"}
+{"level":"info","message":"📊 Environment: development","service":"inflow-backend","timestamp":"2025-08-02 12:37:41"}
+{"level":"info","message":"🏥 Health Check: http://localhost:3001/health","service":"inflow-backend","timestamp":"2025-08-02 12:37:41"}
+{"level":"info","message":"📚 API Documentation: http://localhost:3001/api/docs","service":"inflow-backend","timestamp":"2025-08-02 12:37:41"}
+{"level":"info","message":"🚀 inFlow Backend Server started on port 3001","service":"inflow-backend","timestamp":"2025-08-02 13:01:08"}
+{"level":"info","message":"📊 Environment: development","service":"inflow-backend","timestamp":"2025-08-02 13:01:08"}
+{"level":"info","message":"🏥 Health Check: http://localhost:3001/health","service":"inflow-backend","timestamp":"2025-08-02 13:01:08"}
+{"level":"info","message":"📚 API Documentation: http://localhost:3001/api/docs","service":"inflow-backend","timestamp":"2025-08-02 13:01:08"}
+{"level":"info","message":"🚀 inFlow Backend Server started on port 3001","service":"inflow-backend","timestamp":"2025-08-02 13:01:31"}
+{"level":"info","message":"📊 Environment: development","service":"inflow-backend","timestamp":"2025-08-02 13:01:31"}
+{"level":"info","message":"🏥 Health Check: http://localhost:3001/health","service":"inflow-backend","timestamp":"2025-08-02 13:01:31"}
+{"level":"info","message":"📚 API Documentation: http://localhost:3001/api/docs","service":"inflow-backend","timestamp":"2025-08-02 13:01:31"}

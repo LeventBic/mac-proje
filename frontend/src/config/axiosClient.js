@@ -3,7 +3,7 @@ import toast from 'react-hot-toast';
 
 // API Base URL
 const API_BASE_URL =
-  process.env.REACT_APP_API_URL || 'http://localhost:3002/api';
+  process.env.REACT_APP_API_URL || 'http://localhost:3003/api';
 
 // Create axios instance
 const axiosClient = axios.create({

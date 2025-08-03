@@ -83,9 +83,9 @@ const productsValidators = {
       .withMessage('SKU is required')
       .isLength({ min: 2, max: 50 })
       .withMessage('SKU must be between 2 and 50 characters')
-      .matches(/^[A-Z0-9-_]+$/)
+      .matches(/^[A-Za-z0-9-_]+$/)
       .withMessage(
-        'SKU can only contain uppercase letters, numbers, hyphens, and underscores'
+        'SKU can only contain letters, numbers, hyphens, and underscores'
       ),
     body('name')
       .notEmpty()
@@ -102,43 +102,46 @@ const productsValidators = {
       .withMessage('Barcode cannot exceed 50 characters'),
     body('category_id')
       .optional()
-      .isInt({ min: 1 })
+      .custom(value => {
+        if (value === '' || value === null || value === undefined) return true
+        return Number.isInteger(Number(value)) && Number(value) > 0
+      })
       .withMessage('Category ID must be a positive integer'),
     body('product_type_id')
       .optional()
-      .isInt({ min: 1 })
+      .custom(value => {
+        if (value === '' || value === null || value === undefined) return true
+        return Number.isInteger(Number(value)) && Number(value) > 0
+      })
       .withMessage('Product type ID must be a positive integer'),
     body('supplier_id')
       .optional()
-      .isInt({ min: 1 })
+      .custom(value => {
+        if (value === '' || value === null || value === undefined) return true
+        return Number.isInteger(Number(value)) && Number(value) > 0
+      })
       .withMessage('Supplier ID must be a positive integer'),
     body('unit_price')
       .optional()
-      .isFloat({ min: 0 })
+      .custom(value => {
+        if (value === '' || value === null || value === undefined) return true
+        return !isNaN(Number(value)) && Number(value) >= 0
+      })
       .withMessage('Unit price must be a non-negative number'),
     body('cost_price')
       .optional()
-      .isFloat({ min: 0 })
+      .custom(value => {
+        if (value === '' || value === null || value === undefined) return true
+        return !isNaN(Number(value)) && Number(value) >= 0
+      })
       .withMessage('Cost price must be a non-negative number'),
-    body('unit')
-      .notEmpty()
-      .withMessage('Unit is required')
-      .isIn([
-        'kg',
-        'g',
-        'l',
-        'ml',
-        'm',
-        'cm',
-        'mm',
-        'adet',
-        'paket',
-        'kutu',
-        'ton',
-        'm2',
-        'm3'
-      ])
-      .withMessage('Invalid unit type'),
+    body('unit_id')
+      .optional()
+      .custom(value => {
+        if (value === '' || value === null || value === undefined) return true
+        return Number.isInteger(Number(value)) && Number(value) > 0
+      })
+      .withMessage('Unit ID must be a positive integer'),
     body('min_stock_level')
       .optional()
       .isFloat({ min: 0 })
@@ -173,7 +176,10 @@ const productsValidators = {
       .withMessage('Initial stock must be a non-negative number'),
     body('location_id')
       .optional()
-      .isInt({ min: 1 })
+      .custom(value => {
+        if (value === '' || value === null || value === undefined) return true
+        return Number.isInteger(Number(value)) && Number(value) > 0
+      })
       .withMessage('Location ID must be a positive integer')
   ],
 
@@ -185,9 +191,9 @@ const productsValidators = {
       .optional()
       .isLength({ min: 2, max: 50 })
       .withMessage('SKU must be between 2 and 50 characters')
-      .matches(/^[A-Z0-9-_]+$/)
+      .matches(/^[A-Za-z0-9-_]+$/)
       .withMessage(
-        'SKU can only contain uppercase letters, numbers, hyphens, and underscores'
+        'SKU can only contain letters, numbers, hyphens, and underscores'
       ),
     body('name')
       .optional()
@@ -221,24 +227,10 @@ const productsValidators = {
       .optional()
       .isFloat({ min: 0 })
       .withMessage('Cost price must be a non-negative number'),
-    body('unit')
+    body('unit_id')
       .optional()
-      .isIn([
-        'kg',
-        'g',
-        'l',
-        'ml',
-        'm',
-        'cm',
-        'mm',
-        'adet',
-        'paket',
-        'kutu',
-        'ton',
-        'm2',
-        'm3'
-      ])
-      .withMessage('Invalid unit type'),
+      .isInt({ min: 1 })
+      .withMessage('Unit ID must be a positive integer'),
     body('min_stock_level')
       .optional()
       .isFloat({ min: 0 })

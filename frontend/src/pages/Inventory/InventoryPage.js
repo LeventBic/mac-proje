@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useInventoryAnalysis, useInventoryAlerts, useInventoryValuation } from '../../hooks/useStock';
 import { FiPackage, FiAlertTriangle, FiDollarSign, FiBarChart2 } from 'react-icons/fi';
-import { formatCurrency } from '../../utils/formatters';
+import { formatCurrency, formatNumber } from '../../utils/formatters';
 
 const InventoryPage = () => {
   const [activeTab, setActiveTab] = useState('overview');
@@ -153,7 +153,7 @@ const InventoryPage = () => {
                   <div className="bg-white border border-gray-200 rounded-lg p-6 text-center">
                     <h3 className="text-sm font-medium text-gray-500 mb-2">Toplam Ürün</h3>
                     <div className="text-3xl font-bold text-blue-600 mb-2">
-                      {summary.summary?.total_products || 0}
+                      {formatNumber(summary.summary?.total_products || 0, 0)}
                     </div>
                     <div className="text-sm text-gray-600">Aktif ürün sayısı</div>
                   </div>
@@ -169,7 +169,7 @@ const InventoryPage = () => {
                   <div className="bg-white border border-gray-200 rounded-lg p-6 text-center">
                     <h3 className="text-sm font-medium text-gray-500 mb-2">Düşük Stok</h3>
                     <div className="text-3xl font-bold text-orange-600 mb-2">
-                      {summary.summary?.stock_status?.low_stock || 0}
+                      {formatNumber(summary.summary?.stock_status?.low_stock || 0, 0)}
                     </div>
                     <div className="text-sm text-gray-600">Uyarı seviyesinde</div>
                   </div>
@@ -177,7 +177,7 @@ const InventoryPage = () => {
                   <div className="bg-white border border-gray-200 rounded-lg p-6 text-center">
                     <h3 className="text-sm font-medium text-gray-500 mb-2">Stok Yok</h3>
                     <div className="text-3xl font-bold text-red-600 mb-2">
-                      {summary.summary?.stock_status?.out_of_stock || 0}
+                      {formatNumber(summary.summary?.stock_status?.out_of_stock || 0, 0)}
                     </div>
                     <div className="text-sm text-gray-600">Tükenen ürünler</div>
                   </div>
@@ -193,21 +193,21 @@ const InventoryPage = () => {
                           <div className="w-4 h-4 bg-green-500 rounded mr-2"></div>
                           <span>Stokta</span>
                         </div>
-                        <span className="font-medium">{summary.summary?.stock_status?.in_stock || 0}</span>
+                        <span className="font-medium">{formatNumber(summary.summary?.stock_status?.in_stock || 0, 0)}</span>
                       </div>
                       <div className="flex items-center justify-between">
                         <div className="flex items-center">
                           <div className="w-4 h-4 bg-yellow-500 rounded mr-2"></div>
                           <span>Düşük Stok</span>
                         </div>
-                        <span className="font-medium">{summary.summary?.stock_status?.low_stock || 0}</span>
+                        <span className="font-medium">{formatNumber(summary.summary?.stock_status?.low_stock || 0, 0)}</span>
                       </div>
                       <div className="flex items-center justify-between">
                         <div className="flex items-center">
                           <div className="w-4 h-4 bg-red-500 rounded mr-2"></div>
                           <span>Stok Yok</span>
                         </div>
-                        <span className="font-medium">{summary.summary?.stock_status?.out_of_stock || 0}</span>
+                        <span className="font-medium">{formatNumber(summary.summary?.stock_status?.out_of_stock || 0, 0)}</span>
                       </div>
                       <div className="flex items-center justify-between">
                         <div className="flex items-center">
@@ -228,11 +228,11 @@ const InventoryPage = () => {
                       </div>
                       <div className="flex items-center justify-between">
                         <span className="text-green-600">Giriş</span>
-                        <span className="font-medium text-green-600">{summary.summary?.recent_movements?.inbound || 0}</span>
+                        <span className="font-medium text-green-600">{formatNumber(summary.summary?.recent_movements?.inbound || 0, 0)}</span>
                       </div>
                       <div className="flex items-center justify-between">
                         <span className="text-red-600">Çıkış</span>
-                        <span className="font-medium text-red-600">{summary.summary?.recent_movements?.outbound || 0}</span>
+                        <span className="font-medium text-red-600">{formatNumber(summary.summary?.recent_movements?.outbound || 0, 0)}</span>
                       </div>
                     </div>
                   </div>
@@ -259,9 +259,9 @@ const InventoryPage = () => {
                             <tr key={product.id} className="hover:bg-gray-50">
                               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{product.name}</td>
                               <td className="px-6 py-4 whitespace-nowrap text-sm font-mono text-gray-900">{product.sku}</td>
-                              <td className="px-6 py-4 whitespace-nowrap text-sm text-red-600">{product.current_stock}</td>
-                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{product.min_stock_level}</td>
-                              <td className="px-6 py-4 whitespace-nowrap text-sm text-red-600 font-medium">{product.shortage}</td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm text-red-600">{formatNumber(product.current_stock, 0)}</td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{formatNumber(product.min_stock_level, 0)}</td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm text-red-600 font-medium">{formatNumber(product.shortage, 0)}</td>
                               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                 <button 
                                   onClick={() => navigate(`/products/${product.id}`)}
@@ -306,9 +306,9 @@ const InventoryPage = () => {
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{alert.name}</td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm font-mono text-gray-900">{alert.sku}</td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{alert.category_name || '-'}</td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-red-600">{alert.current_stock} {alert.unit}</td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{alert.min_stock_level}</td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-red-600 font-medium">{alert.shortage}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-red-600">{formatNumber(alert.current_stock, 2)} {alert.unit}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{formatNumber(alert.min_stock_level, 0)}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-red-600 font-medium">{formatNumber(alert.shortage, 2)}</td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{alert.supplier_name || '-'}</td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                               <div className="flex space-x-2">
@@ -360,8 +360,8 @@ const InventoryPage = () => {
                         {summary.category_analysis?.map((cat, index) => (
                           <tr key={index} className="hover:bg-gray-50">
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{cat.category_name || 'Kategori Yok'}</td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{cat.product_count}</td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{cat.total_quantity}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{formatNumber(cat.product_count, 0)}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{formatNumber(cat.total_quantity, 0)}</td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{formatCurrency(cat.total_value || 0)}</td>
                           </tr>
                         )) || []}
@@ -389,9 +389,9 @@ const InventoryPage = () => {
                           <tr key={index} className="hover:bg-gray-50">
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{product.name}</td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm font-mono text-gray-900">{product.sku}</td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{product.movement_count}</td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-green-600">{product.total_in}</td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-red-600">{product.total_out}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{formatNumber(product.movement_count, 0)}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-green-600">{formatNumber(product.total_in, 0)}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-red-600">{formatNumber(product.total_out, 0)}</td>
                           </tr>
                         )) || []}
                       </tbody>
@@ -422,8 +422,8 @@ const InventoryPage = () => {
                           item.category_name === 'TOPLAM' ? 'font-bold bg-gray-100' : ''
                         }`}>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.category_name}</td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.product_count}</td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.total_quantity}</td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{formatNumber(item.product_count, 0)}</td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{formatNumber(item.total_quantity, 0)}</td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{formatCurrency(item.cost_value || 0)}</td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{formatCurrency(item.market_value || 0)}</td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-green-600">{formatCurrency(item.potential_profit || 0)}</td>

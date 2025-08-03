@@ -51,6 +51,12 @@ const Sidebar = () => {
       roles: ['admin', 'operator'],
     },
     {
+      name: 'İnteraktif BOM',
+      href: '/interactive-bom',
+      icon: FiTool,
+      roles: ['admin', 'operator'],
+    },
+    {
       name: 'Projeler',
       href: '/projects',
       icon: FiBriefcase,

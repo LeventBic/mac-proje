@@ -31,7 +31,20 @@ export const formatCurrency = (value, decimals = 2) => {
  * @returns {string} Formatlanmış değer
  */
 export const formatNumber = (value, decimals = 2) => {
-  return formatCurrency(value, decimals);
+  if (value === null || value === undefined || value === '') {
+    return '0';
+  }
+
+  const num = typeof value === 'string' ? parseFloat(value) : value;
+  
+  if (isNaN(num)) {
+    return '0';
+  }
+
+  return new Intl.NumberFormat('tr-TR', {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals
+  }).format(num);
 };
 
 /**

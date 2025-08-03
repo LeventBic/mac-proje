@@ -239,7 +239,7 @@ class ProductsService {
    * Validate product data
    */
   async validateProductData(data) {
-    const requiredFields = ['name', 'sku', 'unit'];
+    const requiredFields = ['name', 'sku'];
     
     for (const field of requiredFields) {
       if (!data[field]) {
