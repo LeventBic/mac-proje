@@ -14,10 +14,12 @@ import {
   useUpdateProduct,
   useDeleteProduct,
 } from '../../hooks/useProducts';
+import { useCreateCategory } from '../../hooks/useCategories.ts';
 import DeleteButton from '../../components/DeleteButton';
 import EditButton from '../../components/EditButton.tsx';
 import ProductForm from '../../components/ProductForm';
 import { formatCurrency, formatQuantity, formatPriceTR, parseFormattedNumber } from '../../utils/formatters';
+import { toast } from 'react-hot-toast';
 
 const ProductsPage = () => {
   const [showProductForm, setShowProductForm] = useState(false);
@@ -31,6 +33,14 @@ const ProductsPage = () => {
   const [modalPosition, setModalPosition] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+  // Kategori ekleme state'leri
+  const [showCategoryForm, setShowCategoryForm] = useState(false);
+  const [newCategoryName, setNewCategoryName] = useState('');
+  const [newCategoryDescription, setNewCategoryDescription] = useState('');
+  // Ürün tipi ekleme state'leri
+  const [showProductTypeModal, setShowProductTypeModal] = useState(false);
+  const [newProductTypeName, setNewProductTypeName] = useState('');
+  const [newProductTypeDescription, setNewProductTypeDescription] = useState('');
   const navigate = useNavigate();
 
   // React Query hooks
@@ -53,6 +63,7 @@ const ProductsPage = () => {
   const createProductMutation = useCreateProduct();
   const updateProductMutation = useUpdateProduct();
   const deleteProductMutation = useDeleteProduct();
+  const createCategoryMutation = useCreateCategory();
 
   // Extract data from API responses
   const products = productsData?.data?.products || productsData?.data || [];
@@ -168,27 +179,52 @@ const ProductsPage = () => {
     setShowDeleteModal(true);
   };
 
-  // const handleCreateCategory = async (data) => {
-  //   try {
-  //     // This would need a category creation hook
-  //     toast.success('Kategori oluşturma özelliği yakında eklenecek');
-  //     setShowCategoryModal(false);
-  //     resetCategory();
-  //   } catch (error) {
-  //     console.error('Error creating category:', error);
-  //   }
-  // };
+  // Kategori ekleme fonksiyonu
+  const handleCreateCategory = async (e) => {
+    e.preventDefault();
+    
+    if (!newCategoryName.trim()) {
+      toast.error('Kategori adı gereklidir');
+      return;
+    }
 
-  // const handleCreateProductType = async (data) => {
-  //   try {
-  //     // This would need a product type creation hook
-  //     toast.success('Ürün tipi oluşturma özelliği yakında eklenecek');
-  //     setShowProductTypeModal(false);
-  //     resetProductType();
-  //   } catch (error) {
-  //     console.error('Error creating product type:', error);
-  //   }
-  // };
+    try {
+      await createCategoryMutation.mutateAsync({
+        name: newCategoryName.trim(),
+        description: newCategoryDescription.trim() || undefined
+      });
+      
+      // Form temizle
+      setNewCategoryName('');
+      setNewCategoryDescription('');
+      setShowCategoryForm(false);
+      
+      toast.success('Kategori başarıyla eklendi');
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Kategori eklenirken hata oluştu');
+    }
+  };
+
+  const handleCreateProductType = async () => {
+    try {
+      if (!newProductTypeName.trim()) {
+        toast.error('Ürün tipi adı gereklidir');
+        return;
+      }
+      
+      // Geçici olarak sadece başarı mesajı gösteriyoruz
+      // Gerçek API entegrasyonu için ürün tipi oluşturma hook'u gerekli
+      toast.success('Ürün tipi oluşturma özelliği yakında eklenecek');
+      
+      // Form'u temizle ve modalı kapat
+      setNewProductTypeName('');
+      setNewProductTypeDescription('');
+      setShowProductTypeModal(false);
+    } catch (error) {
+      console.error('Error creating product type:', error);
+      toast.error('Ürün tipi eklenirken hata oluştu');
+    }
+  };
 
   if (loading) {
     return (
@@ -222,7 +258,7 @@ const ProductsPage = () => {
 
       {/* Filters */}
       <div className="mb-6 rounded-lg bg-white p-4 shadow">
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
           <div>
             <label className="mb-1 block text-sm font-medium text-gray-700">
               Arama
@@ -239,35 +275,55 @@ const ProductsPage = () => {
             <label className="mb-1 block text-sm font-medium text-gray-700">
               Kategori
             </label>
-            <select
-              value={selectedCategory}
-              onChange={e => setSelectedCategory(e.target.value)}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">Tüm Kategoriler</option>
-              {categories.map(category => (
-                <option key={category.id} value={category.id}>
-                  {category.name}
-                </option>
-              ))}
-            </select>
+            <div className="flex space-x-2">
+              <select
+                value={selectedCategory}
+                onChange={e => setSelectedCategory(e.target.value)}
+                className="flex-1 rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">Tüm Kategoriler</option>
+                {categories.map(category => (
+                  <option key={category.id} value={category.id}>
+                    {category.name}
+                  </option>
+                ))}
+              </select>
+              <button
+                type="button"
+                onClick={() => setShowCategoryForm(true)}
+                className="rounded-md bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                title="Kategori Ekle"
+              >
+                <FiPlus />
+              </button>
+            </div>
           </div>
+          
           <div>
             <label className="mb-1 block text-sm font-medium text-gray-700">
               Ürün Tipi
             </label>
-            <select
-              value={productType}
-              onChange={e => setProductType(e.target.value)}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="all">Tüm Tipler</option>
-              {productTypes.map(type => (
-                <option key={type.id} value={type.id}>
-                  {type.name}
-                </option>
-              ))}
-            </select>
+            <div className="flex gap-2">
+              <select
+                value={productType}
+                onChange={e => setProductType(e.target.value)}
+                className="flex-1 rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="all">Tüm Tipler</option>
+                {productTypes.map(type => (
+                  <option key={type.id} value={type.id}>
+                    {type.name}
+                  </option>
+                ))}
+              </select>
+              <button
+                onClick={() => setShowProductTypeModal(true)}
+                className="rounded-md bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                title="Ürün Tipi Ekle"
+              >
+                <FiPlus />
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -287,12 +343,6 @@ const ProductsPage = () => {
                 Kategori
               </th>
               <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                Satış Fiyatı
-              </th>
-              <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                Alış Fiyatı
-              </th>
-              <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                 Stok
               </th>
               <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
@@ -300,6 +350,12 @@ const ProductsPage = () => {
               </th>
               <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                 Barkod
+              </th>
+              <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                Alış Fiyatı
+              </th>
+              <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                Satış Fiyatı
               </th>
               <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                 Durum
@@ -354,12 +410,6 @@ const ProductsPage = () => {
                   <td className="whitespace-nowrap px-4 py-4 text-sm text-gray-900">
                     {product.category?.name || 'Kategori Yok'}
                   </td>
-                  <td className="whitespace-nowrap px-4 py-4 text-sm text-gray-900">
-                    {formatCurrency(product.unit_price)}
-                  </td>
-                  <td className="whitespace-nowrap px-4 py-4 text-sm text-gray-900">
-                    {formatCurrency(product.cost_price)}
-                  </td>
                   <td className="whitespace-nowrap px-4 py-4">
                     <div className="text-sm text-gray-900">
                       <span className="font-medium">{formatQuantity(product.current_stock)}</span>
@@ -383,6 +433,12 @@ const ProductsPage = () => {
                       )}
                       {!product.barcode && !product.qr_code && '-'}
                     </div>
+                  </td>
+                  <td className="whitespace-nowrap px-4 py-4 text-sm text-gray-900">
+                    {formatCurrency(product.cost_price)}
+                  </td>
+                  <td className="whitespace-nowrap px-4 py-4 text-sm text-gray-900">
+                    {formatCurrency(product.unit_price)}
                   </td>
                   <td className="whitespace-nowrap px-4 py-4">
                     <span
@@ -659,9 +715,152 @@ const ProductsPage = () => {
         </div>
       )}
 
-      {/* Delete Confirmation Modal */}
-      {showDeleteModal && productToDelete && (
+      {/* Category Modal */}
+      {showCategoryForm && (
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-gray-600 bg-opacity-50 flex items-center justify-center p-4">
+          <div className="w-full max-w-md bg-white rounded-lg shadow-xl">
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-semibold text-gray-900">
+                  Yeni Kategori Ekle
+                </h2>
+                <button
+                  onClick={() => {
+                    setShowCategoryForm(false);
+                    setNewCategoryName('');
+                    setNewCategoryDescription('');
+                  }}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <FiX className="h-6 w-6" />
+                </button>
+              </div>
+              
+              <form onSubmit={handleCreateCategory} className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Kategori Adı *
+                  </label>
+                  <input
+                    type="text"
+                    value={newCategoryName}
+                    onChange={e => setNewCategoryName(e.target.value)}
+                    placeholder="Kategori adı"
+                    className="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Açıklama
+                  </label>
+                  <textarea
+                    value={newCategoryDescription}
+                    onChange={e => setNewCategoryDescription(e.target.value)}
+                    placeholder="Açıklama (isteğe bağlı)"
+                    rows={3}
+                    className="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+                <div className="flex justify-end space-x-2 pt-4 border-t">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowCategoryForm(false);
+                      setNewCategoryName('');
+                      setNewCategoryDescription('');
+                    }}
+                    className="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50"
+                  >
+                    İptal
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={createCategoryMutation.isPending}
+                    className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50"
+                  >
+                    {createCategoryMutation.isPending ? 'Ekleniyor...' : 'Ekle'}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Ürün Tipi Ekleme Modalı */}
+      {showProductTypeModal && (
         <div className="fixed inset-0 z-50 h-full w-full overflow-y-auto bg-gray-600 bg-opacity-50">
+          <div className="relative top-20 mx-auto w-96 rounded-md border bg-white p-5 shadow-lg">
+            <div className="mb-4 flex items-center justify-between">
+              <h3 className="text-lg font-medium text-gray-900">Yeni Ürün Tipi</h3>
+              <button
+                onClick={() => {
+                  setShowProductTypeModal(false);
+                  setNewProductTypeName('');
+                  setNewProductTypeDescription('');
+                }}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <FiX className="h-6 w-6" />
+              </button>
+            </div>
+            <form onSubmit={(e) => {
+              e.preventDefault();
+              handleCreateProductType();
+            }}>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Ürün Tipi Adı
+                  </label>
+                  <input
+                    type="text"
+                    value={newProductTypeName}
+                    onChange={e => setNewProductTypeName(e.target.value)}
+                    placeholder="Ürün tipi adını girin"
+                    className="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Açıklama
+                  </label>
+                  <textarea
+                    value={newProductTypeDescription}
+                    onChange={e => setNewProductTypeDescription(e.target.value)}
+                    placeholder="Açıklama (isteğe bağlı)"
+                    rows={3}
+                    className="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+                <div className="flex justify-end space-x-2 pt-4 border-t">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowProductTypeModal(false);
+                      setNewProductTypeName('');
+                      setNewProductTypeDescription('');
+                    }}
+                    className="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50"
+                  >
+                    İptal
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
+                  >
+                    Ekle
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {showDeleteModal && productToDelete && (        <div className="fixed inset-0 z-50 h-full w-full overflow-y-auto bg-gray-600 bg-opacity-50">
           <div className="relative top-20 mx-auto w-96 rounded-md border bg-white p-5 shadow-lg">
             <div className="mb-4 flex items-center justify-between">
               <h3 className="text-lg font-medium text-gray-900">Ürünü Sil</h3>

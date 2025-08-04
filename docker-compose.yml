@@ -76,9 +76,10 @@ services:
       GENERATE_SOURCEMAP: false
       SKIP_PREFLIGHT_CHECK: true
       WDS_SOCKET_HOST: 0.0.0.0
-      WDS_SOCKET_PORT: 3000
+      WDS_SOCKET_PORT: 3001
+      PORT: 3001
     ports:
-      - "3001:3000"
+      - "3001:3001"
     volumes:
       - ./frontend/src:/app/src
       - ./frontend/public:/app/public

@@ -82,10 +82,15 @@ class ProductsRepository {
       const productsQuery = `
         SELECT 
           p.*,
-          c.name as category_name,
-          pt.name as product_type_name,
-          s.name as supplier_name,
-          s.supplier_code,
+          CASE WHEN c.id IS NOT NULL THEN 
+            json_build_object('id', c.id, 'name', c.name, 'description', c.description)
+          ELSE NULL END as category,
+          CASE WHEN pt.id IS NOT NULL THEN 
+            json_build_object('id', pt.id, 'name', pt.name, 'description', pt.description)
+          ELSE NULL END as product_type,
+          CASE WHEN s.id IS NOT NULL THEN 
+            json_build_object('id', s.id, 'name', s.name, 'supplier_code', s.supplier_code)
+          ELSE NULL END as supplier,
           0 as total_stock,
           0 as available_stock,
           'normal' as stock_status
@@ -123,13 +128,15 @@ class ProductsRepository {
       const productQuery = `
         SELECT 
           p.*,
-          c.name as category_name,
-          pt.name as product_type_name,
-          s.name as supplier_name,
-          s.supplier_code,
-          s.contact_person as supplier_contact,
-          s.email as supplier_email,
-          s.phone as supplier_phone
+          CASE WHEN c.id IS NOT NULL THEN 
+            json_build_object('id', c.id, 'name', c.name, 'description', c.description)
+          ELSE NULL END as category,
+          CASE WHEN pt.id IS NOT NULL THEN 
+            json_build_object('id', pt.id, 'name', pt.name, 'description', pt.description)
+          ELSE NULL END as product_type,
+          CASE WHEN s.id IS NOT NULL THEN 
+            json_build_object('id', s.id, 'name', s.name, 'supplier_code', s.supplier_code, 'contact_person', s.contact_person, 'email', s.email, 'phone', s.phone)
+          ELSE NULL END as supplier
         FROM products p
         LEFT JOIN product_categories c ON p.category_id = c.id
         LEFT JOIN product_types pt ON p.product_type_id = pt.id
@@ -528,11 +535,17 @@ class ProductsRepository {
       const productsQuery = `
         SELECT 
           p.*,
-          c.name as category_name,
-          pt.name as product_type_name,
-          s.name as supplier_name
+          CASE WHEN c.id IS NOT NULL THEN 
+            json_build_object('id', c.id, 'name', c.name, 'description', c.description)
+          ELSE NULL END as category,
+          CASE WHEN pt.id IS NOT NULL THEN 
+            json_build_object('id', pt.id, 'name', pt.name, 'description', pt.description)
+          ELSE NULL END as product_type,
+          CASE WHEN s.id IS NOT NULL THEN 
+            json_build_object('id', s.id, 'name', s.name, 'supplier_code', s.supplier_code)
+          ELSE NULL END as supplier
         FROM products p
-        LEFT JOIN categories c ON p.category_id = c.id
+        LEFT JOIN product_categories c ON p.category_id = c.id
         LEFT JOIN product_types pt ON p.product_type_id = pt.id
         LEFT JOIN suppliers s ON p.supplier_id = s.id
         WHERE p.category_id = $1 AND p.is_active = true
