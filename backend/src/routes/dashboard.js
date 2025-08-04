@@ -4,6 +4,70 @@ const { query } = require('../config/database')
 
 const router = express.Router()
 
+// Genel İstatistikleri (KPI) Getiren Endpoint
+router.get('/stats', requireAdminOrOperator, async (req, res, next) => {
+  try {
+    // Toplam ürün sayısı
+    const totalProductsResult = await query('SELECT COUNT(*) as count FROM products WHERE is_active = TRUE')
+    const totalProducts = parseInt(totalProductsResult.rows[0].count)
+
+    // Stoktaki tüm ürünlerin toplam değeri
+    const totalStockValueResult = await query(`
+      SELECT COALESCE(SUM(p.unit_price * COALESCE(i.available_quantity, 0)), 0) as total_value
+      FROM products p
+      LEFT JOIN inventory i ON p.id = i.product_id
+      WHERE p.is_active = TRUE
+    `)
+    const totalStockValue = parseFloat(totalStockValueResult.rows[0].total_value || 0)
+
+    // Stoku tükenmiş ürün sayısı
+    const outOfStockResult = await query(`
+      SELECT COUNT(DISTINCT p.id) as count
+      FROM products p
+      LEFT JOIN inventory i ON p.id = i.product_id
+      WHERE p.is_active = TRUE 
+      AND (i.available_quantity IS NULL OR i.available_quantity = 0)
+    `)
+    const outOfStockCount = parseInt(outOfStockResult.rows[0].count)
+
+    // Toplam kategori sayısı
+    const categoryCountResult = await query('SELECT COUNT(DISTINCT category_id) as count FROM products WHERE category_id IS NOT NULL AND is_active = TRUE')
+    const categoryCount = parseInt(categoryCountResult.rows[0].count)
+
+    res.json({
+      totalProducts,
+      totalStockValue,
+      outOfStockCount,
+      categoryCount
+    })
+  } catch (error) {
+    console.error('Dashboard stats error:', error)
+    next(error)
+  }
+})
+
+// Kategoriye Göre Ürün Sayısını Getiren Endpoint
+router.get('/products-per-category', requireAdminOrOperator, async (req, res, next) => {
+  try {
+    const result = await query(`
+      SELECT 
+        pc.name,
+        COUNT(p.id) as urunSayisi
+      FROM product_categories pc
+      LEFT JOIN products p ON pc.id = p.category_id AND p.is_active = TRUE
+      WHERE pc.is_active = TRUE
+      GROUP BY pc.id, pc.name
+      HAVING COUNT(p.id) > 0
+      ORDER BY urunSayisi DESC
+    `)
+
+    res.json(result.rows)
+  } catch (error) {
+    console.error('Dashboard products per category error:', error)
+    next(error)
+  }
+})
+
 // Ana dashboard endpoint'i - genel sistem özeti
 router.get('/', requireAdminOrOperator, async (req, res, next) => {
   try {

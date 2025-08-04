@@ -71,20 +71,53 @@ class ProductsService {
    */
   async updateProduct(id, updateData) {
     try {
-      // Validate update data
-      await this.validateProductUpdateData(updateData);
+      console.log('🔧 ProductsService.updateProduct başladı:', {
+        productId: id,
+        updateData: updateData,
+        timestamp: new Date().toISOString()
+      });
       
-      // Check if SKU already exists for another product
+      // Validate update data
+      console.log('✅ Veri doğrulama başlıyor...');
+      await this.validateProductUpdateData(updateData);
+      console.log('✅ Veri doğrulama tamamlandı');
+      
+      // Check if SKU is being updated and if it already exists
       if (updateData.sku) {
+        console.log('🔍 SKU kontrolü yapılıyor:', updateData.sku);
         const existingProduct = await productsRepository.findProductBySKU(updateData.sku);
         if (existingProduct && existingProduct.id !== parseInt(id)) {
+          console.log('❌ SKU çakışması tespit edildi:', {
+            newSKU: updateData.sku,
+            existingProductId: existingProduct.id,
+            currentProductId: id
+          });
           throw new AppError('Product with this SKU already exists', 400);
         }
+        console.log('✅ SKU kontrolü başarılı');
       }
       
+      console.log('💾 Repository güncelleme işlemi başlıyor...');
       const updatedProduct = await productsRepository.updateProduct(id, updateData);
+      
+      if (updatedProduct) {
+        console.log('✅ ProductsService güncelleme başarılı:', {
+          productId: id,
+          updatedProduct: updatedProduct
+        });
+      } else {
+        console.log('⚠️  ProductsService: Repository null döndürdü');
+      }
+      
       return updatedProduct;
     } catch (error) {
+      console.error('❌ ProductsService.updateProduct HATASI:', {
+        error: error,
+        message: error.message,
+        productId: id,
+        updateData: updateData,
+        timestamp: new Date().toISOString()
+      });
       winston.error('Error in updateProduct service:', error);
       throw error;
     }

@@ -20,8 +20,11 @@ import ProtectedRoute from "./components/Auth/ProtectedRoute";
 // Import pages
 import LoginPage from "./pages/Auth/LoginPage";
 import DashboardPage from "./pages/Dashboard/DashboardPage";
+
 import ProductsPage from "./pages/Products/ProductsPage";
 import ProductDetailPage from "./pages/Products/ProductDetailPage";
+import ProductEditPage from "./pages/Products/ProductEditPage.tsx";
+
 import InventoryPage from "./pages/Inventory/InventoryPage";
 import CurrentStockPage from "./pages/Inventory/CurrentStockPage";
 import StockReorderPage from "./pages/Inventory/StockReorderPage";
@@ -73,9 +76,12 @@ function App() {
                 <Route index element={<Navigate to="/dashboard" replace />} />
                 <Route path="dashboard" element={<DashboardPage />} />
 
+
                 {/* Products */}
                 <Route path="products" element={<ProductsPage />} />
                 <Route path="products/:id" element={<ProductDetailPage />} />
+                <Route path="products/edit/:id" element={<ProductEditPage />} />
+
 
                 {/* Inventory */}
                 <Route path="inventory" element={<InventoryPage />} />

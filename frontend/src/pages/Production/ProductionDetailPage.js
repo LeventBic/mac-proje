@@ -7,7 +7,6 @@ import {
   useAddProductionMovement 
 } from '../../hooks/useProduction';
 import { useProducts } from '../../hooks/useProducts';
-import { FiArrowLeft, FiPlay, FiCheck, FiPlus } from 'react-icons/fi';
 import { formatCurrency, formatQuantity } from '../../utils/formatters';
 import toast from 'react-hot-toast';
 

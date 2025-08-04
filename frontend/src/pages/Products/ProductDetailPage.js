@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useProduct } from '../../hooks/useProducts';
 import { useStockMovements } from '../../hooks/useStock';
-import { FiArrowLeft, FiEdit, FiPackage, FiTrendingUp, /* FiList, */ FiAlertTriangle } from 'react-icons/fi';
+import { FiArrowLeft, FiPackage, FiTrendingUp, /* FiList, */ FiAlertTriangle } from 'react-icons/fi';
 import { formatCurrency } from '../../utils/formatters';
 
 const ProductDetailPage = () => {
@@ -125,13 +125,7 @@ const ProductDetailPage = () => {
                 <p className="text-gray-600">SKU: {product.sku}</p>
               </div>
             </div>
-            <button
-              onClick={() => navigate(`/products/${id}/edit`)}
-              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center space-x-2"
-            >
-              <FiEdit className="w-4 h-4" />
-              <span>Düzenle</span>
-            </button>
+
           </div>
         </div>
 

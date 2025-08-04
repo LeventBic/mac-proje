@@ -98,7 +98,7 @@ class ProductsController {
         name: req.body.name,
         sku: req.body.sku,
         description: req.body.description,
-        brand: req.body.brand,
+        brand_id: req.body.brand_id || null,
         
         // Kategori ve tip
         category_id: req.body.category_id || null,
@@ -160,6 +160,11 @@ class ProductsController {
    * Update product
    */
   async updateProduct(req, res, next) {
+    // Route başına detaylı loglama
+    console.log('🔄 PUT /api/products/:id isteği alındı, ID:', req.params.id);
+    console.log('📥 Gelen Gövde (Body):', JSON.stringify(req.body, null, 2));
+    console.log('🕐 İstek Zamanı:', new Date().toISOString());
+    
     try {
       const { id } = req.params;
       
@@ -168,7 +173,7 @@ class ProductsController {
         name: req.body.name,
         sku: req.body.sku,
         description: req.body.description,
-        brand: req.body.brand,
+        brand_id: req.body.brand_id || null,
         
         // Kategori ve tip
         category_id: req.body.category_id || null,
@@ -176,7 +181,7 @@ class ProductsController {
         
         // Fiyat bilgileri
         unit_price: req.body.unit_price ? parseFloat(req.body.unit_price) : undefined,
-        purchase_price: req.body.purchase_price ? parseFloat(req.body.purchase_price) : undefined,
+        cost_price: req.body.cost_price ? parseFloat(req.body.cost_price) : undefined,
         currency_id: req.body.currency_id || null,
         
         // Birim ve stok
@@ -219,12 +224,21 @@ class ProductsController {
         }
       });
       
+      console.log('🔧 İşlenmiş Güncelleme Verisi:', JSON.stringify(updateData, null, 2));
+      console.log('🎯 Güncellenecek Ürün ID\'si:', id);
+      
       const updatedProduct = await productsService.updateProduct(id, updateData);
       
       if (!updatedProduct) {
+        console.log('⚠️  UYARI: Güncellenecek ürün bulunamadı, ID:', id);
         return next(new AppError('Product not found', 404));
       }
 
+      console.log('✅ Ürün başarıyla güncellendi:', {
+        id: id,
+        updatedFields: Object.keys(updateData),
+        result: updatedProduct
+      });
       winston.info(`Product updated: ${updatedProduct.sku} by user ${req.user.id}`);
       
       res.json({
@@ -232,6 +246,16 @@ class ProductsController {
         data: updatedProduct
       });
     } catch (error) {
+      // Detaylı hata loglama
+      console.error('❌ VERİTABANI GÜNCELLEME HATASI - Tam Detay:', {
+        error: error,
+        message: error.message,
+        stack: error.stack,
+        productId: req.params.id,
+        requestBody: req.body,
+        timestamp: new Date().toISOString()
+      });
+      
       winston.error('Error updating product:', error);
       next(error);
     }

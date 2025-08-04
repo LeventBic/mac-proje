@@ -144,19 +144,31 @@ const productsValidators = {
       .withMessage('Unit ID must be a positive integer'),
     body('min_stock_level')
       .optional()
-      .isFloat({ min: 0 })
+      .custom(value => {
+        if (value === null || value === undefined || value === '') return true
+        return !isNaN(value) && parseFloat(value) >= 0
+      })
       .withMessage('Minimum stock level must be a non-negative number'),
     body('max_stock_level')
       .optional()
-      .isFloat({ min: 0 })
+      .custom(value => {
+        if (value === null || value === undefined || value === '') return true
+        return !isNaN(value) && parseFloat(value) >= 0
+      })
       .withMessage('Maximum stock level must be a non-negative number'),
     body('reorder_point')
       .optional()
-      .isFloat({ min: 0 })
+      .custom(value => {
+        if (value === null || value === undefined || value === '') return true
+        return !isNaN(value) && parseFloat(value) >= 0
+      })
       .withMessage('Reorder point must be a non-negative number'),
     body('reorder_quantity')
       .optional()
-      .isFloat({ min: 0 })
+      .custom(value => {
+        if (value === null || value === undefined || value === '') return true
+        return !isNaN(value) && parseFloat(value) >= 0
+      })
       .withMessage('Reorder quantity must be a non-negative number'),
     body('is_raw_material')
       .optional()
@@ -209,7 +221,10 @@ const productsValidators = {
       .withMessage('Barcode cannot exceed 50 characters'),
     body('category_id')
       .optional()
-      .isInt({ min: 1 })
+      .custom(value => {
+        if (value === '' || value === null || value === undefined) return true
+        return Number.isInteger(Number(value)) && Number(value) > 0
+      })
       .withMessage('Category ID must be a positive integer'),
     body('product_type_id')
       .optional()
@@ -233,19 +248,31 @@ const productsValidators = {
       .withMessage('Unit ID must be a positive integer'),
     body('min_stock_level')
       .optional()
-      .isFloat({ min: 0 })
+      .custom(value => {
+        if (value === null || value === undefined || value === '') return true;
+        return !isNaN(parseFloat(value)) && parseFloat(value) >= 0;
+      })
       .withMessage('Minimum stock level must be a non-negative number'),
     body('max_stock_level')
       .optional()
-      .isFloat({ min: 0 })
+      .custom(value => {
+        if (value === null || value === undefined || value === '') return true;
+        return !isNaN(parseFloat(value)) && parseFloat(value) >= 0;
+      })
       .withMessage('Maximum stock level must be a non-negative number'),
     body('reorder_point')
       .optional()
-      .isFloat({ min: 0 })
+      .custom(value => {
+        if (value === null || value === undefined || value === '') return true;
+        return !isNaN(parseFloat(value)) && parseFloat(value) >= 0;
+      })
       .withMessage('Reorder point must be a non-negative number'),
     body('reorder_quantity')
       .optional()
-      .isFloat({ min: 0 })
+      .custom(value => {
+        if (value === null || value === undefined || value === '') return true;
+        return !isNaN(parseFloat(value)) && parseFloat(value) >= 0;
+      })
       .withMessage('Reorder quantity must be a non-negative number'),
     body('is_raw_material')
       .optional()

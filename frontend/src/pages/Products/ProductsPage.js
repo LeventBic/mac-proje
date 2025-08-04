@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   FiPlus,
-  FiEdit,
   FiPackage,
   FiX,
   FiEye,
@@ -16,17 +15,22 @@ import {
   useDeleteProduct,
 } from '../../hooks/useProducts';
 import DeleteButton from '../../components/DeleteButton';
+import EditButton from '../../components/EditButton.tsx';
 import ProductForm from '../../components/ProductForm';
-import { formatCurrency, formatQuantity } from '../../utils/formatters';
+import { formatCurrency, formatQuantity, formatPriceTR, parseFormattedNumber } from '../../utils/formatters';
 
 const ProductsPage = () => {
   const [showProductForm, setShowProductForm] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const [editingProduct, setEditingProduct] = useState(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [productToDelete, setProductToDelete] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
   const [productType, setProductType] = useState('all');
+  const [modalPosition, setModalPosition] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const navigate = useNavigate();
 
   // React Query hooks
@@ -60,15 +64,15 @@ const ProductsPage = () => {
 
   const loading = productsLoading || categoriesLoading || productTypesLoading;
 
-  const handleProductSubmit = async (data) => {
+  const handleProductSubmit = async (productData) => {
     try {
       if (selectedProduct) {
         await updateProductMutation.mutateAsync({
           id: selectedProduct.id,
-          ...data
+          ...productData,
         });
       } else {
-        await createProductMutation.mutateAsync(data);
+        await createProductMutation.mutateAsync(productData);
       }
       setShowProductForm(false);
       setSelectedProduct(null);
@@ -83,9 +87,69 @@ const ProductsPage = () => {
   };
 
   const handleEditProduct = (product) => {
-    setSelectedProduct(product);
-    setShowProductForm(true);
+    setEditingProduct(product);
+    setShowProductForm(false);
   };
+
+  const handleUpdateProduct = async (productData) => {
+    if (!editingProduct) return;
+    
+    try {
+      await updateProductMutation.mutateAsync({
+        id: editingProduct.id,
+        ...productData
+      });
+      setEditingProduct(null);
+    } catch (error) {
+      // Error is handled by the mutation
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setEditingProduct(null);
+    setModalPosition({ x: 0, y: 0 });
+  };
+
+  const handleMouseDown = (e) => {
+    setIsDragging(true);
+    setDragStart({
+      x: e.clientX - modalPosition.x,
+      y: e.clientY - modalPosition.y
+    });
+  };
+
+  const handleMouseMove = (e) => {
+    if (!isDragging) return;
+    
+    const newX = e.clientX - dragStart.x;
+    const newY = e.clientY - dragStart.y;
+    
+    // Ekran sınırları içinde tutma
+    const maxX = window.innerWidth - 600; // modal genişliği
+    const maxY = window.innerHeight - 400; // modal yüksekliği
+    
+    setModalPosition({
+      x: Math.max(-200, Math.min(newX, maxX)),
+      y: Math.max(0, Math.min(newY, maxY))
+    });
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  // Mouse event listeners
+  React.useEffect(() => {
+    if (isDragging) {
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+      
+      return () => {
+        document.removeEventListener('mousemove', handleMouseMove);
+        document.removeEventListener('mouseup', handleMouseUp);
+      };
+    }
+  }, [isDragging, dragStart, modalPosition]);
 
   const handleDeleteProduct = async () => {
     if (!productToDelete) return;
@@ -294,7 +358,7 @@ const ProductsPage = () => {
                     {formatCurrency(product.unit_price)}
                   </td>
                   <td className="whitespace-nowrap px-4 py-4 text-sm text-gray-900">
-                    {formatCurrency(product.purchase_price)}
+                    {formatCurrency(product.cost_price)}
                   </td>
                   <td className="whitespace-nowrap px-4 py-4">
                     <div className="text-sm text-gray-900">
@@ -336,17 +400,17 @@ const ProductsPage = () => {
                       <button
                         onClick={() => navigate(`/products/${product.id}`)}
                         className="text-blue-600 hover:text-blue-900 p-1"
-                        title="Görüntüle"
+                        title="İncele"
+                        style={{ '--tooltip-delay': '0ms' }}
                       >
                         <FiEye className="h-4 w-4" />
                       </button>
-                      <button
+                      <EditButton
                         onClick={() => handleEditProduct(product)}
-                        className="text-indigo-600 hover:text-indigo-900 p-1"
-                        title="Düzenle"
-                      >
-                        <FiEdit className="h-4 w-4" />
-                      </button>
+                        size="sm"
+                        variant="outline"
+                        className="p-1"
+                      />
                       <DeleteButton
                         onClick={() => openDeleteModal(product)}
                         isLoading={deleteProductMutation.isLoading}
@@ -374,6 +438,226 @@ const ProductsPage = () => {
         product={selectedProduct}
         isLoading={selectedProduct ? updateProductMutation.isPending : createProductMutation.isPending}
       />
+
+      {/* Product Edit Form Modal */}
+      {editingProduct && (
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-gray-600 bg-opacity-50 flex items-center justify-center p-4">
+          <div 
+            className="w-full max-w-2xl bg-white rounded-lg shadow-xl"
+            style={{
+              transform: `translate(${modalPosition.x}px, ${modalPosition.y}px)`,
+              cursor: isDragging ? 'grabbing' : 'default'
+            }}
+          >
+            <div className="p-6">
+              <div 
+                className="flex items-center justify-between mb-6 cursor-grab active:cursor-grabbing select-none"
+                onMouseDown={handleMouseDown}
+              >
+                <h2 className="text-xl font-semibold text-gray-900 pointer-events-none">
+                  Ürün Düzenle: {editingProduct.name}
+                </h2>
+                <button
+                  onClick={handleCancelEdit}
+                  className="text-gray-400 hover:text-gray-600 pointer-events-auto"
+                >
+                  <FiX className="h-6 w-6" />
+                </button>
+              </div>
+              
+              <form onSubmit={(e) => {
+                e.preventDefault();
+                const formData = new FormData(e.target);
+                const categoryId = formData.get('category_id');
+                const productData = {
+                  name: formData.get('name'),
+                  description: formData.get('description'),
+                  sku: formData.get('sku'),
+                  unit_price: parseFormattedNumber(formData.get('unit_price')) || 0,
+                  cost_price: parseFormattedNumber(formData.get('cost_price')) || 0,
+                  quantity_in_stock: parseFormattedNumber(formData.get('quantity_in_stock')) || 0,
+                  category_id: categoryId && categoryId !== '' ? parseInt(categoryId, 10) : undefined,
+                  is_active: formData.get('is_active') === 'on'
+                };
+                handleUpdateProduct(productData);
+              }} className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Ürün Adı *
+                    </label>
+                    <input
+                      type="text"
+                      name="name"
+                      defaultValue={editingProduct.name}
+                      required
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      SKU
+                    </label>
+                    <input
+                      type="text"
+                      name="sku"
+                      defaultValue={editingProduct.sku}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Marka
+                    </label>
+                    <input
+                      type="text"
+                      name="brand"
+                      defaultValue={editingProduct.brand || ''}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Kategori
+                    </label>
+                    <select
+                      name="category_id"
+                      defaultValue={editingProduct.category_id || ''}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                      <option value="">Kategori Seçin</option>
+                      {categoriesData?.data?.map(category => (
+                        <option key={category.id} value={category.id}>
+                          {category.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Satış Fiyatı (₺)
+                    </label>
+                    <input
+                      type="text"
+                      name="unit_price"
+                      defaultValue={formatPriceTR(editingProduct.unit_price)}
+                      placeholder="0,00"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Alış Fiyatı (₺)
+                    </label>
+                    <input
+                      type="text"
+                      name="cost_price"
+                      defaultValue={formatPriceTR(editingProduct.cost_price)}
+                      placeholder="0,00"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Stok Miktarı
+                    </label>
+                    <input
+                      type="text"
+                      name="current_stock"
+                      defaultValue={formatPriceTR(editingProduct.current_stock, 0)}
+                      placeholder="0"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Tedarikçi
+                    </label>
+                    <input
+                      type="text"
+                      name="supplier_name"
+                      defaultValue={editingProduct.supplier?.name || ''}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Barkod
+                    </label>
+                    <input
+                      type="text"
+                      name="barcode"
+                      defaultValue={editingProduct.barcode || ''}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      QR Kod
+                    </label>
+                    <input
+                      type="text"
+                      name="qr_code"
+                      defaultValue={editingProduct.qr_code || ''}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Açıklama
+                  </label>
+                  <textarea
+                    name="description"
+                    defaultValue={editingProduct.description || ''}
+                    rows={3}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+                
+                <div>
+                  <label className="flex items-center">
+                    <input
+                      type="checkbox"
+                      name="is_active"
+                      defaultChecked={editingProduct.is_active}
+                      className="mr-2"
+                    />
+                    <span className="text-sm font-medium text-gray-700">Aktif</span>
+                  </label>
+                </div>
+                
+                <div className="flex justify-end space-x-2 pt-4 border-t">
+                  <button
+                    type="button"
+                    onClick={handleCancelEdit}
+                    className="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50"
+                  >
+                    İptal
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={updateProductMutation.isPending}
+                    className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50"
+                  >
+                    {updateProductMutation.isPending ? 'Güncelleniyor...' : 'Güncelle'}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Delete Confirmation Modal */}
       {showDeleteModal && productToDelete && (

@@ -49,6 +49,18 @@ class DashboardService {
     return response.data;
   }
 
+  // Get dashboard stats (KPI)
+  static async getStats(params = {}) {
+    const response = await axiosClient.get('/dashboard/stats', { params });
+    return response;
+  }
+
+  // Get products per category for charts
+  static async getProductsPerCategory(params = {}) {
+    const response = await axiosClient.get('/dashboard/products-per-category', { params });
+    return response;
+  }
+
   static async markAlertAsRead(alertId) {
     const response = await axiosClient.patch(`/dashboard/alerts/${alertId}/read`);
     return response.data;

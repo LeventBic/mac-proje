@@ -7,38 +7,50 @@ const DeleteButton = ({
   size = 'md',
   className = ''
 }) => {
+  // Boyut sınıfları - EditButton ile aynı
   const sizeClasses = {
-    sm: 'px-2 py-1 text-xs',
-    md: 'px-3 py-2 text-sm',
-    lg: 'px-4 py-3 text-base'
+    sm: 'p-1',
+    md: 'p-2',
+    lg: 'p-3'
   };
 
+  // İkon boyutları - EditButton ile aynı format
   const iconSizes = {
-    sm: 10,
-    md: 12,
-    lg: 14
+    sm: 'h-3 w-3',
+    md: 'h-4 w-4',
+    lg: 'h-5 w-5'
   };
+
+  const baseClasses = `
+    inline-flex items-center justify-center
+    border rounded-md
+    transition-all duration-200 
+    focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2
+    disabled:opacity-50 disabled:cursor-not-allowed
+    hover:shadow-sm
+  `;
+
+  const variantClasses = 'bg-white hover:bg-gray-50 text-red-500 border-red-500';
+
+  const buttonClasses = `
+    ${baseClasses}
+    ${sizeClasses[size]}
+    ${variantClasses}
+    ${className}
+  `.replace(/\s+/g, ' ').trim();
 
   return (
     <button
+      type="button"
       onClick={onClick}
       disabled={isLoading}
-      className={`
-        bg-red-600 hover:bg-red-700 disabled:bg-red-400
-        text-white rounded transition-colors
-        flex items-center justify-center
-        ${sizeClasses[size]}
-        ${className}
-      `}
-      type="button"
+      className={buttonClasses}
+      title="Sil"
     >
       {isLoading ? (
         <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-white" />
       ) : (
-        <>
-          <FaTrash className="mr-1" size={iconSizes[size]} />
-          Sil
-        </>
+        <FaTrash className={iconSizes[size]} />
       )}
     </button>
   );

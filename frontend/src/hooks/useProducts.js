@@ -66,8 +66,8 @@ export const useCreateProduct = () => {
   return useMutation({
     mutationFn: ProductService.create,
     onSuccess: (_data) => {
-      // Invalidate and refetch products list
-      queryClient.invalidateQueries({ queryKey: PRODUCT_QUERY_KEYS.lists() });
+      // Invalidate all product queries (including filtered ones)
+      queryClient.invalidateQueries({ queryKey: PRODUCT_QUERY_KEYS.all });
       toast.success('Ürün başarıyla oluşturuldu');
     },
   });
@@ -78,10 +78,10 @@ export const useUpdateProduct = () => {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: ({ id, data }) => ProductService.update(id, data),
+    mutationFn: ({ id, ...data }) => ProductService.update(id, data),
     onSuccess: (data, variables) => {
-      // Invalidate and refetch products list
-      queryClient.invalidateQueries({ queryKey: PRODUCT_QUERY_KEYS.lists() });
+      // Invalidate all product queries (including filtered ones)
+      queryClient.invalidateQueries({ queryKey: PRODUCT_QUERY_KEYS.all });
       // Update the specific product in cache
       queryClient.invalidateQueries({ queryKey: PRODUCT_QUERY_KEYS.detail(variables.id) });
       toast.success('Ürün başarıyla güncellendi');
@@ -98,8 +98,8 @@ export const useDeleteProduct = () => {
     onSuccess: (data, productId) => {
       // Remove the product from cache
       queryClient.removeQueries({ queryKey: PRODUCT_QUERY_KEYS.detail(productId) });
-      // Invalidate and refetch products list
-      queryClient.invalidateQueries({ queryKey: PRODUCT_QUERY_KEYS.lists() });
+      // Invalidate all product queries (including filtered ones)
+      queryClient.invalidateQueries({ queryKey: PRODUCT_QUERY_KEYS.all });
       toast.success('Ürün başarıyla silindi');
     },
   });
@@ -116,8 +116,8 @@ export const useBulkDeleteProducts = () => {
       productIds.forEach(id => {
         queryClient.removeQueries({ queryKey: PRODUCT_QUERY_KEYS.detail(id) });
       });
-      // Invalidate and refetch products list
-      queryClient.invalidateQueries({ queryKey: PRODUCT_QUERY_KEYS.lists() });
+      // Invalidate all product queries (including filtered ones)
+      queryClient.invalidateQueries({ queryKey: PRODUCT_QUERY_KEYS.all });
       toast.success(`${productIds.length} ürün başarıyla silindi`);
     },
   });
@@ -130,8 +130,8 @@ export const useImportProducts = () => {
   return useMutation({
     mutationFn: ProductService.import,
     onSuccess: (_data) => {
-      // Invalidate and refetch products list
-      queryClient.invalidateQueries({ queryKey: PRODUCT_QUERY_KEYS.lists() });
+      // Invalidate all product queries (including filtered ones)
+      queryClient.invalidateQueries({ queryKey: PRODUCT_QUERY_KEYS.all });
       toast.success('Ürünler başarıyla içe aktarıldı');
     },
   });

@@ -1,8 +1,10 @@
 import React from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import DeleteButton from '../components/DeleteButton';
-import { FaPlus, FaEdit } from 'react-icons/fa';
+import EditButton from '../components/EditButton.tsx';
+import { FaPlus } from 'react-icons/fa';
 
 // API fonksiyonları
 const fetchProducts = async () => {
@@ -16,6 +18,7 @@ const deleteProduct = async (id) => {
 
 const ProductListPage = () => {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   // Ürünleri getir
   const {
@@ -48,6 +51,11 @@ const ProductListPage = () => {
     if (window.confirm('Bu ürünü silmek istediğinizden emin misiniz?')) {
       deleteMutation.mutate(productId);
     }
+  };
+
+  // Düzenleme sayfasına yönlendirme
+  const handleEdit = (productId) => {
+    navigate(`/products/edit/${productId}`);
   };
 
   if (isLoading) {
@@ -141,11 +149,12 @@ const ProductListPage = () => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <div className="flex justify-end space-x-2">
-                      {/* Düzenle butonu */}
-                      <button className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-xs flex items-center transition-colors">
-                        <FaEdit className="mr-1" size={12} />
-                        Düzenle
-                      </button>
+                      {/* Tekrar kullanılabilir EditButton bileşeni */}
+                      <EditButton
+                        onClick={() => handleEdit(product.id)}
+                        size="sm"
+                        title="Ürünü düzenle"
+                      />
                       
                       {/* Tekrar kullanılabilir DeleteButton bileşeni */}
                       <DeleteButton

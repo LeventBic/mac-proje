@@ -131,7 +131,7 @@ class ProductsRepository {
           s.email as supplier_email,
           s.phone as supplier_phone
         FROM products p
-        LEFT JOIN categories c ON p.category_id = c.id
+        LEFT JOIN product_categories c ON p.category_id = c.id
         LEFT JOIN product_types pt ON p.product_type_id = pt.id
         LEFT JOIN suppliers s ON p.supplier_id = s.id
         WHERE p.id = $1
@@ -216,9 +216,15 @@ class ProductsRepository {
    */
   async updateProduct(id, updateData) {
     try {
+      console.log('💾 ProductsRepository.updateProduct başladı:', {
+        productId: id,
+        updateData: updateData,
+        timestamp: new Date().toISOString()
+      });
+      
       const allowedFields = [
-        'sku', 'name', 'description', 'barcode', 'category_id', 'product_type_id',
-        'supplier_id', 'unit_price', 'cost_price', 'unit', 'min_stock_level',
+        'sku', 'name', 'description', 'barcode', 'qr_code', 'brand_id', 'category_id', 'product_type_id',
+        'supplier_id', 'unit_price', 'cost_price', 'current_stock', 'unit', 'min_stock_level',
         'max_stock_level', 'reorder_point', 'reorder_quantity', 'is_raw_material',
         'is_finished_product', 'is_active', 'updated_by'
       ];
@@ -236,6 +242,7 @@ class ProductsRepository {
       }
       
       if (updateFields.length === 0) {
+        console.log('⚠️  Repository: Güncellenecek geçerli alan bulunamadı');
         throw new Error('No valid fields to update');
       }
       
@@ -249,9 +256,54 @@ class ProductsRepository {
         RETURNING *
       `;
       
+      console.log('🔍 SQL Sorgusu:', {
+        query: updateQuery,
+        params: queryParams,
+        updateFields: updateFields
+      });
+      
       const result = await query(updateQuery, queryParams);
-      return result.rows[0] || null;
+      
+      // Güncellenen satır sayısını kontrol et
+      console.log('📊 SQL Sonucu:', {
+        rowCount: result.rowCount,
+        affectedRows: result.rowCount,
+        hasData: result.rows.length > 0,
+        returnedData: result.rows[0] || null
+      });
+      
+      if (result.rowCount === 0) {
+        console.log('⚠️  UYARI: Güncellenecek ürün bulunamadı (rowCount = 0), ID:', id);
+        console.log('🔍 Kontrol: Bu ID ile ürün var mı?');
+        
+        // Ürünün var olup olmadığını kontrol et
+        const checkQuery = 'SELECT id, name, sku FROM products WHERE id = $1';
+        const checkResult = await query(checkQuery, [id]);
+        
+        if (checkResult.rows.length === 0) {
+          console.log('❌ Ürün bulunamadı - ID mevcut değil:', id);
+        } else {
+          console.log('🤔 Ürün mevcut ama güncelleme başarısız:', checkResult.rows[0]);
+        }
+        
+        return null;
+      }
+      
+      console.log('✅ Repository güncelleme başarılı:', {
+        productId: id,
+        updatedProduct: result.rows[0]
+      });
+      
+      return result.rows[0];
     } catch (error) {
+      console.error('❌ ProductsRepository.updateProduct HATASI:', {
+        error: error,
+        message: error.message,
+        stack: error.stack,
+        productId: id,
+        updateData: updateData,
+        timestamp: new Date().toISOString()
+      });
       winston.error('Error in updateProduct repository:', error);
       throw error;
     }

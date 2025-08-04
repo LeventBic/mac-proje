@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useProductionOrders, useProductionBOMs, useCreateProductionOrder } from '../../hooks/useProduction';
 import { FiPlus, FiEye, FiPlay, FiCheck, FiClock, FiAlertTriangle } from 'react-icons/fi';
-import { formatCurrency, formatQuantity } from '../../utils/formatters';
+import { formatQuantity } from '../../utils/formatters';
 
 const ProductionPage = () => {
   const [showForm, setShowForm] = useState(false);
