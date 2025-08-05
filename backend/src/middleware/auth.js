@@ -5,6 +5,8 @@ const { AppError } = require('./errorHandler')
 // Verify JWT token
 const verifyToken = async (req, res, next) => {
   try {
+    console.log(`🔐 Auth: ${req.method} ${req.path} - Starting token verification`)
+
     // Get token from header
     let token
     if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
@@ -12,11 +14,14 @@ const verifyToken = async (req, res, next) => {
     }
 
     if (!token) {
+      console.log('🔐 Auth: No token provided')
       return next(new AppError('Access token is required', 401))
     }
 
+    console.log('🔐 Auth: Token found, verifying...')
     // Verify token
     const decoded = jwt.verify(token, process.env.JWT_SECRET)
+    console.log(`🔐 Auth: Token decoded for user ID: ${decoded.userId}`)
 
     // Get user from database
     const result = await query(
@@ -25,19 +30,24 @@ const verifyToken = async (req, res, next) => {
     )
 
     if (result.rows.length === 0) {
+      console.log(`🔐 Auth: User ${decoded.userId} not found`)
       return next(new AppError('User no longer exists', 401))
     }
 
     const user = result.rows[0]
+    console.log(`🔐 Auth: User found: ${user.username}, role: ${user.role}, active: ${user.is_active}`)
 
     if (!user.is_active) {
+      console.log(`🔐 Auth: User ${user.username} is not active`)
       return next(new AppError('User account is disabled', 401))
     }
 
     // Add user to request object
     req.user = user
+    console.log(`🔐 Auth: Authentication successful for ${user.username}`)
     next()
   } catch (error) {
+    console.log('🔐 Auth: Error during verification:', error.message)
     if (error.name === 'JsonWebTokenError') {
       return next(new AppError('Invalid token', 401))
     }

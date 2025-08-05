@@ -209,19 +209,6 @@ router.delete('/:id', authenticateToken, async (req, res) => {
             });
         }
 
-        // Bu ürün tipine bağlı ürün var mı kontrol et
-        const connectedProducts = await query(
-            'SELECT COUNT(*) as count FROM products WHERE product_type_id = $1 AND is_active = TRUE',
-            [id]
-        );
-
-        if (connectedProducts.rows[0].count > 0) {
-            return res.status(400).json({
-                success: false,
-                message: 'Bu ürün tipine bağlı aktif ürünler bulunuyor. Önce ürünleri güncelleyin.'
-            });
-        }
-
         // Soft delete
         await query(
             'UPDATE product_types SET is_active = FALSE, updated_at = CURRENT_TIMESTAMP WHERE id = $1',

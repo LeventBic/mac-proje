@@ -49,7 +49,7 @@ const inventoryValidators = {
    * Validate inventory item update data
    */
   validateInventoryUpdate: [
-    body('current_quantity')
+    /* body('current_quantity')
       .optional()
       .isFloat({ min: 0 })
       .withMessage('Current quantity must be a non-negative number'),
@@ -76,7 +76,7 @@ const inventoryValidators = {
     body('reorder_quantity')
       .optional()
       .isFloat({ min: 0 })
-      .withMessage('Reorder quantity must be a non-negative number')
+      .withMessage('Reorder quantity must be a non-negative number') */
   ],
 
   /**

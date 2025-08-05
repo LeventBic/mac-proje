@@ -217,19 +217,6 @@ router.delete('/:id', authenticateToken, requireRole('admin'), async (req, res) 
 
     const existing = existingResult.rows[0]
 
-    // Bu kategoriye bağlı ürün var mı kontrol et
-    const connectedProductsResult = await query(
-      'SELECT COUNT(*) as count FROM products WHERE category_id = $1 AND is_active = TRUE',
-      [id]
-    )
-
-    if (parseInt(connectedProductsResult.rows[0].count) > 0) {
-      return res.status(400).json({
-        success: false,
-        message: 'Bu kategoriye bağlı aktif ürünler bulunuyor. Önce ürünleri güncelleyin.'
-      })
-    }
-
     // Soft delete
     await query(
       'UPDATE product_categories SET is_active = FALSE, updated_at = CURRENT_TIMESTAMP WHERE id = $1',

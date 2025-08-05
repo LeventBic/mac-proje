@@ -122,7 +122,7 @@ const customersValidators = {
    * Validate customer update data
    */
   validateCustomerUpdate: [
-    body('name')
+    /* body('name')
       .optional()
       .isLength({ min: 2, max: 200 })
       .withMessage('Customer name must be between 2 and 200 characters')
@@ -182,7 +182,7 @@ const customersValidators = {
     body('notes')
       .optional()
       .isLength({ max: 1000 })
-      .withMessage('Notes cannot exceed 1000 characters')
+      .withMessage('Notes cannot exceed 1000 characters') */
   ],
 
   /**

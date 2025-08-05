@@ -29,7 +29,7 @@ const customersRepository = {
       }
 
       if (customer_type) {
-        whereConditions.push(`c.customer_type = $${paramIndex}`)
+        whereConditions.push(`c.type = $${paramIndex}`)
         queryParams.push(customer_type)
         paramIndex++
       }
@@ -60,7 +60,7 @@ const customersRepository = {
           c.postal_code,
           c.country,
           c.tax_number,
-          c.customer_type,
+          c.type as customer_type,
           c.is_active,
           c.notes,
           c.created_at,
@@ -70,7 +70,7 @@ const customersRepository = {
         FROM customers c
         LEFT JOIN sales_orders so ON c.id = so.customer_id AND so.status != 'cancelled'
         ${whereClause}
-        GROUP BY c.id, c.name, c.email, c.phone, c.address, c.city, c.state, c.postal_code, c.country, c.tax_number, c.customer_type, c.is_active, c.notes, c.created_at, c.updated_at
+        GROUP BY c.id, c.name, c.email, c.phone, c.address, c.city, c.state, c.postal_code, c.country, c.type, c.is_active, c.notes, c.created_at, c.updated_at
         ORDER BY c.created_at DESC
         LIMIT $${paramIndex} OFFSET $${paramIndex + 1}
       `
@@ -109,7 +109,7 @@ const customersRepository = {
 
       // Add customer type filter
       if (customer_type) {
-        whereClause += ` AND customer_type = $${paramIndex}`
+        whereClause += ` AND type = $${paramIndex}`
         queryParams.push(customer_type)
         paramIndex++
       }

@@ -161,13 +161,36 @@ class ProductsController {
    * Update product
    */
   async updateProduct(req, res, next) {
-    // Route başına detaylı loglama
-    console.log('🔄 PUT /api/products/:id isteği alındı, ID:', req.params.id);
-    console.log('📥 Gelen Gövde (Body):', JSON.stringify(req.body, null, 2));
-    console.log('🕐 İstek Zamanı:', new Date().toISOString());
+    // Gelen veriyi loglama
+    console.log('🔄 PUT /api/products/:id isteği alındı');
+    console.log('📥 Gelen Güncelleme İsteği Body:', JSON.stringify(req.body, null, 2));
+    console.log('🆔 Ürün ID:', req.params.id);
+    console.log('👤 Kullanıcı ID:', req.user?.id);
     
     try {
       const { id } = req.params;
+      
+      // Express-validator sonuçlarını kontrol et
+      const { validationResult } = require('express-validator');
+      const errors = validationResult(req);
+      
+      if (!errors.isEmpty()) {
+        const validationErrors = errors.array().map(error => {
+          console.log('🔍 Validation Error Detail:', {
+            field: error.path || error.param,
+            message: error.msg,
+            value: error.value,
+            location: error.location
+          });
+          return error.msg;
+        });
+        
+        console.log('❌ Express-Validator Hataları:', validationErrors);
+        return res.status(400).json({
+          message: 'Validation failed - Express Validator',
+          errors: validationErrors
+        });
+      }
       
       const updateData = {
         // Temel bilgiler
@@ -175,13 +198,13 @@ class ProductsController {
         sku: req.body.sku,
         description: req.body.description,
         brand_id: req.body.brand_id || null,
-        brand: req.body.brand && req.body.brand.trim() !== '' ? req.body.brand : null, // Frontend'den gelen brand string değeri
+        brand: req.body.brand && req.body.brand.trim() !== '' ? req.body.brand : null,
         
         // Kategori ve tip
         category_id: req.body.category_id || null,
         product_type_id: req.body.product_type_id || null,
         
-        // Fiyat bilgileri
+        // Fiyat bilgileri - sayıya dönüştür
         unit_price: req.body.unit_price ? parseFloat(req.body.unit_price) : undefined,
         cost_price: req.body.cost_price ? parseFloat(req.body.cost_price) : undefined,
         currency_id: req.body.currency_id || null,
@@ -195,7 +218,7 @@ class ProductsController {
         // Tedarikçi bilgileri
         supplier_id: req.body.supplier_id || null,
         last_supplier_id: req.body.last_supplier_id || null,
-        supplier_name: req.body.supplier_name, // Frontend'den gelen supplier name
+        supplier_name: req.body.supplier_name,
         supplier_product_code: req.body.supplier_product_code,
         lead_time_days: req.body.lead_time_days ? parseInt(req.body.lead_time_days) : undefined,
         
@@ -270,21 +293,24 @@ class ProductsController {
   async deleteProduct(req, res, next) {
     try {
       const { id } = req.params;
+      winston.info(`🎯 Controller: Starting deleteProduct for ID: ${id}, User: ${req.user.id}`);
       
       const deleted = await productsService.deleteProduct(id, req.user.id);
+      winston.info(`🎯 Controller: Service returned: ${deleted}`);
       
       if (!deleted) {
+        winston.warn(`🎯 Controller: Product ${id} not found, returning 404`);
         return next(new AppError('Product not found', 404));
       }
 
-      winston.info(`Product deleted: ${id} by user ${req.user.id}`);
+      winston.info(`🎯 Controller: Product deleted successfully: ${id} by user ${req.user.id}`);
       
       res.json({
         status: 'success',
         message: 'Product deleted successfully'
       });
     } catch (error) {
-      winston.error('Error deleting product:', error);
+      winston.error('🎯 Controller: Error deleting product:', error);
       next(error);
     }
   }

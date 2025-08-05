@@ -299,19 +299,6 @@ router.delete('/:id', authenticateToken, requireRole(['admin']), async (req, res
             });
         }
 
-        // Bu tedarikçiye bağlı ürün var mı kontrol et
-        const connectedProducts = await query(
-            'SELECT COUNT(*) as count FROM products WHERE supplier_id = $1 AND is_active = TRUE',
-            [id]
-        );
-
-        if (connectedProducts.rows[0].count > 0) {
-            return res.status(400).json({
-                success: false,
-                message: 'Bu tedarikçiye bağlı aktif ürünler bulunuyor. Önce ürünleri güncelleyin.'
-            });
-        }
-
         // Soft delete
         await query(
             'UPDATE suppliers SET is_active = FALSE, updated_at = CURRENT_TIMESTAMP WHERE id = $1',

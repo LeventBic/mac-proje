@@ -76,7 +76,7 @@ app.use(compression())
 // Rate limiting - Production için aktif et
 const limiter = rateLimit({
   windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000, // 15 minutes
-  max: parseInt(process.env.RATE_LIMIT_MAX) || 5000, // Limit each IP to 5000 requests per windowMs
+  max: parseInt(process.env.RATE_LIMIT_MAX) || 6000, // Limit each IP to 6000 requests per windowMs
   message: {
     error: 'Too many requests from this IP, please try again later'
   },

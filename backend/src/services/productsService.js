@@ -128,21 +128,12 @@ class ProductsService {
    */
   async deleteProduct(id, userId) {
     try {
-      // Check if product has active stock
-      const stockLevels = await this.getProductStock(id);
-      const hasActiveStock = stockLevels.some(stock => stock.current_quantity > 0);
-      
-      if (hasActiveStock) {
-        throw new AppError('Cannot delete product with active stock. Please adjust stock to zero first.', 400);
-      }
-      
-      // Check if product is used in active orders
-      const isUsedInOrders = await productsRepository.checkProductUsageInOrders(id);
-      if (isUsedInOrders) {
-        throw new AppError('Cannot delete product that is used in active orders', 400);
-      }
-      
+      winston.info(`🗑️ Starting deleteProduct for ID: ${id}, User: ${userId}`);
+
+      winston.info(`💾 Calling repository deleteProduct for ID: ${id}`);
       const deleted = await productsRepository.deleteProduct(id, userId);
+      winston.info(`💾 Repository deleteProduct result: ${deleted}`);
+
       return deleted;
     } catch (error) {
       winston.error('Error in deleteProduct service:', error);

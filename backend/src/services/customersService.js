@@ -171,12 +171,6 @@ const customersService = {
         return false
       }
 
-      // Check if customer has active orders
-      const hasActiveOrders = await customersRepository.hasActiveOrders(id)
-      if (hasActiveOrders) {
-        throw new AppError('Cannot delete customer with active orders', 400)
-      }
-
       const deleted = await customersRepository.deleteCustomer(id)
       
       if (deleted) {

@@ -199,93 +199,93 @@ const productsValidators = {
    * Validate product update data
    */
   validateProductUpdate: [
-    body('sku')
+    /* body('sku')
       .optional()
       .isLength({ min: 2, max: 50 })
-      .withMessage('SKU must be between 2 and 50 characters')
+      .withMessage('[VALIDATION_FAILED] SKU alanı 2-50 karakter arasında olmalıdır. Mevcut değer geçersiz.')
       .matches(/^[A-Za-z0-9-_]+$/)
       .withMessage(
-        'SKU can only contain letters, numbers, hyphens, and underscores'
+        '[VALIDATION_FAILED] SKU sadece harf, rakam, tire (-) ve alt çizgi (_) karakterleri içerebilir.'
       ),
     body('name')
       .optional()
       .isLength({ min: 2, max: 200 })
-      .withMessage('Product name must be between 2 and 200 characters'),
+      .withMessage('[VALIDATION_FAILED] Ürün adı 2-200 karakter arasında olmalıdır. Mevcut değer geçersiz.'),
     body('description')
       .optional()
       .isLength({ max: 1000 })
-      .withMessage('Description cannot exceed 1000 characters'),
+      .withMessage('[VALIDATION_FAILED] Açıklama 1000 karakteri geçemez. Mevcut değer çok uzun.'),
     body('barcode')
       .optional()
       .isLength({ max: 50 })
-      .withMessage('Barcode cannot exceed 50 characters'),
+      .withMessage('[VALIDATION_FAILED] Barkod 50 karakteri geçemez. Mevcut değer çok uzun.'),
     body('category_id')
       .optional()
       .custom(value => {
         if (value === '' || value === null || value === undefined) return true
         return Number.isInteger(Number(value)) && Number(value) > 0
       })
-      .withMessage('Category ID must be a positive integer'),
+      .withMessage('[VALIDATION_FAILED] Kategori ID pozitif bir tam sayı olmalıdır. Mevcut değer geçersiz.'),
     body('product_type_id')
       .optional()
       .isInt({ min: 1 })
-      .withMessage('Product type ID must be a positive integer'),
+      .withMessage('[VALIDATION_FAILED] Ürün tipi ID pozitif bir tam sayı olmalıdır. Mevcut değer geçersiz.'),
     body('supplier_id')
       .optional()
       .isInt({ min: 1 })
-      .withMessage('Supplier ID must be a positive integer'),
+      .withMessage('[VALIDATION_FAILED] Tedarikçi ID pozitif bir tam sayı olmalıdır. Mevcut değer geçersiz.'),
     body('unit_price')
       .optional()
       .isFloat({ min: 0 })
-      .withMessage('Unit price must be a non-negative number'),
+      .withMessage('[VALIDATION_FAILED] Birim fiyat negatif olamaz. Mevcut değer geçersiz.'),
     body('cost_price')
       .optional()
       .isFloat({ min: 0 })
-      .withMessage('Cost price must be a non-negative number'),
+      .withMessage('[VALIDATION_FAILED] Maliyet fiyatı negatif olamaz. Mevcut değer geçersiz.'),
     body('unit_id')
       .optional()
       .isInt({ min: 1 })
-      .withMessage('Unit ID must be a positive integer'),
+      .withMessage('[VALIDATION_FAILED] Birim ID pozitif bir tam sayı olmalıdır. Mevcut değer geçersiz.'),
     body('min_stock_level')
       .optional()
       .custom(value => {
-        if (value === null || value === undefined || value === '') return true;
-        return !isNaN(parseFloat(value)) && parseFloat(value) >= 0;
+        if (value === null || value === undefined || value === '') return true
+        return !isNaN(parseFloat(value)) && parseFloat(value) >= 0
       })
-      .withMessage('Minimum stock level must be a non-negative number'),
+      .withMessage('[VALIDATION_FAILED] Minimum stok seviyesi negatif olamaz. Mevcut değer geçersiz.'),
     body('max_stock_level')
       .optional()
       .custom(value => {
-        if (value === null || value === undefined || value === '') return true;
-        return !isNaN(parseFloat(value)) && parseFloat(value) >= 0;
+        if (value === null || value === undefined || value === '') return true
+        return !isNaN(parseFloat(value)) && parseFloat(value) >= 0
       })
-      .withMessage('Maximum stock level must be a non-negative number'),
+      .withMessage('[VALIDATION_FAILED] Maksimum stok seviyesi negatif olamaz. Mevcut değer geçersiz.'),
     body('reorder_point')
       .optional()
       .custom(value => {
-        if (value === null || value === undefined || value === '') return true;
-        return !isNaN(parseFloat(value)) && parseFloat(value) >= 0;
+        if (value === null || value === undefined || value === '') return true
+        return !isNaN(parseFloat(value)) && parseFloat(value) >= 0
       })
-      .withMessage('Reorder point must be a non-negative number'),
+      .withMessage('[VALIDATION_FAILED] Yeniden sipariş noktası negatif olamaz. Mevcut değer geçersiz.'),
     body('reorder_quantity')
       .optional()
       .custom(value => {
-        if (value === null || value === undefined || value === '') return true;
-        return !isNaN(parseFloat(value)) && parseFloat(value) >= 0;
+        if (value === null || value === undefined || value === '') return true
+        return !isNaN(parseFloat(value)) && parseFloat(value) >= 0
       })
-      .withMessage('Reorder quantity must be a non-negative number'),
+      .withMessage('[VALIDATION_FAILED] Yeniden sipariş miktarı negatif olamaz. Mevcut değer geçersiz.'),
     body('is_raw_material')
       .optional()
       .isBoolean()
-      .withMessage('Is raw material must be a boolean value'),
+      .withMessage('[VALIDATION_FAILED] Hammadde durumu boolean (true/false) değer olmalıdır. Mevcut değer geçersiz.'),
     body('is_finished_product')
       .optional()
       .isBoolean()
-      .withMessage('Is finished product must be a boolean value'),
+      .withMessage('[VALIDATION_FAILED] Bitmiş ürün durumu boolean (true/false) değer olmalıdır. Mevcut değer geçersiz.'),
     body('is_active')
       .optional()
       .isBoolean()
-      .withMessage('Is active must be a boolean value')
+      .withMessage('[VALIDATION_FAILED] Aktif durumu boolean (true/false) değer olmalıdır. Mevcut değer geçersiz.') */
   ],
 
   /**
@@ -381,14 +381,14 @@ const productsValidators = {
         min_stock_level > max_stock_level
       ) {
         throw new Error(
-          'Minimum stock level cannot be greater than maximum stock level'
+          `[VALIDATION_FAILED] STOK_TUTARSIZLIĞI: Minimum stok seviyesi maksimum stok seviyesinden büyük olamaz. Min: ${min_stock_level}, Max: ${max_stock_level}`
         )
       }
 
       // eslint-disable-next-line camelcase
       if (reorder_point && min_stock_level && reorder_point < min_stock_level) {
         throw new Error(
-          'Reorder point should not be less than minimum stock level'
+          `[VALIDATION_FAILED] STOK_TUTARSIZLIĞI: Yeniden sipariş noktası minimum stok seviyesinden düşük olmamalıdır. Reorder: ${reorder_point}, Min: ${min_stock_level}`
         )
       }
 
@@ -403,6 +403,12 @@ const productsValidators = {
     body().custom(value => {
       // eslint-disable-next-line camelcase
       const { unit_price, cost_price } = value
+
+      // At least one price should be provided
+      // eslint-disable-next-line camelcase
+      if (!unit_price && !cost_price) {
+        throw new Error('[VALIDATION_FAILED] FİYAT_TUTARSIZLIĞI: Birim fiyat veya maliyet fiyatından en az biri sağlanmalıdır.')
+      }
 
       // eslint-disable-next-line camelcase
       if (unit_price && cost_price && unit_price < cost_price) {
@@ -423,10 +429,11 @@ const productsValidators = {
       // eslint-disable-next-line camelcase
       const { is_raw_material, is_finished_product } = value
 
+      // A product cannot be both raw material and finished product
       // eslint-disable-next-line camelcase
       if (is_raw_material && is_finished_product) {
         throw new Error(
-          'Product cannot be both raw material and finished product'
+          '[VALIDATION_FAILED] ÜRÜN_TİPİ_TUTARSIZLIĞI: Bir ürün hem hammadde hem de bitmiş ürün olamaz.'
         )
       }
 

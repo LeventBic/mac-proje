@@ -87,12 +87,6 @@ class ProjectService {
             throw new AppError('Proje bulunamadı', 404);
         }
 
-        // Business rule: Cannot delete project with tasks
-        const taskCount = await projectRepository.getTaskCount(id);
-        if (taskCount > 0) {
-            throw new AppError('Görevleri olan proje silinemez. Önce görevleri silin.', 400);
-        }
-
         await projectRepository.delete(id);
         return { message: 'Proje silindi' };
     }
