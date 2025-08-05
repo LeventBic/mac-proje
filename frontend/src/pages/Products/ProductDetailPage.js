@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useProduct } from '../../hooks/useProducts';
 import { useStockMovements } from '../../hooks/useStock';
 import { FiArrowLeft, FiPackage, FiTrendingUp, /* FiList, */ FiAlertTriangle } from 'react-icons/fi';
-import { formatCurrency } from '../../utils/formatters';
+import { formatCurrency, formatQuantity } from '../../utils/formatters';
 
 const ProductDetailPage = () => {
   const { id } = useParams();
@@ -134,7 +134,7 @@ const ProductDetailPage = () => {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             <div>
               <h3 className="text-sm font-medium text-gray-500 mb-2">Mevcut Stok</h3>
-              <p className="text-2xl font-bold text-gray-900">{product.current_stock || 0}</p>
+              <p className="text-2xl font-bold text-gray-900">{formatQuantity(product.current_stock || 0)}</p>
               <p className="text-sm text-gray-600">{product.unit || 'Adet'}</p>
             </div>
             <div>
@@ -226,19 +226,19 @@ const ProductDetailPage = () => {
                   <div className="space-y-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-500">Mevcut Stok</label>
-                      <p className="mt-1 text-sm text-gray-900">{product.current_stock || 0} {product.unit}</p>
+                      <p className="mt-1 text-sm text-gray-900">{formatQuantity(product.current_stock || 0)} {product.unit}</p>
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-500">Minimum Stok</label>
-                      <p className="mt-1 text-sm text-gray-900">{product.min_stock || 0} {product.unit}</p>
+                      <p className="mt-1 text-sm text-gray-900">{formatQuantity(product.min_stock || 0)} {product.unit}</p>
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-500">Maksimum Stok</label>
-                      <p className="mt-1 text-sm text-gray-900">{product.max_stock || 0} {product.unit}</p>
+                      <p className="mt-1 text-sm text-gray-900">{formatQuantity(product.max_stock || 0)} {product.unit}</p>
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-500">Yeniden Sipariş Noktası</label>
-                      <p className="mt-1 text-sm text-gray-900">{product.reorder_point || 0} {product.unit}</p>
+                      <p className="mt-1 text-sm text-gray-900">{formatQuantity(product.reorder_point || 0)} {product.unit}</p>
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-500">Birim Fiyat</label>

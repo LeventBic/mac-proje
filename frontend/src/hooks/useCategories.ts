@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import axios from 'axios';
+import axiosClient from '../config/axiosClient';
 
 interface Category {
   id: number;
@@ -24,22 +24,22 @@ interface UpdateCategoryData {
 
 // API fonksiyonları
 const fetchCategories = async (): Promise<Category[]> => {
-  const response = await axios.get('/api/categories');
+  const response = await axiosClient.get('/categories');
   return response.data.data;
 };
 
 const createCategory = async (categoryData: CreateCategoryData): Promise<Category> => {
-  const response = await axios.post('/api/categories', categoryData);
+  const response = await axiosClient.post('/categories', categoryData);
   return response.data.data;
 };
 
 const updateCategory = async (categoryData: UpdateCategoryData): Promise<Category> => {
-  const response = await axios.put(`/api/categories/${categoryData.id}`, categoryData);
+  const response = await axiosClient.put(`/categories/${categoryData.id}`, categoryData);
   return response.data;
 };
 
 const deleteCategory = async (id: number): Promise<void> => {
-  await axios.delete(`/api/categories/${id}`);
+  await axiosClient.delete(`/categories/${id}`);
 };
 
 // Custom hook - kategorileri getir

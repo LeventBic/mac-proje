@@ -1,6 +1,6 @@
 {
-  "short_name": "Inflow",
-  "name": "Inflow Manufacturing Management",
+  "short_name": "Devarp",
+  "name": "Devarp Manufacturing Management",
   "icons": [
     {
       "src": "favicon.ico",
@@ -12,4 +12,4 @@
   "display": "standalone",
   "theme_color": "#000000",
   "background_color": "#ffffff"
-} 
+}

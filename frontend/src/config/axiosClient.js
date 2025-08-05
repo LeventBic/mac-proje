@@ -3,12 +3,12 @@ import toast from 'react-hot-toast';
 
 // API Base URL
 const API_BASE_URL =
-  process.env.REACT_APP_API_URL || 'http://localhost:3003/api';
+  process.env.REACT_APP_API_URL || 'http://localhost:3002/api';
 
 // Create axios instance
 const axiosClient = axios.create({
   baseURL: API_BASE_URL,
-  timeout: 10000,
+  timeout: 30000, // 30 seconds timeout
   headers: {
     'Content-Type': 'application/json',
   },

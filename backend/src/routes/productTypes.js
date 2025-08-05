@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { query } = require('../config/database');
-const { requireAuth: authenticateToken, requireRole } = require('../middleware/auth');
+const { requireAuth: authenticateToken } = require('../middleware/auth');
 
 // Tüm ürün tiplerini listele
 router.get('/', authenticateToken, async (req, res) => {
@@ -78,7 +78,7 @@ router.get('/:id', authenticateToken, async (req, res) => {
 });
 
 // Yeni ürün tipi ekle
-router.post('/', authenticateToken, requireRole(['admin', 'operator']), async (req, res) => {
+router.post('/', authenticateToken, async (req, res) => {
     try {
         const { name, description } = req.body;
 
@@ -127,7 +127,7 @@ router.post('/', authenticateToken, requireRole(['admin', 'operator']), async (r
 });
 
 // Ürün tipi güncelle
-router.put('/:id', authenticateToken, requireRole(['admin', 'operator']), async (req, res) => {
+router.put('/:id', authenticateToken, async (req, res) => {
     try {
         const { id } = req.params;
         const { name, description, is_active } = req.body;
@@ -192,7 +192,7 @@ router.put('/:id', authenticateToken, requireRole(['admin', 'operator']), async 
 });
 
 // Ürün tipi sil (soft delete)
-router.delete('/:id', authenticateToken, requireRole(['admin']), async (req, res) => {
+router.delete('/:id', authenticateToken, async (req, res) => {
     try {
         const { id } = req.params;
 

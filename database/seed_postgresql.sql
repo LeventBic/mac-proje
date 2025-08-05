@@ -1,4 +1,4 @@
--- inFlow ERP - PostgreSQL Örnek Veriler
+-- Devarp ERP - PostgreSQL Örnek Veriler
 -- Bu dosya PostgreSQL veritabanına örnek verileri yükler
 -- MySQL'den PostgreSQL'e geçiş sırasında mevcut veriler korunmuştur
 
@@ -8,10 +8,10 @@
 
 -- Kullanıcılar (varsayılan kullanıcılar)
 INSERT INTO users (username, email, password_hash, first_name, last_name, role, is_active) VALUES 
-('admin', 'admin@inflow.com', '$2a$10$cuQ6pIW7CQDt5D0XnG7RjOqmv9VnlHjzQDBzxSqT0AJWGnqtaZzte', 'Admin', 'User', 'admin', TRUE),
-('manager', 'manager@inflow.com', '$2a$10$new/vP827QD1NA4MMHH6p.snazQ3dVvSPMILDZnxMcBbmLdCjLFje', 'Manager', 'User', 'manager', TRUE),
-('operator', 'operator@inflow.com', '$2a$10$/2rBJfa1HwymhNgXf2xbNeC3G1q0NGvtwkDAORsxEFR4HWb1eMpH6', 'Operator', 'User', 'operator', TRUE),
-('viewer', 'viewer@inflow.com', '$2a$10$mNzoqNKZy8J5ZGfs48QpG.7LVkx7xIFcYLwGvW.WALabd3Hpm2gU2', 'Viewer', 'User', 'viewer', TRUE)
+('admin', 'admin@devarp.com', '$2a$10$cuQ6pIW7CQDt5D0XnG7RjOqmv9VnlHjzQDBzxSqT0AJWGnqtaZzte', 'Admin', 'User', 'admin', TRUE),
+('manager', 'manager@devarp.com', '$2a$10$new/vP827QD1NA4MMHH6p.snazQ3dVvSPMILDZnxMcBbmLdCjLFje', 'Manager', 'User', 'manager', TRUE),
+('operator', 'operator@devarp.com', '$2a$10$/2rBJfa1HwymhNgXf2xbNeC3G1q0NGvtwkDAORsxEFR4HWb1eMpH6', 'Operator', 'User', 'operator', TRUE),
+('viewer', 'viewer@devarp.com', '$2a$10$mNzoqNKZy8J5ZGfs48QpG.7LVkx7xIFcYLwGvW.WALabd3Hpm2gU2', 'Viewer', 'User', 'viewer', TRUE)
 ON CONFLICT (username) DO NOTHING;
 
 -- Lokasyonlar (temel lokasyon verileri)

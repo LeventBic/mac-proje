@@ -49,6 +49,10 @@ export const useUpdateStock = () => {
     onSuccess: (data, variables) => {
       queryClient.invalidateQueries({ queryKey: STOCK_QUERY_KEYS.currentStock() });
       queryClient.invalidateQueries({ queryKey: STOCK_QUERY_KEYS.currentStockDetail(variables.id) });
+      // Invalidate dashboard queries to update stock stats
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+      // Invalidate product queries as stock changes may affect product data
+      queryClient.invalidateQueries({ queryKey: ['products'] });
       toast.success('Stok başarıyla güncellendi');
     },
   });
@@ -79,6 +83,10 @@ export const useCreateStockAdjustment = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: STOCK_QUERY_KEYS.adjustments() });
       queryClient.invalidateQueries({ queryKey: STOCK_QUERY_KEYS.currentStock() });
+      // Invalidate dashboard queries to update stock stats
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+      // Invalidate product queries as stock changes may affect product data
+      queryClient.invalidateQueries({ queryKey: ['products'] });
       toast.success('Stok düzeltmesi başarıyla oluşturuldu');
     },
   });
@@ -93,6 +101,10 @@ export const useUpdateStockAdjustment = () => {
       queryClient.invalidateQueries({ queryKey: STOCK_QUERY_KEYS.adjustments() });
       queryClient.invalidateQueries({ queryKey: STOCK_QUERY_KEYS.adjustmentDetail(variables.id) });
       queryClient.invalidateQueries({ queryKey: STOCK_QUERY_KEYS.currentStock() });
+      // Invalidate dashboard queries to update stock stats
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+      // Invalidate product queries as stock changes may affect product data
+      queryClient.invalidateQueries({ queryKey: ['products'] });
       toast.success('Stok düzeltmesi başarıyla güncellendi');
     },
   });
@@ -137,6 +149,10 @@ export const useCreateStockTransfer = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: STOCK_QUERY_KEYS.transfers() });
       queryClient.invalidateQueries({ queryKey: STOCK_QUERY_KEYS.currentStock() });
+      // Invalidate dashboard queries to update stock stats
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+      // Invalidate product queries as stock changes may affect product data
+      queryClient.invalidateQueries({ queryKey: ['products'] });
       toast.success('Stok transferi başarıyla oluşturuldu');
     },
   });
@@ -151,6 +167,10 @@ export const useUpdateStockTransfer = () => {
       queryClient.invalidateQueries({ queryKey: STOCK_QUERY_KEYS.transfers() });
       queryClient.invalidateQueries({ queryKey: STOCK_QUERY_KEYS.transferDetail(variables.id) });
       queryClient.invalidateQueries({ queryKey: STOCK_QUERY_KEYS.currentStock() });
+      // Invalidate dashboard queries to update stock stats
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+      // Invalidate product queries as stock changes may affect product data
+      queryClient.invalidateQueries({ queryKey: ['products'] });
       toast.success('Stok transferi başarıyla güncellendi');
     },
   });
@@ -179,6 +199,10 @@ export const useApproveStockTransfer = () => {
       queryClient.invalidateQueries({ queryKey: STOCK_QUERY_KEYS.transfers() });
       queryClient.invalidateQueries({ queryKey: STOCK_QUERY_KEYS.transferDetail(transferId) });
       queryClient.invalidateQueries({ queryKey: STOCK_QUERY_KEYS.currentStock() });
+      // Invalidate dashboard queries to update stock stats
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+      // Invalidate product queries as stock changes may affect product data
+      queryClient.invalidateQueries({ queryKey: ['products'] });
       toast.success('Stok transferi başarıyla onaylandı');
     },
   });

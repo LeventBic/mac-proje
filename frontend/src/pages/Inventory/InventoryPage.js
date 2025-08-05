@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useInventoryAnalysis, useInventoryAlerts, useInventoryValuation } from '../../hooks/useStock';
 import { FiPackage, FiAlertTriangle, FiDollarSign, FiBarChart2 } from 'react-icons/fi';
 import { formatCurrency, formatNumber } from '../../utils/formatters';
+import TotalProductsWidget from '../../components/TotalProductsWidget';
 
 const InventoryPage = () => {
   const [activeTab, setActiveTab] = useState('overview');
@@ -150,13 +151,7 @@ const InventoryPage = () => {
               <div className="space-y-6">
                 {/* Summary Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                  <div className="bg-white border border-gray-200 rounded-lg p-6 text-center">
-                    <h3 className="text-sm font-medium text-gray-500 mb-2">Toplam Ürün</h3>
-                    <div className="text-3xl font-bold text-blue-600 mb-2">
-                      {formatNumber(summary.summary?.total_products || 0, 0)}
-                    </div>
-                    <div className="text-sm text-gray-600">Aktif ürün sayısı</div>
-                  </div>
+                  <TotalProductsWidget />
 
                   <div className="bg-white border border-gray-200 rounded-lg p-6 text-center">
                     <h3 className="text-sm font-medium text-gray-500 mb-2">Stok Değeri</h3>

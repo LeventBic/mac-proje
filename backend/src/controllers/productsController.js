@@ -99,6 +99,7 @@ class ProductsController {
         sku: req.body.sku,
         description: req.body.description,
         brand_id: req.body.brand_id || null,
+        brand: req.body.brand && req.body.brand.trim() !== '' ? req.body.brand : null,
         
         // Kategori ve tip
         category_id: req.body.category_id || null,
@@ -123,8 +124,8 @@ class ProductsController {
         
         // Lokasyon ve kodlar
         location_id: req.body.location_id || null,
-        barcode: req.body.barcode,
-        qr_code: req.body.qr_code,
+        barcode: req.body.barcode && req.body.barcode.trim() !== '' ? req.body.barcode : null,
+        qr_code: req.body.qr_code && req.body.qr_code.trim() !== '' ? req.body.qr_code : null,
         
         // Özellikler
         is_popular: req.body.is_popular === true || req.body.is_popular === 'true',
@@ -174,6 +175,7 @@ class ProductsController {
         sku: req.body.sku,
         description: req.body.description,
         brand_id: req.body.brand_id || null,
+        brand: req.body.brand && req.body.brand.trim() !== '' ? req.body.brand : null, // Frontend'den gelen brand string değeri
         
         // Kategori ve tip
         category_id: req.body.category_id || null,
@@ -193,13 +195,14 @@ class ProductsController {
         // Tedarikçi bilgileri
         supplier_id: req.body.supplier_id || null,
         last_supplier_id: req.body.last_supplier_id || null,
+        supplier_name: req.body.supplier_name, // Frontend'den gelen supplier name
         supplier_product_code: req.body.supplier_product_code,
         lead_time_days: req.body.lead_time_days ? parseInt(req.body.lead_time_days) : undefined,
         
         // Lokasyon ve kodlar
         location_id: req.body.location_id || null,
-        barcode: req.body.barcode,
-        qr_code: req.body.qr_code,
+        barcode: req.body.barcode && req.body.barcode.trim() !== '' ? req.body.barcode : null,
+        qr_code: req.body.qr_code && req.body.qr_code.trim() !== '' ? req.body.qr_code : null,
         
         // Özellikler
         is_popular: req.body.is_popular !== undefined ? (req.body.is_popular === true || req.body.is_popular === 'true') : undefined,

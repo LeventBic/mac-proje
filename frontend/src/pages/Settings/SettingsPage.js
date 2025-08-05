@@ -19,7 +19,7 @@ const SettingsPage = () => {
 
   // Sistem ayarları
   const [systemSettings, setSystemSettings] = useState({
-    companyName: 'inFlow Stok Yönetimi',
+    companyName: 'Devarp Stok Yönetimi',
     companyAddress: '',
     companyPhone: '',
     companyEmail: '',

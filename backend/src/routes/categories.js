@@ -77,7 +77,7 @@ router.get('/:id', authenticateToken, async (req, res) => {
 })
 
 // Yeni kategori ekle
-router.post('/', authenticateToken, requireRole(['admin', 'operator']), async (req, res) => {
+router.post('/', authenticateToken, requireRole('admin', 'operator'), async (req, res) => {
   try {
     const { name, description, parent_id: parentId } = req.body
 
@@ -102,10 +102,13 @@ router.post('/', authenticateToken, requireRole(['admin', 'operator']), async (r
       })
     }
 
+    // Kategori kodu oluştur (name'den türetilmiş)
+    const code = name.toUpperCase().replace(/[^A-Z0-9]/g, '').substring(0, 10) || 'CAT'
+
     const result = await query(`
-            INSERT INTO product_categories (name, description, parent_id)
-            VALUES ($1, $2, $3) RETURNING id
-        `, [name, description, parentId])
+            INSERT INTO product_categories (name, description, parent_id, code)
+            VALUES ($1, $2, $3, $4) RETURNING id
+        `, [name, description, parentId, code])
 
     // Yeni eklenen kategoriyi getir
     const newCategoryResult = await query(
@@ -130,7 +133,7 @@ router.post('/', authenticateToken, requireRole(['admin', 'operator']), async (r
 })
 
 // Kategori güncelle
-router.put('/:id', authenticateToken, requireRole(['admin', 'operator']), async (req, res) => {
+router.put('/:id', authenticateToken, requireRole('admin', 'operator'), async (req, res) => {
   try {
     const { id } = req.params
     const { name, description, parent_id: parentId, is_active: isActive } = req.body
@@ -195,7 +198,7 @@ router.put('/:id', authenticateToken, requireRole(['admin', 'operator']), async 
 })
 
 // Kategori sil (soft delete)
-router.delete('/:id', authenticateToken, requireRole(['admin']), async (req, res) => {
+router.delete('/:id', authenticateToken, requireRole('admin'), async (req, res) => {
   try {
     const { id } = req.params
 

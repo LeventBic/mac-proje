@@ -1,4 +1,4 @@
--- inFlow ERP Sistemi - PostgreSQL Database Schema
+-- Devarp ERP Sistemi - PostgreSQL Database Schema
 -- Profesyonel ERP sistemi için gelişmiş veritabanı yapısı
 -- MySQL'den PostgreSQL'e geçiş ve ERP özellikleri eklendi
 
@@ -1764,7 +1764,7 @@ CREATE INDEX idx_payments_date_type ON payments(payment_date, payment_type);
 
 -- Varsayılan şirket
 INSERT INTO companies (name, legal_name, tax_number, currency, settings) VALUES 
-('inFlow ERP', 'inFlow ERP Teknoloji A.Ş.', '1234567890', 'TRY', '{"default_location": "MAIN"}');
+('Devarp ERP', 'Devarp ERP Teknoloji A.Ş.', '1234567890', 'TRY', '{"default_location": "MAIN"}');
 
 -- Varsayılan lokasyon
 INSERT INTO locations (company_id, code, name, type, is_active) VALUES 

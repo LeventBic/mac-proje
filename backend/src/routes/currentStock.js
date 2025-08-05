@@ -772,7 +772,7 @@ router.get('/:id/movements', authenticateToken, async (req, res) => {
     const { page = 1, limit = 10 } = req.query
     const offset = (page - 1) * limit
 
-    const query = `
+    const queryText = `
             SELECT 
                 sm.id,
                 sm.uuid,
@@ -790,23 +790,24 @@ router.get('/:id/movements', authenticateToken, async (req, res) => {
             FROM stock_movements sm
             LEFT JOIN users u ON sm.created_by = u.id
             LEFT JOIN suppliers s ON sm.supplier_id = s.id
-            WHERE sm.product_id = ?
+            WHERE sm.product_id = $1
             ORDER BY sm.created_at DESC
-            LIMIT ? OFFSET ?
+            LIMIT $2 OFFSET $3
         `
 
-    const [movements] = await require('../config/database').pool.execute(
-      query,
+    const movementsResult = await query(
+      queryText,
       [id, parseInt(limit), parseInt(offset)]
     )
+    const movements = movementsResult.rows
 
     // Count sorgusu
-    const [countResult] = await require('../config/database').pool.execute(
-      'SELECT COUNT(*) as total FROM stock_movements WHERE product_id = ?',
+    const countResult = await query(
+      'SELECT COUNT(*) as total FROM stock_movements WHERE product_id = $1',
       [id]
     )
 
-    const total = countResult[0].total
+    const total = countResult.rows[0].total
     const totalPages = Math.ceil(total / limit)
 
     res.json({

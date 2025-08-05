@@ -1,7 +1,7 @@
 {
-  "name": "inflow-backend",
+  "name": "devarp-backend",
   "version": "1.0.0",
-  "description": "inFlow benzeri stok ve üretim yönetimi uygulaması - Backend API",
+  "description": "Devarp stok ve üretim yönetimi uygulaması - Backend API",
   "main": "src/app.js",
   "scripts": {
     "dev": "nodemon server.js",
@@ -29,7 +29,7 @@
     "express",
     "postgresql"
   ],
-  "author": "inFlow Team",
+  "author": "Devarp Team",
   "license": "MIT",
   "dependencies": {
     "@types/pg": "^8.15.5",
@@ -67,10 +67,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/your-org/inflow-app.git"
+    "url": "https://github.com/your-org/devarp-app.git"
   },
   "bugs": {
-    "url": "https://github.com/your-org/inflow-app/issues"
+    "url": "https://github.com/your-org/devarp-app/issues"
   },
-  "homepage": "https://github.com/your-org/inflow-app#readme"
+  "homepage": "https://github.com/your-org/devarp-app#readme"
 }

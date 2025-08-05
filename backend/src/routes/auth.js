@@ -5,8 +5,21 @@ const { query } = require('../config/database')
 const { AppError } = require('../middleware/errorHandler')
 const { generateToken, generateRefreshToken, verifyRefreshToken } = require('../middleware/auth')
 const winston = require('winston')
+const rateLimit = require('express-rate-limit')
 
 const router = express.Router()
+
+// Login için özel rate limiting
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 dakika
+  max: 20, // IP başına 15 dakikada maksimum 20 login denemesi
+  message: {
+    error: 'Çok fazla istek gönderdiniz. Lütfen bekleyin.'
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+  skipSuccessfulRequests: true // Başarılı login'ler sayılmaz
+})
 
 /**
  * @swagger
@@ -74,7 +87,7 @@ const router = express.Router()
  *       400:
  *         description: Validation error
  */
-router.post('/login', [
+router.post('/login', loginLimiter, [
   body('username')
     .notEmpty()
     .withMessage('Username is required'),
@@ -116,11 +129,11 @@ router.post('/login', [
     
     if (!passwordValidation.isValid) {
       if (passwordValidation.needsReset) {
-        winston.warn('User login failed due to invalid hash format', {
-          userId: user.id,
-          username: user.username,
-          error: passwordValidation.error
-        })
+        // winston.warn('User login failed due to invalid hash format', {
+        //   userId: user.id,
+        //   username: user.username,
+        //   error: passwordValidation.error
+        // })
         return next(new AppError('Your password needs to be reset. Please contact administrator.', 401))
       }
       return next(new AppError('Invalid credentials', 401))

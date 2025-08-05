@@ -230,8 +230,8 @@ class ProductsRepository {
       });
       
       const allowedFields = [
-        'sku', 'name', 'description', 'barcode', 'qr_code', 'brand_id', 'category_id', 'product_type_id',
-        'supplier_id', 'unit_price', 'cost_price', 'current_stock', 'unit', 'min_stock_level',
+        'sku', 'name', 'description', 'barcode', 'qr_code', 'brand_id', 'brand', 'category_id', 'product_type_id',
+        'supplier_id', 'supplier_name', 'unit_price', 'cost_price', 'current_stock', 'unit', 'min_stock_level',
         'max_stock_level', 'reorder_point', 'reorder_quantity', 'is_raw_material',
         'is_finished_product', 'is_active', 'updated_by'
       ];

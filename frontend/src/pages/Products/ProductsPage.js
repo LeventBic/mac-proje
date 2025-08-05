@@ -13,6 +13,7 @@ import {
   useCreateProduct,
   useUpdateProduct,
   useDeleteProduct,
+  useCreateProductType,
 } from '../../hooks/useProducts';
 import { useCreateCategory } from '../../hooks/useCategories.ts';
 import DeleteButton from '../../components/DeleteButton';
@@ -30,9 +31,19 @@ const ProductsPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
   const [productType, setProductType] = useState('all');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(10);
   const [modalPosition, setModalPosition] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+  // Kategori modal drag state'leri
+  const [categoryModalPosition, setCategoryModalPosition] = useState({ x: 0, y: 0 });
+  const [isCategoryDragging, setIsCategoryDragging] = useState(false);
+  const [categoryDragStart, setCategoryDragStart] = useState({ x: 0, y: 0 });
+  // Ürün tipi modal drag state'leri
+  const [productTypeModalPosition, setProductTypeModalPosition] = useState({ x: 0, y: 0 });
+  const [isProductTypeDragging, setIsProductTypeDragging] = useState(false);
+  const [productTypeDragStart, setProductTypeDragStart] = useState({ x: 0, y: 0 });
   // Kategori ekleme state'leri
   const [showCategoryForm, setShowCategoryForm] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState('');
@@ -52,6 +63,9 @@ const ProductsPage = () => {
     search: searchTerm,
     category_id: selectedCategory,
     product_type_id: productType !== 'all' ? productType : undefined,
+    page: currentPage,
+    limit: itemsPerPage,
+    status: 'all', // Tüm ürünleri getir (aktif + pasif)
   });
 
   const { data: categoriesData, isLoading: categoriesLoading } =
@@ -64,14 +78,21 @@ const ProductsPage = () => {
   const updateProductMutation = useUpdateProduct();
   const deleteProductMutation = useDeleteProduct();
   const createCategoryMutation = useCreateCategory();
+  const createProductTypeMutation = useCreateProductType();
 
   // Extract data from API responses
   const products = productsData?.data?.products || productsData?.data || [];
+  const pagination = productsData?.pagination || {};
   const categories =
     categoriesData?.data?.categories || categoriesData?.data || [];
   const productTypes =
     productTypesData?.data?.productTypes || productTypesData?.data || [];
   // const suppliers = suppliersData?.data?.suppliers || suppliersData?.data || [];
+
+  // Reset page when filters change
+  React.useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, selectedCategory, productType]);
 
   const loading = productsLoading || categoriesLoading || productTypesLoading;
 
@@ -121,6 +142,62 @@ const ProductsPage = () => {
     setModalPosition({ x: 0, y: 0 });
   };
 
+  // Kategori modal drag fonksiyonları
+  const handleCategoryMouseDown = (e) => {
+    setIsCategoryDragging(true);
+    setCategoryDragStart({
+      x: e.clientX - categoryModalPosition.x,
+      y: e.clientY - categoryModalPosition.y
+    });
+  };
+
+  const handleCategoryMouseMove = (e) => {
+    if (!isCategoryDragging) return;
+    
+    const newX = e.clientX - categoryDragStart.x;
+    const newY = e.clientY - categoryDragStart.y;
+    
+    const maxX = window.innerWidth - 500;
+    const maxY = window.innerHeight - 400;
+    
+    setCategoryModalPosition({
+      x: Math.max(-200, Math.min(newX, maxX)),
+      y: Math.max(0, Math.min(newY, maxY))
+    });
+  };
+
+  const handleCategoryMouseUp = () => {
+    setIsCategoryDragging(false);
+  };
+
+  // Ürün tipi modal drag fonksiyonları
+  const handleProductTypeMouseDown = (e) => {
+    setIsProductTypeDragging(true);
+    setProductTypeDragStart({
+      x: e.clientX - productTypeModalPosition.x,
+      y: e.clientY - productTypeModalPosition.y
+    });
+  };
+
+  const handleProductTypeMouseMove = (e) => {
+    if (!isProductTypeDragging) return;
+    
+    const newX = e.clientX - productTypeDragStart.x;
+    const newY = e.clientY - productTypeDragStart.y;
+    
+    const maxX = window.innerWidth - 400;
+    const maxY = window.innerHeight - 400;
+    
+    setProductTypeModalPosition({
+      x: Math.max(-200, Math.min(newX, maxX)),
+      y: Math.max(0, Math.min(newY, maxY))
+    });
+  };
+
+  const handleProductTypeMouseUp = () => {
+    setIsProductTypeDragging(false);
+  };
+
   const handleMouseDown = (e) => {
     setIsDragging(true);
     setDragStart({
@@ -161,6 +238,32 @@ const ProductsPage = () => {
       };
     }
   }, [isDragging, dragStart, modalPosition]);
+
+  // Kategori modal mouse event listeners
+  React.useEffect(() => {
+    if (isCategoryDragging) {
+      document.addEventListener('mousemove', handleCategoryMouseMove);
+      document.addEventListener('mouseup', handleCategoryMouseUp);
+      
+      return () => {
+        document.removeEventListener('mousemove', handleCategoryMouseMove);
+        document.removeEventListener('mouseup', handleCategoryMouseUp);
+      };
+    }
+  }, [isCategoryDragging, categoryDragStart, categoryModalPosition]);
+
+  // Ürün tipi modal mouse event listeners
+  React.useEffect(() => {
+    if (isProductTypeDragging) {
+      document.addEventListener('mousemove', handleProductTypeMouseMove);
+      document.addEventListener('mouseup', handleProductTypeMouseUp);
+      
+      return () => {
+        document.removeEventListener('mousemove', handleProductTypeMouseMove);
+        document.removeEventListener('mouseup', handleProductTypeMouseUp);
+      };
+    }
+  }, [isProductTypeDragging, productTypeDragStart, productTypeModalPosition]);
 
   const handleDeleteProduct = async () => {
     if (!productToDelete) return;
@@ -212,17 +315,18 @@ const ProductsPage = () => {
         return;
       }
       
-      // Geçici olarak sadece başarı mesajı gösteriyoruz
-      // Gerçek API entegrasyonu için ürün tipi oluşturma hook'u gerekli
-      toast.success('Ürün tipi oluşturma özelliği yakında eklenecek');
+      await createProductTypeMutation.mutateAsync({
+        name: newProductTypeName.trim(),
+        description: newProductTypeDescription.trim() || undefined
+      });
       
       // Form'u temizle ve modalı kapat
       setNewProductTypeName('');
       setNewProductTypeDescription('');
       setShowProductTypeModal(false);
+      setProductTypeModalPosition({ x: 0, y: 0 });
     } catch (error) {
-      console.error('Error creating product type:', error);
-      toast.error('Ürün tipi eklenirken hata oluştu');
+      // Error is handled by the mutation
     }
   };
 
@@ -330,37 +434,37 @@ const ProductsPage = () => {
 
       {/* Products Table */}
       <div className="overflow-x-auto rounded-lg bg-white shadow">
-        <table className="min-w-full divide-y divide-gray-200">
+        <table className="w-full table-fixed divide-y divide-gray-200" style={{minWidth: '1200px'}}>
           <thead className="bg-gray-50">
             <tr>
-              <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+              <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500" style={{width: '22%'}}>
                 Ürün
               </th>
-              <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+              <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500" style={{width: '8%'}}>
                 Marka
               </th>
-              <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+              <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500" style={{width: '10%'}}>
                 Kategori
               </th>
-              <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+              <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500" style={{width: '8%'}}>
                 Stok
               </th>
-              <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+              <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500" style={{width: '16%'}}>
                 Tedarikçi
               </th>
-              <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+              <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500" style={{width: '12%'}}>
                 Barkod
               </th>
-              <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+              <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500" style={{width: '8%'}}>
                 Alış Fiyatı
               </th>
-              <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+              <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500" style={{width: '8%'}}>
                 Satış Fiyatı
               </th>
-              <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+              <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500" style={{width: '6%'}}>
                 Durum
               </th>
-              <th className="px-4 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500">
+              <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-gray-500" style={{width: '8%'}}>
                 İşlemler
               </th>
             </tr>
@@ -375,7 +479,7 @@ const ProductsPage = () => {
             ) : (
               products.map(product => (
                 <tr key={product.id} className="hover:bg-gray-50">
-                  <td className="whitespace-nowrap px-4 py-4">
+                  <td className="px-4 py-4 overflow-hidden" style={{width: '22%'}}>
                     <div className="flex items-center">
                       <div className="h-8 w-8 flex-shrink-0">
                         {product.image_url ? (
@@ -394,23 +498,23 @@ const ProductsPage = () => {
                           </div>
                         )}
                       </div>
-                      <div className="ml-3">
-                        <div className="text-sm font-medium text-gray-900">
+                      <div className="ml-3 min-w-0 flex-1">
+                        <div className="text-sm font-medium text-gray-900 truncate">
                           {product.name}
                         </div>
-                        <div className="text-xs text-gray-500">
+                        <div className="text-xs text-gray-500 truncate">
                           {product.sku}
                         </div>
                       </div>
                     </div>
                   </td>
-                  <td className="whitespace-nowrap px-4 py-4 text-sm text-gray-900">
+                  <td className="px-4 py-4 text-sm text-gray-900 truncate" style={{width: '8%'}}>
                     {product.brand || '-'}
                   </td>
-                  <td className="whitespace-nowrap px-4 py-4 text-sm text-gray-900">
+                  <td className="px-4 py-4 text-sm text-gray-900 truncate" style={{width: '10%'}}>
                     {product.category?.name || 'Kategori Yok'}
                   </td>
-                  <td className="whitespace-nowrap px-4 py-4">
+                  <td className="px-4 py-4" style={{width: '8%'}}>
                     <div className="text-sm text-gray-900">
                       <span className="font-medium">{formatQuantity(product.current_stock)}</span>
                       {product.reserved_stock > 0 && (
@@ -420,27 +524,27 @@ const ProductsPage = () => {
                       )}
                     </div>
                   </td>
-                  <td className="whitespace-nowrap px-4 py-4 text-sm text-gray-900">
-                    {product.supplier?.name || '-'}
+                  <td className="px-4 py-4 text-sm text-gray-900 truncate" style={{width: '16%'}}>
+                    {product.supplier_name || product.supplier?.name || '-'}
                   </td>
-                  <td className="whitespace-nowrap px-4 py-4 text-sm text-gray-900">
-                    <div>
+                  <td className="px-4 py-4 text-sm text-gray-900" style={{width: '12%'}}>
+                    <div className="truncate">
                       {product.barcode && (
-                        <div className="text-xs font-mono">{product.barcode}</div>
+                        <div className="text-xs font-mono truncate">{product.barcode}</div>
                       )}
                       {product.qr_code && (
-                        <div className="text-xs text-gray-500">QR: {product.qr_code}</div>
+                        <div className="text-xs text-gray-500 truncate">QR: {product.qr_code}</div>
                       )}
                       {!product.barcode && !product.qr_code && '-'}
                     </div>
                   </td>
-                  <td className="whitespace-nowrap px-4 py-4 text-sm text-gray-900">
+                  <td className="px-4 py-4 text-sm text-gray-900" style={{width: '8%'}}>
                     {formatCurrency(product.cost_price)}
                   </td>
-                  <td className="whitespace-nowrap px-4 py-4 text-sm text-gray-900">
+                  <td className="px-4 py-4 text-sm text-gray-900" style={{width: '8%'}}>
                     {formatCurrency(product.unit_price)}
                   </td>
-                  <td className="whitespace-nowrap px-4 py-4">
+                  <td className="px-4 py-4" style={{width: '6%'}}>
                     <span
                       className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${
                         product.is_active
@@ -451,8 +555,8 @@ const ProductsPage = () => {
                       {product.is_active ? 'Aktif' : 'Pasif'}
                     </span>
                   </td>
-                  <td className="whitespace-nowrap px-4 py-4 text-right text-sm font-medium">
-                    <div className="flex justify-end space-x-1">
+                  <td className="px-4 py-4 text-center text-sm font-medium" style={{width: '8%'}}>
+                    <div className="flex justify-center space-x-1">
                       <button
                         onClick={() => navigate(`/products/${product.id}`)}
                         className="text-blue-600 hover:text-blue-900 p-1"
@@ -482,6 +586,77 @@ const ProductsPage = () => {
           </tbody>
         </table>
       </div>
+
+      {/* Pagination */}
+      {pagination.total > 0 && (
+        <div className="mt-6 flex items-center justify-between bg-white px-4 py-3 rounded-lg shadow">
+          <div className="flex flex-1 justify-between sm:hidden">
+            <button
+              onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+              disabled={currentPage === 1}
+              className="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Önceki
+            </button>
+            <button
+              onClick={() => setCurrentPage(Math.min(pagination.pages || 1, currentPage + 1))}
+              disabled={currentPage >= (pagination.pages || 1)}
+              className="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Sonraki
+            </button>
+          </div>
+          <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+            <div>
+              <p className="text-sm text-gray-700">
+                Toplam <span className="font-medium">{pagination.total || 0}</span> ürün,{' '}
+                <span className="font-medium">{((currentPage - 1) * itemsPerPage) + 1}</span> -{' '}
+                <span className="font-medium">
+                  {Math.min(currentPage * itemsPerPage, pagination.total || 0)}
+                </span>{' '}
+                arası gösteriliyor
+              </p>
+            </div>
+            <div>
+              <nav className="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
+                <button
+                  onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                  disabled={currentPage === 1}
+                  className="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <span className="sr-only">Önceki</span>
+                  <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <path fillRule="evenodd" d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z" clipRule="evenodd" />
+                  </svg>
+                </button>
+                {Array.from({ length: pagination.pages || 1 }, (_, i) => i + 1).map((page) => (
+                  <button
+                    key={page}
+                    onClick={() => setCurrentPage(page)}
+                    className={`relative inline-flex items-center px-4 py-2 text-sm font-semibold ${
+                      page === currentPage
+                        ? 'z-10 bg-blue-600 text-white focus:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600'
+                        : 'text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0'
+                    }`}
+                  >
+                    {page}
+                  </button>
+                ))}
+                <button
+                  onClick={() => setCurrentPage(Math.min(pagination.pages || 1, currentPage + 1))}
+                  disabled={currentPage >= (pagination.pages || 1)}
+                  className="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <span className="sr-only">Sonraki</span>
+                  <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <path fillRule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clipRule="evenodd" />
+                  </svg>
+                </button>
+              </nav>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Product Form Modal */}
       <ProductForm
@@ -529,10 +704,14 @@ const ProductsPage = () => {
                   name: formData.get('name'),
                   description: formData.get('description'),
                   sku: formData.get('sku'),
+                  brand: formData.get('brand'),
                   unit_price: parseFormattedNumber(formData.get('unit_price')) || 0,
                   cost_price: parseFormattedNumber(formData.get('cost_price')) || 0,
-                  quantity_in_stock: parseFormattedNumber(formData.get('quantity_in_stock')) || 0,
+                  current_stock: parseFormattedNumber(formData.get('current_stock')) || 0,
                   category_id: categoryId && categoryId !== '' ? parseInt(categoryId, 10) : undefined,
+                  supplier_name: formData.get('supplier_name'),
+                  barcode: formData.get('barcode'),
+                  qr_code: formData.get('qr_code'),
                   is_active: formData.get('is_active') === 'on'
                 };
                 handleUpdateProduct(productData);
@@ -639,7 +818,7 @@ const ProductsPage = () => {
                     <input
                       type="text"
                       name="supplier_name"
-                      defaultValue={editingProduct.supplier?.name || ''}
+                      defaultValue={editingProduct.supplier_name || editingProduct.supplier?.name || ''}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
@@ -718,10 +897,19 @@ const ProductsPage = () => {
       {/* Category Modal */}
       {showCategoryForm && (
         <div className="fixed inset-0 z-50 overflow-y-auto bg-gray-600 bg-opacity-50 flex items-center justify-center p-4">
-          <div className="w-full max-w-md bg-white rounded-lg shadow-xl">
+          <div 
+            className="w-full max-w-md bg-white rounded-lg shadow-xl"
+            style={{
+              transform: `translate(${categoryModalPosition.x}px, ${categoryModalPosition.y}px)`,
+              cursor: isCategoryDragging ? 'grabbing' : 'default'
+            }}
+          >
             <div className="p-6">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-semibold text-gray-900">
+              <div 
+                className="flex items-center justify-between mb-6 cursor-grab active:cursor-grabbing select-none"
+                onMouseDown={handleCategoryMouseDown}
+              >
+                <h2 className="text-xl font-semibold text-gray-900 pointer-events-none">
                   Yeni Kategori Ekle
                 </h2>
                 <button
@@ -729,8 +917,9 @@ const ProductsPage = () => {
                     setShowCategoryForm(false);
                     setNewCategoryName('');
                     setNewCategoryDescription('');
+                    setCategoryModalPosition({ x: 0, y: 0 });
                   }}
-                  className="text-gray-400 hover:text-gray-600"
+                  className="text-gray-400 hover:text-gray-600 pointer-events-auto"
                 >
                   <FiX className="h-6 w-6" />
                 </button>
@@ -790,17 +979,27 @@ const ProductsPage = () => {
 
       {/* Ürün Tipi Ekleme Modalı */}
       {showProductTypeModal && (
-        <div className="fixed inset-0 z-50 h-full w-full overflow-y-auto bg-gray-600 bg-opacity-50">
-          <div className="relative top-20 mx-auto w-96 rounded-md border bg-white p-5 shadow-lg">
-            <div className="mb-4 flex items-center justify-between">
-              <h3 className="text-lg font-medium text-gray-900">Yeni Ürün Tipi</h3>
+        <div className="fixed inset-0 z-50 h-full w-full overflow-y-auto bg-gray-600 bg-opacity-50 flex items-center justify-center p-4">
+          <div 
+            className="w-96 rounded-md border bg-white p-5 shadow-lg"
+            style={{
+              transform: `translate(${productTypeModalPosition.x}px, ${productTypeModalPosition.y}px)`,
+              cursor: isProductTypeDragging ? 'grabbing' : 'default'
+            }}
+          >
+            <div 
+              className="mb-4 flex items-center justify-between cursor-grab active:cursor-grabbing select-none"
+              onMouseDown={handleProductTypeMouseDown}
+            >
+              <h3 className="text-lg font-medium text-gray-900 pointer-events-none">Yeni Ürün Tipi</h3>
               <button
                 onClick={() => {
                   setShowProductTypeModal(false);
                   setNewProductTypeName('');
                   setNewProductTypeDescription('');
+                  setProductTypeModalPosition({ x: 0, y: 0 });
                 }}
-                className="text-gray-400 hover:text-gray-600"
+                className="text-gray-400 hover:text-gray-600 pointer-events-auto"
               >
                 <FiX className="h-6 w-6" />
               </button>
@@ -849,9 +1048,10 @@ const ProductsPage = () => {
                   </button>
                   <button
                     type="submit"
-                    className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
+                    disabled={createProductTypeMutation.isPending}
+                    className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50"
                   >
-                    Ekle
+                    {createProductTypeMutation.isPending ? 'Ekleniyor...' : 'Ekle'}
                   </button>
                 </div>
               </div>

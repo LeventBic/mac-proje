@@ -1,7 +1,7 @@
 {
-  "name": "inflow-frontend",
+  "name": "devarp-frontend",
   "version": "1.0.0",
-  "description": "inFlow benzeri stok ve üretim yönetimi uygulaması - Frontend",
+  "description": "Devarp stok ve üretim yönetimi uygulaması - Frontend",
   "private": true,
   "dependencies": {
     "@reduxjs/toolkit": "^2.0.1",

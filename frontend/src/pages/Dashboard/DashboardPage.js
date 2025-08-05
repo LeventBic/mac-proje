@@ -20,6 +20,7 @@ import { useRecentActivities, useAlerts } from '../../hooks/useDashboard';
 import { useQuery } from '@tanstack/react-query';
 import DashboardService from '../../services/dashboardService';
 import { formatCurrency } from '../../utils/formatters';
+import TotalProductsWidget from '../../components/TotalProductsWidget';
 
 const DashboardPage = () => {
   // React Query hooks for real database data
@@ -149,17 +150,7 @@ const DashboardPage = () => {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-            <div className="bg-white rounded-lg shadow-sm p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Toplam Ürün</p>
-                  <p className="text-2xl font-bold text-gray-900">{stats.totalProducts || 0}</p>
-                </div>
-                <div className="p-3 bg-blue-100 rounded-full">
-                  <FiPackage className="text-blue-600 text-xl" />
-                </div>
-              </div>
-            </div>
+            <TotalProductsWidget />
 
             <div className="bg-white rounded-lg shadow-sm p-6">
               <div className="flex items-center justify-between">

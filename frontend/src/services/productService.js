@@ -49,6 +49,12 @@ class ProductService {
     return response.data;
   }
 
+  // Create product type
+  static async createProductType(productTypeData) {
+    const response = await axiosClient.post('/product-types', productTypeData);
+    return response.data;
+  }
+
   // Bulk operations
   static async bulkDelete(productIds) {
     const response = await axiosClient.post('/products/bulk-delete', { ids: productIds });

@@ -6,7 +6,7 @@ router.get('/', (req, res) => {
   res.json({
     status: 'success',
     data: {
-      company_name: process.env.COMPANY_NAME || 'inFlow',
+      company_name: process.env.COMPANY_NAME || 'Devarp',
       currency: process.env.CURRENCY || 'USD',
       timezone: process.env.TIMEZONE || 'UTC',
       date_format: process.env.DATE_FORMAT || 'YYYY-MM-DD',

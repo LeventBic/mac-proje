@@ -56,7 +56,7 @@ const LoginPage = () => {
             <FiLogIn className="h-8 w-8 text-white" />
           </div>
           <h2 className="mt-6 text-3xl font-bold text-secondary-900">
-            inFlow'a Giriş Yapın
+            Devarp'a Giriş Yapın
           </h2>
           <p className="mt-2 text-sm text-secondary-600">
             Stok ve üretim yönetimi sistemi
@@ -161,7 +161,7 @@ const LoginPage = () => {
         {/* Footer */}
         <div className="text-center">
           <p className="text-xs text-secondary-500">
-            inFlow Stok ve Üretim Yönetimi Sistemi v1.0
+            Devarp Stok ve Üretim Yönetimi Sistemi v1.0
           </p>
         </div>
       </div>

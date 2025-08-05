@@ -1,7 +1,7 @@
 {
-  "name": "inflow-inventory",
+  "name": "devarp-inventory",
   "version": "1.0.0",
-  "description": "InFlow Stok ve Üretim Yönetimi Sistemi",
+  "description": "Devarp Stok ve Üretim Yönetimi Sistemi",
   "main": "backend/server.js",
   "scripts": {
     "start": "cd backend && npm start",
@@ -26,7 +26,7 @@
     "stock",
     "production"
   ],
-  "author": "InFlow Team",
+  "author": "Devarp Team",
   "license": "MIT",
   "engines": {
     "node": ">=18.0.0",

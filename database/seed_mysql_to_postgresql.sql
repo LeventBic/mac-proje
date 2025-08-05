@@ -7,9 +7,9 @@
 
 -- Admin kullanıcısı (bcrypt hash ile)
 INSERT INTO users (username, email, password_hash, first_name, last_name, role, is_active) VALUES
-('admin', 'admin@inflow.com', '$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBPj/VjPyV8Nim', 'Admin', 'User', 'admin', true),
-('operator', 'operator@inflow.com', '$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBPj/VjPyV8Nim', 'Operator', 'User', 'operator', true),
-('viewer', 'viewer@inflow.com', '$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBPj/VjPyV8Nim', 'Viewer', 'User', 'viewer', true);
+('admin', 'admin@devarp.com', '$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBPj/VjPyV8Nim', 'Admin', 'User', 'admin', true),
+('operator', 'operator@devarp.com', '$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBPj/VjPyV8Nim', 'Operator', 'User', 'operator', true),
+('viewer', 'viewer@devarp.com', '$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBPj/VjPyV8Nim', 'Viewer', 'User', 'viewer', true);
 
 -- =======================
 -- TEDARİKÇİ VERİLERİ

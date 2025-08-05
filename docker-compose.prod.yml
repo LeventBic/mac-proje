@@ -4,11 +4,11 @@ services:
   # MySQL Database
   mysql:
     image: mysql:8.0
-    container_name: inflow_mysql_prod
+    container_name: devarp_mysql_prod
     restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE: inflow_db
+      MYSQL_DATABASE: devarp_db
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     ports:
@@ -18,7 +18,7 @@ services:
       - ./database/schema_mysql.sql:/docker-entrypoint-initdb.d/01-schema.sql
       - ./database/seed_mysql.sql:/docker-entrypoint-initdb.d/02-seed.sql
     networks:
-      - inflow_network_prod
+      - devarp_network_prod
     command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
@@ -32,14 +32,14 @@ services:
       context: ./backend
       dockerfile: Dockerfile
       target: production
-    container_name: inflow_backend_prod
+    container_name: devarp_backend_prod
     restart: unless-stopped
     environment:
       NODE_ENV: production
       PORT: 3001
       DB_HOST: mysql
       DB_PORT: 3306
-      DB_NAME: inflow_db
+      DB_NAME: devarp_db
       DB_USER: ${MYSQL_USER}
       DB_PASSWORD: ${MYSQL_PASSWORD}
       JWT_SECRET: ${JWT_SECRET}
@@ -55,7 +55,7 @@ services:
       mysql:
         condition: service_healthy
     networks:
-      - inflow_network_prod
+      - devarp_network_prod
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
       interval: 30s
@@ -67,7 +67,7 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile.prod
-    container_name: inflow_frontend_prod
+    container_name: devarp_frontend_prod
     restart: unless-stopped
     environment:
       REACT_APP_API_URL: ${BACKEND_URL}/api
@@ -76,11 +76,11 @@ services:
     depends_on:
       - backend
     networks:
-      - inflow_network_prod
+      - devarp_network_prod
 
 volumes:
   mysql_data_prod:
 
 networks:
-  inflow_network_prod:
-    driver: bridge 
+  devarp_network_prod:
+    driver: bridge

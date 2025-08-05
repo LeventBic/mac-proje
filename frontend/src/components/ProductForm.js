@@ -83,8 +83,8 @@ const ProductForm = ({
   
   // Extract data from API responses
   const suppliers = suppliersData?.data?.suppliers || suppliersData?.data || []
-  const categories = categoriesData?.data?.categories || categoriesData?.data || []
-  const productTypes = productTypesData?.data?.productTypes || productTypesData?.data || []
+  const categories = categoriesData?.data || []
+  const productTypes = productTypesData?.data || []
 
   // Form reset when product changes
   useEffect(() => {
@@ -308,7 +308,7 @@ const ProductForm = ({
                         className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-colors"
                       >
                         <option value="">Kategori Seçin</option>
-                        {categories?.data?.map(category => (
+                        {categories?.map(category => (
                           <option key={category.id} value={category.id}>
                             {category.name}
                           </option>
@@ -325,7 +325,7 @@ const ProductForm = ({
                         className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-colors"
                       >
                         <option value="">Tip Seçin</option>
-                        {productTypes?.data?.map(type => (
+                        {productTypes?.map(type => (
                           <option key={type.id} value={type.id}>
                             {type.name}
                           </option>

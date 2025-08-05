@@ -125,6 +125,10 @@ export const useCreateBOM = () => {
       // Invalidate and refetch BOMs
       queryClient.invalidateQueries({ queryKey: BOM_QUERY_KEYS.all });
       queryClient.invalidateQueries({ queryKey: ['products'] });
+      // Invalidate dashboard queries to update BOM stats
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+      // Invalidate stock queries as BOM changes may affect stock calculations
+      queryClient.invalidateQueries({ queryKey: ['stock'] });
 
       toast.success('Reçete başarıyla oluşturuldu');
     },
@@ -149,6 +153,10 @@ export const useUpdateBOM = () => {
         queryKey: BOM_QUERY_KEYS.detail(variables.id),
       });
       queryClient.invalidateQueries({ queryKey: ['products'] });
+      // Invalidate dashboard queries to update BOM stats
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+      // Invalidate stock queries as BOM changes may affect stock calculations
+      queryClient.invalidateQueries({ queryKey: ['stock'] });
 
       toast.success('Reçete başarıyla güncellendi');
     },
@@ -170,6 +178,10 @@ export const useDeleteBOM = () => {
       // Invalidate and refetch BOMs
       queryClient.invalidateQueries({ queryKey: BOM_QUERY_KEYS.all });
       queryClient.invalidateQueries({ queryKey: ['products'] });
+      // Invalidate dashboard queries to update BOM stats
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+      // Invalidate stock queries as BOM changes may affect stock calculations
+      queryClient.invalidateQueries({ queryKey: ['stock'] });
 
       toast.success('Reçete başarıyla silindi');
     },

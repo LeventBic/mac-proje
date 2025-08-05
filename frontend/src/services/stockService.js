@@ -133,8 +133,13 @@ class StockService {
 
   // Stock Movements
   static async getStockMovements(params = {}) {
-    const response = await axiosClient.get('/stock-movements', { params });
-    return response.data;
+    const { product_id, ...otherParams } = params;
+    if (product_id) {
+      const response = await axiosClient.get(`/current-stock/${product_id}/movements`, { params: otherParams });
+      return response.data;
+    }
+    // If no product_id provided, return empty data
+    return { success: true, data: [] };
   }
 
   // Stock Transfer Stats

@@ -68,6 +68,12 @@ export const useCreateProduct = () => {
     onSuccess: (_data) => {
       // Invalidate all product queries (including filtered ones)
       queryClient.invalidateQueries({ queryKey: PRODUCT_QUERY_KEYS.all });
+      // Invalidate dashboard queries to update product stats
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+      // Invalidate stock queries to update stock data
+      queryClient.invalidateQueries({ queryKey: ['stock'] });
+      // Invalidate product count stats
+      queryClient.invalidateQueries({ queryKey: ['stats', 'productCount'] });
       toast.success('Ürün başarıyla oluşturuldu');
     },
   });
@@ -84,6 +90,12 @@ export const useUpdateProduct = () => {
       queryClient.invalidateQueries({ queryKey: PRODUCT_QUERY_KEYS.all });
       // Update the specific product in cache
       queryClient.invalidateQueries({ queryKey: PRODUCT_QUERY_KEYS.detail(variables.id) });
+      // Invalidate dashboard queries to update product stats
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+      // Invalidate stock queries to update stock data
+      queryClient.invalidateQueries({ queryKey: ['stock'] });
+      // Invalidate product count stats
+      queryClient.invalidateQueries({ queryKey: ['stats', 'productCount'] });
       toast.success('Ürün başarıyla güncellendi');
     },
   });
@@ -100,7 +112,30 @@ export const useDeleteProduct = () => {
       queryClient.removeQueries({ queryKey: PRODUCT_QUERY_KEYS.detail(productId) });
       // Invalidate all product queries (including filtered ones)
       queryClient.invalidateQueries({ queryKey: PRODUCT_QUERY_KEYS.all });
+      // Invalidate dashboard queries to update product stats
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+      // Invalidate stock queries to update stock data
+      queryClient.invalidateQueries({ queryKey: ['stock'] });
+      // Invalidate product count stats
+      queryClient.invalidateQueries({ queryKey: ['stats', 'productCount'] });
       toast.success('Ürün başarıyla silindi');
+    },
+  });
+};
+
+// Create product type mutation
+export const useCreateProductType = () => {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: ProductService.createProductType,
+    onSuccess: () => {
+      // Invalidate product types queries
+      queryClient.invalidateQueries({ queryKey: PRODUCT_QUERY_KEYS.productTypes() });
+      toast.success('Ürün tipi başarıyla oluşturuldu');
+    },
+    onError: (error) => {
+      toast.error(error.response?.data?.message || 'Ürün tipi oluşturulurken hata oluştu');
     },
   });
 };
@@ -118,6 +153,12 @@ export const useBulkDeleteProducts = () => {
       });
       // Invalidate all product queries (including filtered ones)
       queryClient.invalidateQueries({ queryKey: PRODUCT_QUERY_KEYS.all });
+      // Invalidate dashboard queries to update product stats
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+      // Invalidate stock queries to update stock data
+      queryClient.invalidateQueries({ queryKey: ['stock'] });
+      // Invalidate product count stats
+      queryClient.invalidateQueries({ queryKey: ['stats', 'productCount'] });
       toast.success(`${productIds.length} ürün başarıyla silindi`);
     },
   });
@@ -132,6 +173,10 @@ export const useImportProducts = () => {
     onSuccess: (_data) => {
       // Invalidate all product queries (including filtered ones)
       queryClient.invalidateQueries({ queryKey: PRODUCT_QUERY_KEYS.all });
+      // Invalidate dashboard queries to update product stats
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+      // Invalidate stock queries to update stock data
+      queryClient.invalidateQueries({ queryKey: ['stock'] });
       toast.success('Ürünler başarıyla içe aktarıldı');
     },
   });

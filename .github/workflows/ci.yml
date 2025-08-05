@@ -15,7 +15,7 @@ jobs:
         image: postgres:15
         env:
           POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: inflow_test
+          POSTGRES_DB: devarp_test
         options: >
           --health-cmd pg_isready
           --health-interval 10s
@@ -56,7 +56,7 @@ jobs:
         NODE_ENV: test
         DB_HOST: localhost
         DB_PORT: 5432
-        DB_NAME: inflow_test
+        DB_NAME: devarp_test
         DB_USER: postgres
         DB_PASSWORD: postgres
         JWT_SECRET: test_secret

@@ -10,7 +10,6 @@ const swaggerUi = require('swagger-ui-express')
 
 // Import configurations and utilities
 const { testConnection } = require('./config/database')
-const logger = require('./utils/logger')
 
 // Test database connection
 testConnection()
@@ -41,6 +40,7 @@ const projectRoutes = require('./routes/projects')
 const hashAdminRoutes = require('./routes/hashAdmin')
 const settingsRoutes = require('./routes/settings')
 const lookupRoutes = require('./routes/lookup')
+const statsRoutes = require('./routes/stats')
 
 // Import middleware
 const errorHandler = require('./middleware/errorHandler')
@@ -76,7 +76,7 @@ app.use(compression())
 // Rate limiting - Production için aktif et
 const limiter = rateLimit({
   windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000, // 15 minutes
-  max: parseInt(process.env.RATE_LIMIT_MAX) || 1000, // Limit each IP to 1000 requests per windowMs
+  max: parseInt(process.env.RATE_LIMIT_MAX) || 5000, // Limit each IP to 5000 requests per windowMs
   message: {
     error: 'Too many requests from this IP, please try again later'
   },
@@ -102,12 +102,12 @@ if (process.env.API_DOCS_ENABLED === 'true') {
     definition: {
       openapi: '3.0.0',
       info: {
-        title: 'inFlow API',
+        title: 'Devarp API',
         version: '1.0.0',
-        description: 'API documentation for inFlow inventory and manufacturing management system',
+        description: 'API documentation for Devarp inventory and manufacturing management system',
         contact: {
-          name: 'inFlow Team',
-          email: 'support@inflow.com'
+          name: 'Devarp Team',
+          email: 'support@devarp.com'
         }
       },
       servers: [
@@ -168,6 +168,7 @@ app.use('/api/customers', authMiddleware.verifyToken, customerRoutes)
 app.use('/api/projects', authMiddleware.verifyToken, projectRoutes)
 app.use('/api/admin', authMiddleware.verifyToken, hashAdminRoutes)
 app.use('/api/lookup', authMiddleware.verifyToken, lookupRoutes)
+app.use('/api/stats', authMiddleware.verifyToken, statsRoutes)
 
 app.use('/api/settings', authMiddleware.verifyToken, settingsRoutes)
 

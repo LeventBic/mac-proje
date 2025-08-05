@@ -106,7 +106,7 @@ const Sidebar = () => {
               <span className="text-lg font-bold text-white">iF</span>
             </div>
             <h1 className="ml-3 text-xl font-bold text-secondary-900">
-              inFlow
+              Devarp
             </h1>
           </div>
 
