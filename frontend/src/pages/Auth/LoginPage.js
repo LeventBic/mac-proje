@@ -2,9 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Navigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-import { FiUser, FiLock, FiEye, FiEyeOff, FiLogIn } from 'react-icons/fi';
+import { FiUser, FiLock, FiEye, FiEyeOff } from 'react-icons/fi';
 import { loginUser, clearError } from '../../store/slices/authSlice';
 import toast from 'react-hot-toast';
+import loginBg from '../../assets/images/wallpapers/login-bg.svg';
 
 const LoginPage = () => {
   const dispatch = useDispatch();
@@ -48,32 +49,37 @@ const LoginPage = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-red-50 to-red-100 py-12 px-4 sm:px-6 lg:px-8">
+    <div 
+      className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8"
+      style={{
+        backgroundImage: `url(${loginBg})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat'
+      }}
+    >
       <div className="max-w-md w-full space-y-8">
         {/* Header */}
         <div className="text-center">
-          <div className="mx-auto h-16 w-16 bg-primary-600 rounded-full flex items-center justify-center">
-            <FiLogIn className="h-8 w-8 text-white" />
-          </div>
-          <h2 className="mt-6 text-3xl font-bold text-secondary-900">
-            Devarp'a Giriş Yapın
+          <h2 className="mt-6 text-3xl font-bold text-white">
+            DEVARP ERP
           </h2>
-          <p className="mt-2 text-sm text-secondary-600">
+          <p className="mt-2 text-sm text-gray-300">
             Stok ve üretim yönetimi sistemi
           </p>
         </div>
 
         {/* Login Form */}
-        <div className="card">
+        <div className="bg-white bg-opacity-10 backdrop-blur-sm rounded-lg shadow-xl p-8 border border-white border-opacity-20">
           <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
             {/* Username Field */}
             <div className="form-group">
-              <label htmlFor="username" className="form-label">
+              <label htmlFor="username" className="block text-sm font-medium text-white mb-2">
                 Kullanıcı Adı veya E-posta
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <FiUser className="h-5 w-5 text-secondary-400" />
+                  <FiUser className="h-5 w-5 text-gray-300" />
                 </div>
                 <input
                   {...register('username', {
@@ -84,24 +90,24 @@ const LoginPage = () => {
                     },
                   })}
                   type="text"
-                  className={`form-input pl-10 ${errors.username ? 'border-error-300 focus:ring-error-500 focus:border-error-500' : ''}`}
-                  placeholder="kullanici_adi veya email@example.com"
+                  className={`w-full pl-10 pr-3 py-3 bg-white bg-opacity-20 border border-white border-opacity-30 rounded-lg text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-white focus:border-transparent ${errors.username ? 'border-red-400 focus:ring-white' : ''}`}
+                  placeholder="Kullanıcı Adı"
                   autoComplete="username"
                 />
               </div>
               {errors.username && (
-                <p className="form-error">{errors.username.message}</p>
+                <p className="mt-1 text-sm text-red-300">{errors.username.message}</p>
               )}
             </div>
 
             {/* Password Field */}
             <div className="form-group">
-              <label htmlFor="password" className="form-label">
+              <label htmlFor="password" className="block text-sm font-medium text-white mb-2">
                 Şifre
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <FiLock className="h-5 w-5 text-secondary-400" />
+                  <FiLock className="h-5 w-5 text-gray-300" />
                 </div>
                 <input
                   {...register('password', {
@@ -112,7 +118,7 @@ const LoginPage = () => {
                     },
                   })}
                   type={showPassword ? 'text' : 'password'}
-                  className={`form-input pl-10 pr-10 ${errors.password ? 'border-error-300 focus:ring-error-500 focus:border-error-500' : ''}`}
+                  className={`w-full pl-10 pr-10 py-3 bg-white bg-opacity-20 border border-white border-opacity-30 rounded-lg text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-white focus:border-transparent ${errors.password ? 'border-red-400 focus:ring-white' : ''}`}
                   placeholder="••••••••"
                   autoComplete="current-password"
                 />
@@ -122,14 +128,14 @@ const LoginPage = () => {
                   onClick={() => setShowPassword(!showPassword)}
                 >
                   {showPassword ? (
-                    <FiEyeOff className="h-5 w-5 text-secondary-400 hover:text-secondary-600" />
+                    <FiEyeOff className="h-5 w-5 text-gray-300 hover:text-white" />
                   ) : (
-                    <FiEye className="h-5 w-5 text-secondary-400 hover:text-secondary-600" />
+                    <FiEye className="h-5 w-5 text-gray-300 hover:text-white" />
                   )}
                 </button>
               </div>
               {errors.password && (
-                <p className="form-error">{errors.password.message}</p>
+                <p className="mt-1 text-sm text-red-300">{errors.password.message}</p>
               )}
             </div>
 
@@ -138,7 +144,7 @@ const LoginPage = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full btn-primary py-3 text-base font-medium"
+                className="w-full bg-red-600 hover:bg-red-700 text-white font-medium py-3 px-4 rounded-lg transition duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {loading ? (
                   <div className="flex items-center justify-center">
@@ -146,10 +152,7 @@ const LoginPage = () => {
                     Giriş yapılıyor...
                   </div>
                 ) : (
-                  <div className="flex items-center justify-center">
-                    <FiLogIn className="h-5 w-5 mr-2" />
-                    Giriş Yap
-                  </div>
+                  "Giriş Yap"
                 )}
               </button>
             </div>
@@ -160,7 +163,7 @@ const LoginPage = () => {
 
         {/* Footer */}
         <div className="text-center">
-          <p className="text-xs text-secondary-500">
+          <p className="text-xs text-gray-300">
             Devarp Stok ve Üretim Yönetimi Sistemi v1.0
           </p>
         </div>

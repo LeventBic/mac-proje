@@ -104,7 +104,7 @@ if (process.env.API_DOCS_ENABLED === 'true') {
       info: {
         title: 'Devarp API',
         version: '1.0.0',
-        description: 'API documentation for Devarp inventory and manufacturing management system',
+        description: 'API documentation for Devarp ERP system',
         contact: {
           name: 'Devarp Team',
           email: 'support@devarp.com'
