@@ -14,7 +14,7 @@ import { Toaster } from "react-hot-toast";
 import { store } from "./store/store";
 
 // Import components
-import Layout from "./components/Layout/Layout";
+import Layout from "./components/Layout/Layout.tsx";
 import ProtectedRoute from "./components/Auth/ProtectedRoute";
 
 // Import pages
@@ -55,7 +55,7 @@ function App() {
   return (
     <Provider store={store}>
       <QueryClientProvider client={queryClient}>
-        <Router future={{ v7_startTransition: true }}>
+        <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
           <div className="App">
             <Routes>
               {/* Public routes */}
@@ -150,6 +150,9 @@ function App() {
 
                 {/* Projects */}
                 <Route path="projects" element={<ProjectsPage />} />
+                <Route path="projects/bop" element={<BOMPage />} />
+                <Route path="projects/interactive-bop" element={<InteractiveBOMPage />} />
+                <Route path="projects/page" element={<ProjectsPage />} />
 
                 {/* Users (Admin only) */}
                 <Route

@@ -12,7 +12,7 @@ const productsValidators = {
   validateProductId: [
     param('id')
       .isInt({ min: 1 })
-      .withMessage('Product ID must be a positive integer')
+      .withMessage('Ürün ID pozitif bir tam sayı olmalıdır')
   ],
 
   /**
@@ -21,7 +21,7 @@ const productsValidators = {
   validateCategoryId: [
     param('category_id')
       .isInt({ min: 1 })
-      .withMessage('Category ID must be a positive integer')
+      .withMessage('Kategori ID pozitif bir tam sayı olmalıdır')
   ],
 
   /**
@@ -31,11 +31,11 @@ const productsValidators = {
     query('page')
       .optional()
       .isInt({ min: 1 })
-      .withMessage('Page must be a positive integer'),
+      .withMessage('Sayfa pozitif bir tam sayı olmalıdır'),
     query('limit')
       .optional()
       .isInt({ min: 1, max: 100 })
-      .withMessage('Limit must be between 1 and 100'),
+      .withMessage('Limit 1 ile 100 arasında olmalıdır'),
     query('search')
       .optional()
       .custom(value => {
@@ -43,7 +43,7 @@ const productsValidators = {
         if (value === '') return true
         return value.length >= 1 && value.length <= 100
       })
-      .withMessage('Search term must be between 1 and 100 characters'),
+      .withMessage('Arama terimi 1 ile 100 karakter arasında olmalıdır'),
     query('category_id')
       .optional()
       .custom(value => {
@@ -51,27 +51,27 @@ const productsValidators = {
         if (value === '') return true
         return Number.isInteger(Number(value)) && Number(value) >= 1
       })
-      .withMessage('Category ID must be a positive integer'),
+      .withMessage('Kategori ID pozitif bir tam sayı olmalıdır'),
     query('product_type_id')
       .optional()
       .isInt({ min: 1 })
-      .withMessage('Product type ID must be a positive integer'),
+      .withMessage('Ürün tipi ID pozitif bir tam sayı olmalıdır'),
     query('supplier_id')
       .optional()
       .isInt({ min: 1 })
-      .withMessage('Supplier ID must be a positive integer'),
+      .withMessage('Tedarikçi ID pozitif bir tam sayı olmalıdır'),
     query('is_active')
       .optional()
       .isBoolean()
-      .withMessage('Is active must be a boolean value'),
+      .withMessage('Aktif durumu boolean değer olmalıdır'),
     query('is_raw_material')
       .optional()
       .isBoolean()
-      .withMessage('Is raw material must be a boolean value'),
+      .withMessage('Hammadde durumu boolean değer olmalıdır'),
     query('is_finished_product')
       .optional()
       .isBoolean()
-      .withMessage('Is finished product must be a boolean value')
+      .withMessage('Bitmiş ürün durumu boolean değer olmalıdır')
   ],
 
   /**
@@ -80,40 +80,40 @@ const productsValidators = {
   validateProductCreate: [
     body('sku')
       .notEmpty()
-      .withMessage('SKU is required')
+      .withMessage('SKU gereklidir')
       .isLength({ min: 2, max: 50 })
-      .withMessage('SKU must be between 2 and 50 characters')
+      .withMessage('SKU 2 ile 50 karakter arasında olmalıdır')
       .matches(/^[A-Za-z0-9-_]+$/)
       .withMessage(
-        'SKU can only contain letters, numbers, hyphens, and underscores'
+        'SKU sadece harf, rakam, tire ve alt çizgi içerebilir'
       ),
     body('name')
       .notEmpty()
-      .withMessage('Product name is required')
+      .withMessage('Ürün adı gereklidir')
       .isLength({ min: 2, max: 200 })
-      .withMessage('Product name must be between 2 and 200 characters'),
+      .withMessage('Ürün adı 2 ile 200 karakter arasında olmalıdır'),
     body('description')
       .optional()
       .isLength({ max: 1000 })
-      .withMessage('Description cannot exceed 1000 characters'),
+      .withMessage('Açıklama 1000 karakteri geçemez'),
     body('barcode')
       .optional()
       .isLength({ max: 50 })
-      .withMessage('Barcode cannot exceed 50 characters'),
+      .withMessage('Barkod 50 karakteri geçemez'),
     body('category_id')
       .optional()
       .custom(value => {
         if (value === '' || value === null || value === undefined) return true
         return Number.isInteger(Number(value)) && Number(value) > 0
       })
-      .withMessage('Category ID must be a positive integer'),
+      .withMessage('Kategori ID pozitif bir tam sayı olmalıdır'),
     body('product_type_id')
       .optional()
       .custom(value => {
         if (value === '' || value === null || value === undefined) return true
         return Number.isInteger(Number(value)) && Number(value) > 0
       })
-      .withMessage('Product type ID must be a positive integer'),
+      .withMessage('Ürün tipi ID pozitif bir tam sayı olmalıdır'),
     body('supplier_id')
       .optional()
       .custom(value => {

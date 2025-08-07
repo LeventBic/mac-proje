@@ -16,6 +16,7 @@ const LoginPage = () => {
     register,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm();
 
   // useEffect should not return JSX - redirect logic moved to component return
@@ -38,9 +39,14 @@ const LoginPage = () => {
       const result = await dispatch(loginUser(data));
       if (result.type === 'auth/login/fulfilled') {
         toast.success('Giriş başarılı!');
+      } else if (result.type === 'auth/login/rejected') {
+        // Clear only password field on login failure, keep username
+        reset({ password: '' }, { keepValues: true, keepDefaultValues: true });
       }
     } catch (err) {
       // Error is handled by Redux and useEffect
+      // Clear only password field on error
+      reset({ password: '' }, { keepValues: true, keepDefaultValues: true });
     }
   };
 

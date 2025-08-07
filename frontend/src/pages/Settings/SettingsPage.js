@@ -161,32 +161,34 @@ const SettingsPage = () => {
         </div>
       )}
 
-      {/* Tabs */}
-      <div className="border-b border-gray-200">
-        <nav className="-mb-px flex space-x-8">
-          {[
-            { key: 'profile', label: 'Profil' },
-            { key: 'system', label: 'Sistem' },
-            { key: 'security', label: 'Güvenlik' },
-            { key: 'data', label: 'Veri Yönetimi' }
-          ].map(tab => (
-            <button
-              key={tab.key}
-              onClick={() => setActiveTab(tab.key)}
-              className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                activeTab === tab.key
-                  ? 'border-blue-500 text-blue-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-              }`}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </nav>
-      </div>
+      {/* Layout with Sidebar */}
+      <div className="flex gap-6">
+        {/* Vertical Sidebar */}
+        <div className="w-64 flex-shrink-0">
+          <nav className="space-y-1">
+            {[
+              { key: 'profile', label: 'Profil' },
+              { key: 'system', label: 'Sistem' },
+              { key: 'security', label: 'Güvenlik' },
+              { key: 'data', label: 'Veri Yönetimi' }
+            ].reverse().map(tab => (
+              <button
+                key={tab.key}
+                onClick={() => setActiveTab(tab.key)}
+                className={`w-full text-left px-4 py-3 rounded-lg font-medium text-sm transition-colors ${
+                  activeTab === tab.key
+                    ? 'bg-blue-100 text-blue-700 border-l-4 border-blue-500'
+                    : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </nav>
+        </div>
 
-      {/* Tab Content */}
-      <div className="space-y-6">
+        {/* Tab Content */}
+        <div className="flex-1 space-y-6">
         {activeTab === 'profile' && (
           <form onSubmit={handleProfileSubmit} className="card p-6 space-y-4">
             <h3 className="font-semibold mb-4">Profil Bilgileri</h3>
@@ -549,6 +551,7 @@ const SettingsPage = () => {
             </div>
           </div>
         )}
+        </div>
       </div>
     </div>
   );

@@ -1,432 +1,659 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useForm, SubmitHandler } from 'react-hook-form';
-import axios, { AxiosError } from 'axios';
+import { useForm } from 'react-hook-form';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { FiX } from 'react-icons/fi';
+import { useProduct, useCategories, useProductTypes, useSuppliers } from '../../hooks/useProducts';
+import ProductService from '../../services/productService';
 import { toast } from 'react-hot-toast';
-import { formatPriceTR, parseFormattedNumber } from '../../utils/formatters';
-
-// Types
-interface Product {
-  id: number;
-  name: string;
-  sku: string;
-  description?: string;
-  brand?: string;
-  brand_id?: number;
-  category_id?: number;
-  unit_price: number;
-  cost_price: number;
-  current_stock: number;
-  supplier_id?: number;
-  barcode?: string;
-  qr_code?: string;
-  is_active: boolean;
-}
 
 interface ProductFormData {
   name: string;
   sku: string;
-  description: string;
-  brand_id: number | null;
-  category_id: number | null;
-  unit_price: number;
-  cost_price: number;
-  current_stock: number;
-  supplier_id: number | null;
-  barcode: string;
-  qr_code: string;
-  is_active: boolean;
+  description?: string;
+  brand?: string;
+  category_id?: number;
+  product_type_id?: number;
+  unit_price?: number;
+  cost_price?: number;
+  currency_id?: number;
+  unit_id?: number;
+  current_stock?: number;
+  reserved_stock?: number;
+  ordered_stock?: number;
+  supplier_id?: number;
+  last_supplier_id?: number;
+  supplier_product_code?: string;
+  lead_time_days?: number;
+  location_id?: number;
+  barcode?: string;
+  qr_code?: string;
+  is_popular?: boolean;
+  is_raw_material?: boolean;
+  is_finished_product?: boolean;
+  price_increase_percentage?: number;
+  last_price_update?: string;
 }
-
-// API Functions
-const fetchProduct = async (id: string): Promise<Product> => {
-  const response = await axios.get(`/api/products/${id}`);
-  return response.data.data;
-};
-
-const updateProduct = async ({ id, data }: { id: string; data: ProductFormData }): Promise<Product> => {
-  const response = await axios.put(`/api/products/${id}`, data);
-  return response.data.data;
-};
 
 const ProductEditPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  
+  // State for modal-like behavior
+  const [activeTab, setActiveTab] = useState('basic');
+  
+  // Mock data - replace with actual API calls
+  const currencies = [
+    { id: 1, name: 'TRY', symbol: '₺' },
+    { id: 2, name: 'USD', symbol: '$' },
+    { id: 3, name: 'EUR', symbol: '€' }
+  ];
 
-  // React Hook Form setup
+  const units = [
+    { id: 1, name: 'Adet', symbol: 'adet' },
+    { id: 2, name: 'Kilogram', symbol: 'kg' },
+    { id: 3, name: 'Litre', symbol: 'lt' },
+    { id: 4, name: 'Metre', symbol: 'm' }
+  ];
+
+  const locations = [
+    { id: 1, name: 'Ana Depo' },
+    { id: 2, name: 'Üretim Alanı' },
+    { id: 3, name: 'Sevkiyat Alanı' }
+  ];
+  
+  // API hooks
+  const { data: suppliers } = useSuppliers();
+  const { data: categories } = useCategories();
+  const { data: productTypes } = useProductTypes();
+  
+  const { data: product, isLoading, error } = useProduct(id!);
+  
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-    setValue
+    reset
   } = useForm<ProductFormData>();
-
-  // Fetch product data using React Query
-  const {
-    data: product,
-    isLoading,
-    error,
-    isError
-  } = useQuery({
-    queryKey: ['product', id],
-    queryFn: () => fetchProduct(id!),
-    enabled: !!id, // Only run query if id exists
-    retry: 1,
-    staleTime: 5 * 60 * 1000, // 5 minutes
-  });
-
-  // Update mutation using React Query
-  const updateMutation = useMutation({
-    mutationFn: updateProduct,
-    onSuccess: () => {
-      // KRİTİK: Önbellek güncelleme işlemleri
-      // Ana ürün listesini yenilemek için
-      queryClient.invalidateQueries({ queryKey: ['products'] });
-      
-      // Şu anki düzenleme sayfasındaki veriyi yenilemek için
-      queryClient.invalidateQueries({ queryKey: ['product', id] });
-      
-      // Başarı mesajı göster
-      toast.success('Ürün başarıyla güncellendi!');
-      
-      // Ürün listesi sayfasına yönlendir
-      navigate('/products');
-    },
-    onError: (error: AxiosError) => {
-      // Kullanıcıya hata mesajı göster
-      const errorMessage = (error?.response?.data as any)?.message || 
-                          error?.message || 
-                          'Ürün güncellenirken bir hata oluştu';
-      toast.error(`Güncelleme Hatası: ${errorMessage}`);
-    }
-  });
-
-  // Form verilerini product data ile doldur
+  
+  // Reset form when product data is loaded
   useEffect(() => {
     if (product) {
-      // Form alanlarını mevcut ürün verileriyle doldur
-      setValue('name', product.name || '');
-      setValue('sku', product.sku || '');
-      setValue('description', product.description || '');
-      setValue('brand_id', product.brand_id || null);
-      setValue('category_id', product.category_id || null);
-      setValue('unit_price', product.unit_price || 0);
-      setValue('cost_price', product.cost_price || 0);
-      setValue('current_stock', product.current_stock || 0);
-      setValue('supplier_id', product.supplier_id || null);
-      setValue('barcode', product.barcode || '');
-      setValue('qr_code', product.qr_code || '');
-      setValue('is_active', product.is_active ?? true);
+      reset({
+        name: product.name || '',
+        sku: product.sku || '',
+        description: product.description || '',
+        brand: product.brand || '',
+        category_id: product.category_id || undefined,
+        product_type_id: product.product_type_id || undefined,
+        unit_price: product.unit_price || undefined,
+        cost_price: product.cost_price || undefined,
+        currency_id: product.currency_id || 1,
+        unit_id: product.unit_id || 1,
+        current_stock: product.current_stock || 0,
+        reserved_stock: product.reserved_stock || 0,
+        ordered_stock: product.ordered_stock || 0,
+        supplier_id: product.supplier_id || undefined,
+        last_supplier_id: product.last_supplier_id || undefined,
+        supplier_product_code: product.supplier_product_code || '',
+        lead_time_days: product.lead_time_days || undefined,
+        location_id: product.location_id || 1,
+        barcode: product.barcode || '',
+        qr_code: product.qr_code || '',
+        is_popular: product.is_popular || false,
+        is_raw_material: product.is_raw_material || false,
+        is_finished_product: product.is_finished_product || false,
+        price_increase_percentage: product.price_increase_percentage || undefined,
+        last_price_update: product.last_price_update || ''
+      });
     }
-  }, [product, setValue]);
-
-  // Form submit handler
-  const onSubmit: SubmitHandler<ProductFormData> = async (data) => {
-    if (!id) return;
-    
+  }, [product, reset]);
+  
+  const updateMutation = useMutation({
+    mutationFn: (data: ProductFormData) => ProductService.update(id!, data),
+    onSuccess: () => {
+      toast.success('Ürün başarıyla güncellendi!');
+      queryClient.invalidateQueries({ queryKey: ['products'] });
+      queryClient.invalidateQueries({ queryKey: ['product', id] });
+      navigate('/products');
+    },
+    onError: (error: any) => {
+      console.error('❌ Ürün güncelleme hatası:', error);
+      
+      // Backend'den gelen spesifik hata mesajlarını yakala
+      if (error?.response?.data?.errors && Array.isArray(error.response.data.errors)) {
+        const errorMessages = error.response.data.errors.join('\n');
+        toast.error(`Validation hatası:\n${errorMessages}`);
+        console.log('📋 Validation hataları:', error.response.data.errors);
+      } else if (error?.response?.data?.message) {
+        toast.error(`Hata: ${error.response.data.message}`);
+      } else {
+        toast.error('Ürün güncellenirken beklenmeyen bir hata oluştu!');
+      }
+    }
+  });
+  
+  const onSubmit = async (data: ProductFormData) => {
     try {
-      // Mutation'ı çağır
-      await updateMutation.mutateAsync({ id, data });
+      console.log('📤 Form verisi (ham):', data);
+      
+      // Veri tipi dönüşümü ve filtreleme
+      const processedData = {
+        name: data.name,
+        sku: data.sku,
+        description: data.description,
+        brand: data.brand,
+        category_id: data.category_id,
+        product_type_id: data.product_type_id,
+        // Sayısal alanları parseFloat ile dönüştür
+        unit_price: data.unit_price ? parseFloat(data.unit_price.toString()) : undefined,
+        cost_price: data.cost_price ? parseFloat(data.cost_price.toString()) : undefined,
+        currency_id: data.currency_id,
+        unit_id: data.unit_id,
+        current_stock: data.current_stock ? parseFloat(data.current_stock.toString()) : undefined,
+        reserved_stock: data.reserved_stock ? parseFloat(data.reserved_stock.toString()) : undefined,
+        ordered_stock: data.ordered_stock ? parseFloat(data.ordered_stock.toString()) : undefined,
+        supplier_id: data.supplier_id,
+        last_supplier_id: data.last_supplier_id,
+        supplier_product_code: data.supplier_product_code,
+        lead_time_days: data.lead_time_days ? parseInt(data.lead_time_days.toString()) : undefined,
+        location_id: data.location_id,
+        barcode: data.barcode,
+        qr_code: data.qr_code,
+        is_popular: Boolean(data.is_popular),
+        is_raw_material: Boolean(data.is_raw_material),
+        is_finished_product: Boolean(data.is_finished_product),
+        price_increase_percentage: data.price_increase_percentage ? parseFloat(data.price_increase_percentage.toString()) : undefined
+      };
+      
+      // Undefined değerleri temizle
+      Object.keys(processedData).forEach(key => {
+        if (processedData[key as keyof typeof processedData] === undefined) {
+          delete processedData[key as keyof typeof processedData];
+        }
+      });
+      
+      console.log('🚀 Backend\'e Gönderilen Veri:', JSON.stringify(processedData, null, 2));
+      
+      await updateMutation.mutateAsync(processedData);
     } catch (error) {
-      // Error handling is done in mutation's onError
+      console.error('❌ Submit error:', error);
     }
   };
+  
 
-  // Loading state
+  
+  // Helper components
+  const FormField: React.FC<{
+    label: string;
+    required?: boolean;
+    error?: string;
+    children: React.ReactNode;
+  }> = ({ label, required, error, children }) => (
+    <div>
+      <label className="block text-sm font-medium text-gray-700 mb-1">
+        {label}
+        {required && <span className="text-red-500 ml-1">*</span>}
+      </label>
+      {children}
+      {error && <p className="mt-1 text-sm text-red-600">{error}</p>}
+    </div>
+  );
+  
+  const tabs = [
+    { id: 'basic', label: 'Temel Bilgiler' },
+    { id: 'pricing', label: 'Fiyatlandırma' },
+    { id: 'inventory', label: 'Stok' },
+    { id: 'supplier', label: 'Tedarikçi' },
+    { id: 'settings', label: 'Ayarlar' }
+  ];
+  
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
+      <div className="fixed inset-0 z-50 overflow-y-auto bg-gray-600 bg-opacity-50 flex items-center justify-center">
+        <div className="bg-white rounded-lg p-8">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
           <p className="mt-4 text-gray-600">Ürün bilgileri yükleniyor...</p>
         </div>
       </div>
     );
   }
-
-  // Error state
-  if (isError) {
+  
+  if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="text-red-500 text-6xl mb-4">⚠️</div>
-          <h2 className="text-2xl font-bold text-gray-800 mb-2">Ürün Bulunamadı</h2>
-          <p className="text-gray-600 mb-4">
-            {error instanceof Error ? error.message : 'Ürün bilgileri yüklenirken bir hata oluştu'}
-          </p>
+      <div className="fixed inset-0 z-50 overflow-y-auto bg-gray-600 bg-opacity-50 flex items-center justify-center">
+        <div className="bg-white rounded-lg p-8 max-w-md">
+          <h2 className="text-lg font-semibold text-red-600 mb-4">Hata</h2>
+          <p className="text-gray-600 mb-4">Ürün bilgileri yüklenirken bir hata oluştu.</p>
           <button
             onClick={() => navigate('/products')}
-            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded transition-colors"
+            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
           >
-            Ürün Listesine Dön
+            Geri Dön
           </button>
         </div>
       </div>
     );
   }
-
+  
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-gray-600 bg-opacity-50 flex items-center justify-center p-2 sm:p-4">
+      <div className="w-full max-w-5xl max-h-[95vh] rounded-lg bg-white shadow-xl flex flex-col">
         {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">Ürün Düzenle</h1>
-              <p className="mt-2 text-gray-600">
-                {product?.name} - {product?.sku}
-              </p>
-            </div>
-            <button
-              onClick={() => navigate('/products')}
-              className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded transition-colors"
-            >
-              Geri Dön
-            </button>
+        <div className="flex items-center justify-between border-b p-4 sm:p-6 flex-shrink-0">
+          <div>
+            <h2 className="text-lg sm:text-xl font-semibold text-gray-900">
+              Ürün Düzenle
+            </h2>
+            <p className="text-sm text-gray-500 mt-1">
+              {product?.name || 'Mevcut ürün bilgilerini güncelleyin'}
+            </p>
           </div>
+          <button
+            onClick={() => navigate('/products')}
+            className="text-gray-400 hover:text-gray-600 p-1 rounded-md hover:bg-gray-100 transition-colors"
+            title="Kapat"
+          >
+            <FiX className="h-5 w-5 sm:h-6 sm:w-6" />
+          </button>
+        </div>
+
+        {/* Tabs */}
+        <div className="border-b flex-shrink-0">
+          <nav className="flex overflow-x-auto px-4 sm:px-6 scrollbar-hide">
+            {tabs.map(tab => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`py-3 sm:py-4 px-2 sm:px-4 text-xs sm:text-sm font-medium border-b-2 whitespace-nowrap transition-colors ${
+                  activeTab === tab.id
+                    ? 'border-blue-500 text-blue-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </nav>
         </div>
 
         {/* Form */}
-        <div className="bg-white shadow-lg rounded-lg">
-          <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-6">
-            {/* Temel Bilgiler */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Ürün Adı */}
-              <div>
-                <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
-                  Ürün Adı *
-                </label>
-                <input
-                  type="text"
-                  id="name"
-                  {...register('name', { required: 'Ürün adı zorunludur' })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Ürün adını girin"
-                />
-                {errors.name && (
-                  <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>
-                )}
+        <div className="flex-1 overflow-y-auto">
+          <form id="product-edit-form" onSubmit={handleSubmit(onSubmit)} className="p-4 sm:p-6">
+            {/* Tab Content */}
+            {activeTab === 'basic' && (
+              <div className="space-y-6">
+                {/* Temel Bilgiler */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <FormField
+                    label="Ürün Adı"
+                    required
+                    error={errors.name?.message}
+                  >
+                    <input
+                      type="text"
+                      {...register('name' /* { required: 'Ürün adı zorunludur' } */)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="Ürün adını girin"
+                    />
+                  </FormField>
+
+                  <FormField
+                    label="SKU"
+                    required
+                    error={errors.sku?.message}
+                  >
+                    <input
+                      type="text"
+                      {...register('sku' /* { required: 'SKU zorunludur' } */)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="Ürün kodunu girin"
+                    />
+                  </FormField>
+
+                  <FormField
+                    label="Marka"
+                    error={errors.brand?.message}
+                  >
+                    <input
+                      type="text"
+                      {...register('brand')}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="Marka adını girin"
+                    />
+                  </FormField>
+
+                  <FormField
+                    label="Kategori"
+                    error={errors.category_id?.message}
+                  >
+                    <select
+                      {...register('category_id', { valueAsNumber: true })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    >
+                      <option value="">Kategori seçin</option>
+                      {categories?.map(category => (
+                        <option key={category.id} value={category.id}>
+                          {category.name}
+                        </option>
+                      ))}
+                    </select>
+                  </FormField>
+
+                  <FormField
+                    label="Ürün Tipi"
+                    error={errors.product_type_id?.message}
+                  >
+                    <select
+                      {...register('product_type_id', { valueAsNumber: true })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    >
+                      <option value="">Ürün tipi seçin</option>
+                      {productTypes?.map(type => (
+                        <option key={type.id} value={type.id}>
+                          {type.name}
+                        </option>
+                      ))}
+                    </select>
+                  </FormField>
+                </div>
+
+                <FormField
+                  label="Açıklama"
+                  error={errors.description?.message}
+                >
+                  <textarea
+                    {...register('description')}
+                    rows={4}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="Ürün açıklamasını girin"
+                  />
+                </FormField>
               </div>
+            )}
 
-              {/* SKU */}
-              <div>
-                <label htmlFor="sku" className="block text-sm font-medium text-gray-700 mb-2">
-                  SKU *
-                </label>
-                <input
-                  type="text"
-                  id="sku"
-                  {...register('sku', { required: 'SKU zorunludur' })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="SKU girin"
-                />
-                {errors.sku && (
-                  <p className="mt-1 text-sm text-red-600">{errors.sku.message}</p>
-                )}
+            {activeTab === 'pricing' && (
+              <div className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <FormField
+                    label="Satış Fiyatı"
+                    error={errors.unit_price?.message}
+                  >
+                    <input
+                      type="number"
+                      step="0.01"
+                      {...register('unit_price', { valueAsNumber: true })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="0.00"
+                    />
+                  </FormField>
+
+                  <FormField
+                    label="Alış Fiyatı"
+                    error={errors.cost_price?.message}
+                  >
+                    <input
+                      type="number"
+                      step="0.01"
+                      {...register('cost_price', { valueAsNumber: true })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="0.00"
+                    />
+                  </FormField>
+
+                  <FormField
+                    label="Para Birimi"
+                    error={errors.currency_id?.message}
+                  >
+                    <select
+                      {...register('currency_id', { valueAsNumber: true })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    >
+                      <option value="">Para birimi seçin</option>
+                      {currencies.map(currency => (
+                        <option key={currency.id} value={currency.id}>
+                          {currency.name} ({currency.symbol})
+                        </option>
+                      ))}
+                    </select>
+                  </FormField>
+
+                  <FormField
+                    label="Birim"
+                    error={errors.unit_id?.message}
+                  >
+                    <select
+                      {...register('unit_id', { valueAsNumber: true })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    >
+                      <option value="">Birim seçin</option>
+                      {units.map(unit => (
+                        <option key={unit.id} value={unit.id}>
+                          {unit.name} ({unit.symbol})
+                        </option>
+                      ))}
+                    </select>
+                  </FormField>
+                </div>
               </div>
+            )}
 
-              {/* Marka */}
-              <div>
-                <label htmlFor="brand_id" className="block text-sm font-medium text-gray-700 mb-2">
-                  Marka ID
-                </label>
-                <input
-                  type="number"
-                  id="brand_id"
-                  {...register('brand_id', {
-                    setValueAs: (value) => value ? parseInt(value) : null
-                  })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Marka ID girin"
-                />
+            {activeTab === 'inventory' && (
+              <div className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <FormField
+                    label="Mevcut Stok"
+                    error={errors.current_stock?.message}
+                  >
+                    <input
+                      type="number"
+                      {...register('current_stock', { valueAsNumber: true })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="0"
+                    />
+                  </FormField>
+
+                  <FormField
+                    label="Rezerve Stok"
+                    error={errors.reserved_stock?.message}
+                  >
+                    <input
+                      type="number"
+                      {...register('reserved_stock', { valueAsNumber: true })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="0"
+                    />
+                  </FormField>
+
+                  <FormField
+                    label="Sipariş Edilen Stok"
+                    error={errors.ordered_stock?.message}
+                  >
+                    <input
+                      type="number"
+                      {...register('ordered_stock', { valueAsNumber: true })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="0"
+                    />
+                  </FormField>
+                </div>
+
+                <FormField
+                  label="Konum"
+                  error={errors.location_id?.message}
+                >
+                  <select
+                    {...register('location_id', { valueAsNumber: true })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  >
+                    {locations.map(location => (
+                      <option key={location.id} value={location.id}>
+                        {location.name}
+                      </option>
+                    ))}
+                  </select>
+                </FormField>
               </div>
+            )}
 
-              {/* Kategori ID */}
-              <div>
-                <label htmlFor="category_id" className="block text-sm font-medium text-gray-700 mb-2">
-                  Kategori ID
-                </label>
-                <input
-                  type="text"
-                  id="category_id"
-                  {...register('category_id', { 
-                    setValueAs: (value) => value ? parseFormattedNumber(value) : null
-                  })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Kategori ID girin"
-                  defaultValue={product && product.category_id ? formatPriceTR(product.category_id, 0) : ''}
-                />
+            {activeTab === 'supplier' && (
+              <div className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <FormField
+                    label="Ana Tedarikçi"
+                    error={errors.supplier_id?.message}
+                  >
+                    <select
+                      {...register('supplier_id', { valueAsNumber: true })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    >
+                      <option value="">Tedarikçi seçin</option>
+                      {suppliers?.map(supplier => (
+                        <option key={supplier.id} value={supplier.id}>
+                          {supplier.name}
+                        </option>
+                      ))}
+                    </select>
+                  </FormField>
+
+                  <FormField
+                    label="Son Tedarikçi"
+                    error={errors.last_supplier_id?.message}
+                  >
+                    <select
+                      {...register('last_supplier_id', { valueAsNumber: true })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    >
+                      <option value="">Tedarikçi seçin</option>
+                      {suppliers?.map(supplier => (
+                        <option key={supplier.id} value={supplier.id}>
+                          {supplier.name}
+                        </option>
+                      ))}
+                    </select>
+                  </FormField>
+
+                  <FormField
+                    label="Tedarikçi Ürün Kodu"
+                    error={errors.supplier_product_code?.message}
+                  >
+                    <input
+                      type="text"
+                      {...register('supplier_product_code')}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="Tedarikçi ürün kodunu girin"
+                    />
+                  </FormField>
+
+                  <FormField
+                    label="Temin Süresi (Gün)"
+                    error={errors.lead_time_days?.message}
+                  >
+                    <input
+                      type="number"
+                      {...register('lead_time_days', { valueAsNumber: true })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="0"
+                    />
+                  </FormField>
+                </div>
               </div>
-            </div>
+            )}
 
-            {/* Açıklama */}
-            <div>
-              <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-2">
-                Açıklama
-              </label>
-              <textarea
-                id="description"
-                rows={3}
-                {...register('description')}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Ürün açıklamasını girin"
-              />
-            </div>
+            {activeTab === 'settings' && (
+              <div className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <FormField
+                    label="Barkod"
+                    error={errors.barcode?.message}
+                  >
+                    <input
+                      type="text"
+                      {...register('barcode')}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="Barkod numarasını girin"
+                    />
+                  </FormField>
 
-            {/* Fiyat Bilgileri */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {/* Satış Fiyatı */}
-              <div>
-                <label htmlFor="unit_price" className="block text-sm font-medium text-gray-700 mb-2">
-                  Satış Fiyatı *
-                </label>
-                <input
-                  type="text"
-                  id="unit_price"
-                  {...register('unit_price', { 
-                    required: 'Satış fiyatı zorunludur',
-                    setValueAs: (value) => parseFormattedNumber(value),
-                    validate: (value) => value >= 0 || 'Fiyat 0\'dan küçük olamaz'
-                  })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="0,00"
-                  defaultValue={product ? formatPriceTR(product.unit_price) : ''}
-                />
-                {errors.unit_price && (
-                  <p className="mt-1 text-sm text-red-600">{errors.unit_price.message}</p>
-                )}
+                  <FormField
+                    label="QR Kod"
+                    error={errors.qr_code?.message}
+                  >
+                    <input
+                      type="text"
+                      {...register('qr_code')}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="QR kod bilgisini girin"
+                    />
+                  </FormField>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="flex items-center">
+                    <input
+                      type="checkbox"
+                      id="is_popular"
+                      {...register('is_popular')}
+                      className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                    />
+                    <label htmlFor="is_popular" className="ml-2 block text-sm text-gray-700">
+                      Popüler ürün
+                    </label>
+                  </div>
+
+                  <div className="flex items-center">
+                    <input
+                      type="checkbox"
+                      id="is_raw_material"
+                      {...register('is_raw_material')}
+                      className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                    />
+                    <label htmlFor="is_raw_material" className="ml-2 block text-sm text-gray-700">
+                      Hammadde
+                    </label>
+                  </div>
+
+                  <div className="flex items-center">
+                    <input
+                      type="checkbox"
+                      id="is_finished_product"
+                      {...register('is_finished_product')}
+                      className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                    />
+                    <label htmlFor="is_finished_product" className="ml-2 block text-sm text-gray-700">
+                      Bitmiş ürün
+                    </label>
+                  </div>
+                </div>
               </div>
-
-              {/* Alış Fiyatı */}
-              <div>
-                <label htmlFor="cost_price" className="block text-sm font-medium text-gray-700 mb-2">
-                  Alış Fiyatı *
-                </label>
-                <input
-                  type="text"
-                  id="cost_price"
-                  {...register('cost_price', { 
-                    required: 'Alış fiyatı zorunludur',
-                    setValueAs: (value) => parseFormattedNumber(value),
-                    validate: (value) => value >= 0 || 'Fiyat 0\'dan küçük olamaz'
-                  })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="0,00"
-                  defaultValue={product ? formatPriceTR(product.cost_price) : ''}
-                />
-                {errors.cost_price && (
-                  <p className="mt-1 text-sm text-red-600">{errors.cost_price.message}</p>
-                )}
-              </div>
-
-              {/* Stok Miktarı */}
-              <div>
-                <label htmlFor="current_stock" className="block text-sm font-medium text-gray-700 mb-2">
-                  Stok Miktarı
-                </label>
-                <input
-                  type="text"
-                  id="current_stock"
-                  {...register('current_stock', { 
-                    setValueAs: (value) => parseFormattedNumber(value),
-                    validate: (value) => value >= 0 || 'Stok 0\'dan küçük olamaz'
-                  })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="0,00"
-                  defaultValue={product ? formatPriceTR(product.current_stock, 0) : ''}
-                />
-                {errors.current_stock && (
-                  <p className="mt-1 text-sm text-red-600">{errors.current_stock.message}</p>
-                )}
-              </div>
-            </div>
-
-            {/* Diğer Bilgiler */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {/* Tedarikçi ID */}
-              <div>
-                <label htmlFor="supplier_id" className="block text-sm font-medium text-gray-700 mb-2">
-                  Tedarikçi ID
-                </label>
-                <input
-                  type="text"
-                  id="supplier_id"
-                  {...register('supplier_id', { 
-                    setValueAs: (value) => value ? parseFormattedNumber(value) : null
-                  })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Tedarikçi ID girin"
-                  defaultValue={product && product.supplier_id ? formatPriceTR(product.supplier_id, 0) : ''}
-                />
-              </div>
-
-              {/* Barkod */}
-              <div>
-                <label htmlFor="barcode" className="block text-sm font-medium text-gray-700 mb-2">
-                  Barkod
-                </label>
-                <input
-                  type="text"
-                  id="barcode"
-                  {...register('barcode')}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Barkod girin"
-                />
-              </div>
-
-              {/* QR Kod */}
-              <div>
-                <label htmlFor="qr_code" className="block text-sm font-medium text-gray-700 mb-2">
-                  QR Kod
-                </label>
-                <input
-                  type="text"
-                  id="qr_code"
-                  {...register('qr_code')}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="QR kod girin"
-                />
-              </div>
-            </div>
-
-            {/* Aktiflik Durumu */}
-            <div className="flex items-center">
-              <input
-                type="checkbox"
-                id="is_active"
-                {...register('is_active')}
-                defaultChecked={product?.is_active ?? true}
-                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-              />
-              <label htmlFor="is_active" className="ml-2 block text-sm text-gray-700">
-                Ürün aktif
-              </label>
-            </div>
-
-            {/* Form Actions */}
-            <div className="flex items-center justify-end space-x-4 pt-6 border-t border-gray-200">
-              <button
-                type="button"
-                onClick={() => navigate('/products')}
-                className="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors"
-                disabled={isSubmitting || updateMutation.isPending}
-              >
-                İptal
-              </button>
-              <button
-                type="submit"
-                disabled={isSubmitting || updateMutation.isPending}
-                className="px-6 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
-              >
-                {(isSubmitting || updateMutation.isPending) && (
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                )}
-                {(isSubmitting || updateMutation.isPending) ? 'Kaydediliyor...' : 'Kaydet'}
-              </button>
-            </div>
+            )}
           </form>
+        </div>
+
+        {/* Form Actions */}
+        <div className="border-t p-4 sm:p-6 flex-shrink-0">
+          <div className="flex items-center justify-end space-x-3">
+            <button
+              type="button"
+              onClick={() => navigate('/products')}
+              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+              disabled={isSubmitting || updateMutation.isPending}
+            >
+              İptal
+            </button>
+            <button
+              type="submit"
+              form="product-edit-form"
+              disabled={isSubmitting || updateMutation.isPending}
+              className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+            >
+              {(isSubmitting || updateMutation.isPending) && (
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+              )}
+              {(isSubmitting || updateMutation.isPending) ? 'Kaydediliyor...' : 'Kaydet'}
+            </button>
+          </div>
         </div>
       </div>
     </div>

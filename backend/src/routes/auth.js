@@ -12,7 +12,7 @@ const router = express.Router()
 // Login için özel rate limiting
 const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 dakika
-  max: 20, // IP başına 15 dakikada maksimum 20 login denemesi
+  max: 500, // IP başına 15 dakikada maksimum 500 login denemesi
   message: {
     error: 'Çok fazla istek gönderdiniz. Lütfen bekleyin.'
   },
@@ -116,7 +116,7 @@ router.post('/login', loginLimiter, [
 
     if (result.rows.length === 0) {
       // winston.warn('User not found', { username })
-      return next(new AppError('Invalid credentials', 401))
+      return next(new AppError('Şifre yanlış', 401))
     }
 
     const user = result.rows[0]
@@ -126,7 +126,7 @@ router.post('/login', loginLimiter, [
 
     // Validate password with hash format checking
     const passwordValidation = await validateUserPassword(user.id, password)
-    
+
     if (!passwordValidation.isValid) {
       if (passwordValidation.needsReset) {
         // winston.warn('User login failed due to invalid hash format', {
@@ -136,7 +136,7 @@ router.post('/login', loginLimiter, [
         // })
         return next(new AppError('Your password needs to be reset. Please contact administrator.', 401))
       }
-      return next(new AppError('Invalid credentials', 401))
+      return next(new AppError('Şifre yanlış', 401))
     }
 
     // Generate tokens

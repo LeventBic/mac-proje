@@ -12,7 +12,7 @@ const inventoryValidators = {
   validateInventoryItemId: [
     param('id')
       .isInt({ min: 1 })
-      .withMessage('Inventory item ID must be a positive integer')
+      .withMessage('Envanter öğesi ID pozitif bir tam sayı olmalıdır')
   ],
 
   /**
@@ -22,27 +22,27 @@ const inventoryValidators = {
     query('page')
       .optional()
       .isInt({ min: 1 })
-      .withMessage('Page must be a positive integer'),
+      .withMessage('Sayfa pozitif bir tam sayı olmalıdır'),
     query('limit')
       .optional()
       .isInt({ min: 1, max: 100 })
-      .withMessage('Limit must be between 1 and 100'),
+      .withMessage('Limit 1 ile 100 arasında olmalıdır'),
     query('search')
       .optional()
       .isLength({ min: 1, max: 100 })
-      .withMessage('Search term must be between 1 and 100 characters'),
+      .withMessage('Arama terimi 1 ile 100 karakter arasında olmalıdır'),
     query('location_id')
       .optional()
       .isInt({ min: 1 })
-      .withMessage('Location ID must be a positive integer'),
+      .withMessage('Lokasyon ID pozitif bir tam sayı olmalıdır'),
     query('category_id')
       .optional()
       .isInt({ min: 1 })
-      .withMessage('Category ID must be a positive integer'),
+      .withMessage('Kategori ID pozitif bir tam sayı olmalıdır'),
     query('low_stock')
       .optional()
       .isBoolean()
-      .withMessage('Low stock must be a boolean value')
+      .withMessage('Düşük stok boolean değer olmalıdır')
   ],
 
   /**
@@ -85,12 +85,12 @@ const inventoryValidators = {
   validateStockMovement: [
     body('product_id')
       .notEmpty()
-      .withMessage('Product ID is required')
+      .withMessage('Ürün ID gereklidir')
       .isInt({ min: 1 })
-      .withMessage('Product ID must be a positive integer'),
+      .withMessage('Ürün ID pozitif bir tam sayı olmalıdır'),
     body('location_id')
       .notEmpty()
-      .withMessage('Location ID is required')
+      .withMessage('Lokasyon ID gereklidir')
       .isInt({ min: 1 })
       .withMessage('Location ID must be a positive integer'),
     body('movement_type')

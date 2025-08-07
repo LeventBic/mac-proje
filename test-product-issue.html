@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Ürün 123 Silme Sorunu Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        .result { margin: 10px 0; padding: 10px; background: #f5f5f5; border-radius: 3px; }
+        .error { background: #ffebee; color: #c62828; }
+        .success { background: #e8f5e8; color: #2e7d32; }
+        button { padding: 10px 15px; margin: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>🔍 Ürün 123 Silme Sorunu Analizi</h1>
+    
+    <div class="section">
+        <h2>📊 Mevcut Durum Analizi</h2>
+        <div class="result">
+            <strong>Bulgular:</strong><br>
+            ✅ Backend API çalışıyor<br>
+            ✅ Ürün listesi doğru geliyor (ID 1-8 arası)<br>
+            ✅ ID 123 veritabanında yok<br>
+            ✅ Mevcut ürün silme işlemi çalışıyor<br>
+            ⚠️ Backend loglarında ID 18'e DELETE isteği var (123 değil)<br>
+            ❓ Frontend'de ID 123'ün nereden geldiği belirsiz
+        </div>
+    </div>
+    
+    <div class="section">
+        <h2>🧪 Test Adımları</h2>
+        <button onclick="testCurrentProducts()">1. Mevcut Ürünleri Listele</button>
+        <button onclick="testDelete123()">2. ID 123 Silmeyi Test Et</button>
+        <button onclick="testDeleteExisting()">3. Mevcut Ürün Silmeyi Test Et</button>
+        <button onclick="openFrontend()">4. Frontend'i Aç</button>
+        <div id="testResults"></div>
+    </div>
+    
+    <div class="section">
+        <h2>🔧 Çözüm Önerileri</h2>
+        <div class="result">
+            <strong>Olası Nedenler:</strong><br>
+            1. Frontend cache'inde eski veri<br>
+            2. React Query cache'inde yanlış ID<br>
+            3. Frontend state'inde hatalı ID<br>
+            4. URL parametresinde yanlış ID<br>
+            5. Component prop'larında hatalı ID geçişi
+        </div>
+        <button onclick="clearAllCache()">Cache'leri Temizle</button>
+        <button onclick="debugFrontend()">Frontend Debug Bilgileri</button>
+    </div>
+    
+    <div class="section">
+        <h2>📝 Debug Bilgileri</h2>
+        <div id="debugInfo"></div>
+    </div>
+    
+    <script>
+        const API_BASE = 'http://localhost:3002/api';
+        let authToken = null;
+        
+        async function getAuthToken() {
+            if (authToken) return authToken;
+            
+            try {
+                const response = await fetch(`${API_BASE}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: 'levent2', password: '20202020' })
+                });
+                const data = await response.json();
+                authToken = data.token;
+                return authToken;
+            } catch (error) {
+                console.error('Auth error:', error);
+                return null;
+            }
+        }
+        
+        async function testCurrentProducts() {
+            const resultsDiv = document.getElementById('testResults');
+            resultsDiv.innerHTML = '<p>🔄 Ürünler yükleniyor...</p>';
+            
+            try {
+                const token = await getAuthToken();
+                const response = await fetch(`${API_BASE}/products?status=all`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+                
+                const products = data.data?.products || [];
+                const productList = products.map(p => 
+                    `ID: ${p.id}, Name: ${p.name}, Active: ${p.is_active}`
+                ).join('<br>');
+                
+                resultsDiv.innerHTML = `
+                    <div class="result success">
+                        <strong>✅ Toplam ${products.length} ürün bulundu:</strong><br>
+                        ${productList}<br><br>
+                        <strong>ID Aralığı:</strong> ${Math.min(...products.map(p => p.id))} - ${Math.max(...products.map(p => p.id))}
+                    </div>
+                `;
+            } catch (error) {
+                resultsDiv.innerHTML = `<div class="result error">❌ Hata: ${error.message}</div>`;
+            }
+        }
+        
+        async function testDelete123() {
+            const resultsDiv = document.getElementById('testResults');
+            resultsDiv.innerHTML = '<p>🔄 ID 123 silme testi...</p>';
+            
+            try {
+                const token = await getAuthToken();
+                const response = await fetch(`${API_BASE}/products/123`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+                
+                resultsDiv.innerHTML = `
+                    <div class="result ${response.ok ? 'success' : 'error'}">
+                        <strong>Status:</strong> ${response.status}<br>
+                        <strong>Mesaj:</strong> ${data.message || 'Bilinmeyen yanıt'}<br>
+                        <strong>Sonuç:</strong> ${response.ok ? '✅ Başarılı' : '❌ Başarısız (beklenen)'}
+                    </div>
+                `;
+            } catch (error) {
+                resultsDiv.innerHTML = `<div class="result error">❌ Hata: ${error.message}</div>`;
+            }
+        }
+        
+        async function testDeleteExisting() {
+            const resultsDiv = document.getElementById('testResults');
+            resultsDiv.innerHTML = '<p>🔄 Mevcut ürün silme testi...</p>';
+            
+            try {
+                const token = await getAuthToken();
+                // Önce ürünleri al
+                const productsResponse = await fetch(`${API_BASE}/products?status=all`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const productsData = await productsResponse.json();
+                const activeProducts = productsData.data?.products?.filter(p => p.is_active) || [];
+                
+                if (activeProducts.length === 0) {
+                    resultsDiv.innerHTML = '<div class="result error">❌ Silinecek aktif ürün bulunamadı</div>';
+                    return;
+                }
+                
+                const productToDelete = activeProducts[0];
+                
+                // Ürünü sil
+                const deleteResponse = await fetch(`${API_BASE}/products/${productToDelete.id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const deleteData = await deleteResponse.json();
+                
+                resultsDiv.innerHTML = `
+                    <div class="result ${deleteResponse.ok ? 'success' : 'error'}">
+                        <strong>Silinen Ürün:</strong> ID ${productToDelete.id} - ${productToDelete.name}<br>
+                        <strong>Status:</strong> ${deleteResponse.status}<br>
+                        <strong>Mesaj:</strong> ${deleteData.message || 'Bilinmeyen yanıt'}<br>
+                        <strong>Sonuç:</strong> ${deleteResponse.ok ? '✅ Başarılı' : '❌ Başarısız'}
+                    </div>
+                `;
+            } catch (error) {
+                resultsDiv.innerHTML = `<div class="result error">❌ Hata: ${error.message}</div>`;
+            }
+        }
+        
+        function openFrontend() {
+            window.open('http://localhost:3001', '_blank');
+        }
+        
+        function clearAllCache() {
+            localStorage.clear();
+            sessionStorage.clear();
+            if ('caches' in window) {
+                caches.keys().then(names => {
+                    names.forEach(name => caches.delete(name));
+                });
+            }
+            document.getElementById('debugInfo').innerHTML = '<div class="result success">✅ Tüm cache\'ler temizlendi</div>';
+        }
+        
+        function debugFrontend() {
+            const debugDiv = document.getElementById('debugInfo');
+            debugDiv.innerHTML = `
+                <div class="result">
+                    <strong>🔍 Frontend Debug Kontrol Listesi:</strong><br><br>
+                    
+                    <strong>1. Browser Developer Tools:</strong><br>
+                    • F12 ile açın<br>
+                    • Network sekmesinde DELETE isteklerini izleyin<br>
+                    • Console'da hataları kontrol edin<br><br>
+                    
+                    <strong>2. React DevTools:</strong><br>
+                    • Components sekmesinde ProductsPage'i bulun<br>
+                    • productToDelete state'ini kontrol edin<br>
+                    • products array'inde ID'leri kontrol edin<br><br>
+                    
+                    <strong>3. Network İzleme:</strong><br>
+                    • Ürün listesi yüklenirken /api/products isteğini izleyin<br>
+                    • Silme butonuna tıklarken DELETE isteğini izleyin<br>
+                    • İstek URL'inde hangi ID'nin gönderildiğini kontrol edin<br><br>
+                    
+                    <strong>4. Console Komutları:</strong><br>
+                    • <code>localStorage.getItem('products')</code><br>
+                    • <code>sessionStorage.getItem('products')</code><br>
+                    • React Query cache'ini kontrol edin
+                </div>
+            `;
+        }
+        
+        // Sayfa yüklendiğinde otomatik test
+        window.onload = function() {
+            testCurrentProducts();
+        };
+    </script>
+</body>
+</html>

@@ -436,7 +436,7 @@ const BOMPage = () => {
                         value={form.finished_product_id}
                         onChange={handleFormChange}
                         className="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        required
+                        /* required */
                       >
                         <option value="">Ürün Seçiniz</option>
                         {products.map(p => (
@@ -476,7 +476,7 @@ const BOMPage = () => {
                         value={form.version}
                         onChange={handleFormChange}
                         className="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        required
+                        /* required */
                       />
                     </div>
                   </div>
@@ -571,7 +571,7 @@ const BOMPage = () => {
                                   )
                                 }
                                 className="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                required
+                                /* required */
                               >
                                 <option value="">Malzeme Seçin</option>
                                 {materials.map(material => (
@@ -591,7 +591,7 @@ const BOMPage = () => {
                                   )
                                 }
                                 className="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                required
+                                /* required */
                               >
                                 <option value="">Alt Reçete Seçin</option>
                                 {availableSubBoms.map(bom => (
@@ -620,7 +620,7 @@ const BOMPage = () => {
                               className="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                               min="0"
                               step="0.01"
-                              required
+                              /* required */
                             />
                           </div>
 
@@ -762,7 +762,7 @@ const BOMPage = () => {
                     className="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     min="0"
                     step="0.01"
-                    required
+                    /* required */
                   />
                 </div>
                 <div className="flex justify-end space-x-3 pt-4">

@@ -3,7 +3,7 @@ import toast from 'react-hot-toast';
 
 // API Base URL
 const API_BASE_URL =
-  process.env.REACT_APP_API_URL || 'http://localhost:3002/api';
+  process.env.REACT_APP_API_URL || 'http://localhost:3003/api';
 
 // Create axios instance
 const axiosClient = axios.create({
@@ -14,17 +14,16 @@ const axiosClient = axios.create({
   },
 });
 
-// Request interceptor - Add auth token to all requests
+// Request interceptor to add auth token
 axiosClient.interceptors.request.use(
-  config => {
+  (config) => {
     const token = localStorage.getItem('token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
-
     return config;
   },
-  error => {
+  (error) => {
     return Promise.reject(error);
   }
 );

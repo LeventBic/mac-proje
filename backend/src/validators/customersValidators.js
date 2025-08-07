@@ -12,7 +12,7 @@ const customersValidators = {
   validateCustomerId: [
     param('id')
       .isInt({ min: 1 })
-      .withMessage('Customer ID must be a positive integer')
+      .withMessage('Müşteri ID pozitif bir tam sayı olmalıdır')
   ],
 
   /**
@@ -22,31 +22,31 @@ const customersValidators = {
     query('page')
       .optional()
       .isInt({ min: 1 })
-      .withMessage('Page must be a positive integer'),
+      .withMessage('Sayfa pozitif bir tam sayı olmalıdır'),
     query('limit')
       .optional()
       .isInt({ min: 1, max: 100 })
-      .withMessage('Limit must be between 1 and 100'),
+      .withMessage('Limit 1 ile 100 arasında olmalıdır'),
     query('search')
       .optional()
       .isLength({ min: 1, max: 100 })
-      .withMessage('Search term must be between 1 and 100 characters'),
+      .withMessage('Arama terimi 1 ile 100 karakter arasında olmalıdır'),
     query('is_active')
       .optional()
       .isBoolean()
-      .withMessage('Is active must be a boolean value'),
+      .withMessage('Aktif durumu boolean değer olmalıdır'),
     query('customer_type')
       .optional()
       .isIn(['individual', 'corporate'])
-      .withMessage('Customer type must be either individual or corporate'),
+      .withMessage('Müşteri tipi bireysel veya kurumsal olmalıdır'),
     query('city')
       .optional()
       .isLength({ min: 1, max: 100 })
-      .withMessage('City must be between 1 and 100 characters'),
+      .withMessage('Şehir 1 ile 100 karakter arasında olmalıdır'),
     query('country')
       .optional()
       .isLength({ min: 1, max: 100 })
-      .withMessage('Country must be between 1 and 100 characters')
+      .withMessage('Ülke 1 ile 100 karakter arasında olmalıdır')
   ],
 
   /**
@@ -55,9 +55,9 @@ const customersValidators = {
   validateCustomerCreate: [
     body('name')
       .notEmpty()
-      .withMessage('Customer name is required')
+      .withMessage('Müşteri adı gereklidir')
       .isLength({ min: 2, max: 200 })
-      .withMessage('Customer name must be between 2 and 200 characters')
+      .withMessage('Müşteri adı 2 ile 200 karakter arasında olmalıdır')
       .matches(/^[a-zA-ZğüşıöçĞÜŞİÖÇ\s\-\.]+$/)
       .withMessage('Customer name can only contain letters, spaces, hyphens, and dots'),
     body('email')

@@ -150,20 +150,20 @@ const CategoryManager: React.FC = () => {
                     Kategori Adı *
                   </label>
                   <input
-                    type="text"
-                    id="categoryName"
-                    value={editingCategory ? editingCategory.name : newCategoryName}
-                    onChange={(e) => {
-                      if (editingCategory) {
-                        setEditingCategory({ ...editingCategory, name: e.target.value });
-                      } else {
-                        setNewCategoryName(e.target.value);
-                      }
-                    }}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="Kategori adını giriniz"
-                    required
-                  />
+                      type="text"
+                      id="categoryName"
+                      value={editingCategory ? editingCategory.name : newCategoryName}
+                      onChange={(e) => {
+                        if (editingCategory) {
+                          setEditingCategory({ ...editingCategory, name: e.target.value });
+                        } else {
+                          setNewCategoryName(e.target.value);
+                        }
+                      }}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      placeholder="Kategori adını giriniz"
+                      /* required */
+                    />
                 </div>
                 <div>
                   <label htmlFor="categoryDescription" className="block text-sm font-medium text-gray-700 mb-1">

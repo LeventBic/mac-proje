@@ -19,13 +19,13 @@ import { useCreateCategory } from '../../hooks/useCategories.ts';
 import DeleteButton from '../../components/DeleteButton';
 import EditButton from '../../components/EditButton.tsx';
 import ProductForm from '../../components/ProductForm';
-import { formatCurrency, formatQuantity, formatPriceTR, parseFormattedNumber } from '../../utils/formatters';
+import { formatCurrency, formatQuantity } from '../../utils/formatters';
 import { toast } from 'react-hot-toast';
 
 const ProductsPage = () => {
   const [showProductForm, setShowProductForm] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
-  const [editingProduct, setEditingProduct] = useState(null);
+
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [productToDelete, setProductToDelete] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
@@ -33,9 +33,7 @@ const ProductsPage = () => {
   const [productType, setProductType] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
-  const [modalPosition, setModalPosition] = useState({ x: 0, y: 0 });
-  const [isDragging, setIsDragging] = useState(false);
-  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+
   // Kategori modal drag state'leri
   const [categoryModalPosition, setCategoryModalPosition] = useState({ x: 0, y: 0 });
   const [isCategoryDragging, setIsCategoryDragging] = useState(false);
@@ -119,28 +117,11 @@ const ProductsPage = () => {
   };
 
   const handleEditProduct = (product) => {
-    setEditingProduct(product);
-    setShowProductForm(false);
+    setSelectedProduct(product);
+    setShowProductForm(true);
   };
 
-  const handleUpdateProduct = async (productData) => {
-    if (!editingProduct) return;
-    
-    try {
-      await updateProductMutation.mutateAsync({
-        id: editingProduct.id,
-        ...productData
-      });
-      setEditingProduct(null);
-    } catch (error) {
-      // Error is handled by the mutation
-    }
-  };
 
-  const handleCancelEdit = () => {
-    setEditingProduct(null);
-    setModalPosition({ x: 0, y: 0 });
-  };
 
   // Kategori modal drag fonksiyonları
   const handleCategoryMouseDown = (e) => {
@@ -198,46 +179,7 @@ const ProductsPage = () => {
     setIsProductTypeDragging(false);
   };
 
-  const handleMouseDown = (e) => {
-    setIsDragging(true);
-    setDragStart({
-      x: e.clientX - modalPosition.x,
-      y: e.clientY - modalPosition.y
-    });
-  };
 
-  const handleMouseMove = (e) => {
-    if (!isDragging) return;
-    
-    const newX = e.clientX - dragStart.x;
-    const newY = e.clientY - dragStart.y;
-    
-    // Ekran sınırları içinde tutma
-    const maxX = window.innerWidth - 600; // modal genişliği
-    const maxY = window.innerHeight - 400; // modal yüksekliği
-    
-    setModalPosition({
-      x: Math.max(-200, Math.min(newX, maxX)),
-      y: Math.max(0, Math.min(newY, maxY))
-    });
-  };
-
-  const handleMouseUp = () => {
-    setIsDragging(false);
-  };
-
-  // Mouse event listeners
-  React.useEffect(() => {
-    if (isDragging) {
-      document.addEventListener('mousemove', handleMouseMove);
-      document.addEventListener('mouseup', handleMouseUp);
-      
-      return () => {
-        document.removeEventListener('mousemove', handleMouseMove);
-        document.removeEventListener('mouseup', handleMouseUp);
-      };
-    }
-  }, [isDragging, dragStart, modalPosition]);
 
   // Kategori modal mouse event listeners
   React.useEffect(() => {
@@ -609,50 +551,81 @@ const ProductsPage = () => {
           <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
             <div>
               <p className="text-sm text-gray-700">
-                Toplam <span className="font-medium">{pagination.total || 0}</span> ürün,{' '}
+                Toplam <span className="font-medium">{pagination.total || 0}</span> ürün
+              </p>
+            </div>
+            <div>
+              <nav className="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
+                <button
+                  onClick={() => setCurrentPage(1)}
+                  disabled={currentPage === 1}
+                  className="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <span className="sr-only">İlk Sayfa</span>
+                  {'<<'}
+                </button>
+                {/* Önceki sayfa butonu */}
+                <button
+                  onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                  disabled={currentPage === 1}
+                  className="relative inline-flex items-center px-3 py-2 text-sm font-medium text-gray-500 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {'<'}
+                </button>
+                
+                {/* Önceki sayfa numarası (varsa) */}
+                {currentPage > 1 && (
+                  <button
+                    onClick={() => setCurrentPage(currentPage - 1)}
+                    className="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+                  >
+                    {currentPage - 1}
+                  </button>
+                )}
+                
+                {/* Mevcut sayfa */}
+                <button
+                  className="relative z-10 inline-flex items-center bg-blue-600 px-4 py-2 text-sm font-semibold text-white focus:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+                >
+                  {currentPage}
+                </button>
+                
+                {/* Sonraki sayfa numarası (varsa) */}
+                {currentPage < (pagination.pages || 1) && (
+                  <button
+                    onClick={() => setCurrentPage(currentPage + 1)}
+                    className="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+                  >
+                    {currentPage + 1}
+                  </button>
+                )}
+                
+                {/* Sonraki sayfa butonu */}
+                <button
+                  onClick={() => setCurrentPage(Math.min(pagination.pages || 1, currentPage + 1))}
+                  disabled={currentPage >= (pagination.pages || 1)}
+                  className="relative inline-flex items-center px-3 py-2 text-sm font-medium text-gray-500 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {'>'}
+                </button>
+                <button
+                  onClick={() => setCurrentPage(pagination.pages || 1)}
+                  disabled={currentPage >= (pagination.pages || 1)}
+                  className="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <span className="sr-only">Son Sayfa</span>
+                  {'>>'}
+                </button>
+              </nav>
+            </div>
+            <div>
+              <p className="text-sm text-gray-700">
                 <span className="font-medium">{((currentPage - 1) * itemsPerPage) + 1}</span> -{' '}
                 <span className="font-medium">
                   {Math.min(currentPage * itemsPerPage, pagination.total || 0)}
                 </span>{' '}
                 arası gösteriliyor
               </p>
-            </div>
-            <div>
-              <nav className="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
-                <button
-                  onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-                  disabled={currentPage === 1}
-                  className="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  <span className="sr-only">Önceki</span>
-                  <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                    <path fillRule="evenodd" d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z" clipRule="evenodd" />
-                  </svg>
-                </button>
-                {Array.from({ length: pagination.pages || 1 }, (_, i) => i + 1).map((page) => (
-                  <button
-                    key={page}
-                    onClick={() => setCurrentPage(page)}
-                    className={`relative inline-flex items-center px-4 py-2 text-sm font-semibold ${
-                      page === currentPage
-                        ? 'z-10 bg-blue-600 text-white focus:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600'
-                        : 'text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0'
-                    }`}
-                  >
-                    {page}
-                  </button>
-                ))}
-                <button
-                  onClick={() => setCurrentPage(Math.min(pagination.pages || 1, currentPage + 1))}
-                  disabled={currentPage >= (pagination.pages || 1)}
-                  className="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  <span className="sr-only">Sonraki</span>
-                  <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                    <path fillRule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clipRule="evenodd" />
-                  </svg>
-                </button>
-              </nav>
             </div>
           </div>
         </div>
@@ -670,229 +643,7 @@ const ProductsPage = () => {
         isLoading={selectedProduct ? updateProductMutation.isPending : createProductMutation.isPending}
       />
 
-      {/* Product Edit Form Modal */}
-      {editingProduct && (
-        <div className="fixed inset-0 z-50 overflow-y-auto bg-gray-600 bg-opacity-50 flex items-center justify-center p-4">
-          <div 
-            className="w-full max-w-2xl bg-white rounded-lg shadow-xl"
-            style={{
-              transform: `translate(${modalPosition.x}px, ${modalPosition.y}px)`,
-              cursor: isDragging ? 'grabbing' : 'default'
-            }}
-          >
-            <div className="p-6">
-              <div 
-                className="flex items-center justify-between mb-6 cursor-grab active:cursor-grabbing select-none"
-                onMouseDown={handleMouseDown}
-              >
-                <h2 className="text-xl font-semibold text-gray-900 pointer-events-none">
-                  Ürün Düzenle: {editingProduct.name}
-                </h2>
-                <button
-                  onClick={handleCancelEdit}
-                  className="text-gray-400 hover:text-gray-600 pointer-events-auto"
-                >
-                  <FiX className="h-6 w-6" />
-                </button>
-              </div>
-              
-              <form onSubmit={(e) => {
-                e.preventDefault();
-                const formData = new FormData(e.target);
-                const categoryId = formData.get('category_id');
-                const productData = {
-                  name: formData.get('name'),
-                  description: formData.get('description'),
-                  sku: formData.get('sku'),
-                  brand: formData.get('brand'),
-                  unit_price: parseFormattedNumber(formData.get('unit_price')) || 0,
-                  cost_price: parseFormattedNumber(formData.get('cost_price')) || 0,
-                  current_stock: parseFormattedNumber(formData.get('current_stock')) || 0,
-                  category_id: categoryId && categoryId !== '' ? parseInt(categoryId, 10) : undefined,
-                  supplier_name: formData.get('supplier_name'),
-                  barcode: formData.get('barcode'),
-                  qr_code: formData.get('qr_code'),
-                  is_active: formData.get('is_active') === 'on'
-                };
-                handleUpdateProduct(productData);
-              }} className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Ürün Adı *
-                    </label>
-                    <input
-                      type="text"
-                      name="name"
-                      defaultValue={editingProduct.name}
-                      required
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      SKU
-                    </label>
-                    <input
-                      type="text"
-                      name="sku"
-                      defaultValue={editingProduct.sku}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Marka
-                    </label>
-                    <input
-                      type="text"
-                      name="brand"
-                      defaultValue={editingProduct.brand || ''}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Kategori
-                    </label>
-                    <select
-                      name="category_id"
-                      defaultValue={editingProduct.category_id || ''}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    >
-                      <option value="">Kategori Seçin</option>
-                      {categoriesData?.data?.map(category => (
-                        <option key={category.id} value={category.id}>
-                          {category.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Satış Fiyatı (₺)
-                    </label>
-                    <input
-                      type="text"
-                      name="unit_price"
-                      defaultValue={formatPriceTR(editingProduct.unit_price)}
-                      placeholder="0,00"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Alış Fiyatı (₺)
-                    </label>
-                    <input
-                      type="text"
-                      name="cost_price"
-                      defaultValue={formatPriceTR(editingProduct.cost_price)}
-                      placeholder="0,00"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Stok Miktarı
-                    </label>
-                    <input
-                      type="text"
-                      name="current_stock"
-                      defaultValue={formatPriceTR(editingProduct.current_stock, 0)}
-                      placeholder="0"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Tedarikçi
-                    </label>
-                    <input
-                      type="text"
-                      name="supplier_name"
-                      defaultValue={editingProduct.supplier_name || editingProduct.supplier?.name || ''}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Barkod
-                    </label>
-                    <input
-                      type="text"
-                      name="barcode"
-                      defaultValue={editingProduct.barcode || ''}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      QR Kod
-                    </label>
-                    <input
-                      type="text"
-                      name="qr_code"
-                      defaultValue={editingProduct.qr_code || ''}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                  </div>
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Açıklama
-                  </label>
-                  <textarea
-                    name="description"
-                    defaultValue={editingProduct.description || ''}
-                    rows={3}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-                
-                <div>
-                  <label className="flex items-center">
-                    <input
-                      type="checkbox"
-                      name="is_active"
-                      defaultChecked={editingProduct.is_active}
-                      className="mr-2"
-                    />
-                    <span className="text-sm font-medium text-gray-700">Aktif</span>
-                  </label>
-                </div>
-                
-                <div className="flex justify-end space-x-2 pt-4 border-t">
-                  <button
-                    type="button"
-                    onClick={handleCancelEdit}
-                    className="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50"
-                  >
-                    İptal
-                  </button>
-                  <button
-                    type="submit"
-                    disabled={updateProductMutation.isPending}
-                    className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50"
-                  >
-                    {updateProductMutation.isPending ? 'Güncelleniyor...' : 'Güncelle'}
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        </div>
-      )}
+
 
       {/* Category Modal */}
       {showCategoryForm && (
