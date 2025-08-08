@@ -213,7 +213,7 @@ const ProductEditPage: React.FC = () => {
     return (
       <div className="fixed inset-0 z-50 overflow-y-auto bg-gray-600 bg-opacity-50 flex items-center justify-center">
         <div className="bg-white rounded-lg p-8">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-600 mx-auto"></div>
           <p className="mt-4 text-gray-600">Ürün bilgileri yükleniyor...</p>
         </div>
       </div>
@@ -228,7 +228,7 @@ const ProductEditPage: React.FC = () => {
           <p className="text-gray-600 mb-4">Ürün bilgileri yüklenirken bir hata oluştu.</p>
           <button
             onClick={() => navigate('/products')}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+            className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
           >
             Geri Dön
           </button>
@@ -268,7 +268,7 @@ const ProductEditPage: React.FC = () => {
                 onClick={() => setActiveTab(tab.id)}
                 className={`py-3 sm:py-4 px-2 sm:px-4 text-xs sm:text-sm font-medium border-b-2 whitespace-nowrap transition-colors ${
                   activeTab === tab.id
-                    ? 'border-blue-500 text-blue-600'
+                    ? 'border-red-500 text-red-600'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                 }`}
               >
@@ -595,7 +595,7 @@ const ProductEditPage: React.FC = () => {
                       type="checkbox"
                       id="is_popular"
                       {...register('is_popular')}
-                      className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                      className="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 rounded"
                     />
                     <label htmlFor="is_popular" className="ml-2 block text-sm text-gray-700">
                       Popüler ürün
@@ -646,7 +646,7 @@ const ProductEditPage: React.FC = () => {
               type="submit"
               form="product-edit-form"
               disabled={isSubmitting || updateMutation.isPending}
-              className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+              className="px-4 py-2 text-sm font-medium text-white bg-red-600 border border-transparent rounded-md hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
             >
               {(isSubmitting || updateMutation.isPending) && (
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>

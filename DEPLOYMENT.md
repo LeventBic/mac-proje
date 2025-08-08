@@ -7,6 +7,7 @@ Bu rehber, inFlow Inventory projesini farklı ortamlara nasıl deploy edeceğini
 ### 1. VPS/Sunucu Deployment (Önerilen)
 
 #### Gereksinimler:
+
 - Ubuntu 20.04+ veya CentOS 8+
 - En az 2GB RAM
 - En az 20GB disk alanı
@@ -112,15 +113,15 @@ spec:
         app: inflow-backend
     spec:
       containers:
-      - name: backend
-        image: yourusername/inflow-backend:latest
-        ports:
-        - containerPort: 3001
-        env:
-        - name: NODE_ENV
-          value: "production"
-        - name: DB_HOST
-          value: "mysql-service"
+        - name: backend
+          image: yourusername/inflow-backend:latest
+          ports:
+            - containerPort: 3001
+          env:
+            - name: NODE_ENV
+              value: "production"
+            - name: DB_HOST
+              value: "postgres-service"
 ```
 
 ## 🔧 Production Konfigürasyonu
@@ -164,7 +165,7 @@ server {
 #!/bin/bash
 # backup.sh
 DATE=$(date +%Y%m%d_%H%M%S)
-docker exec inflow_mysql_prod mysqldump -uroot -p$MYSQL_ROOT_PASSWORD inflow_db > backup_$DATE.sql
+docker exec devarp_postgres_prod pg_dump -U postgres -d inflow_db > backup_$DATE.sql
 aws s3 cp backup_$DATE.sql s3://your-backup-bucket/
 rm backup_$DATE.sql
 ```
@@ -172,6 +173,7 @@ rm backup_$DATE.sql
 ## 🌐 Domain Konfigürasyonu
 
 ### DNS Settings:
+
 ```
 A Record: yourdomain.com → your-server-ip
 A Record: api.yourdomain.com → your-server-ip
@@ -179,6 +181,7 @@ CNAME: www.yourdomain.com → yourdomain.com
 ```
 
 ### Cloudflare Setup (Önerilen):
+
 1. Domain'i Cloudflare'e ekleyin
 2. SSL/TLS: "Full (strict)" mode
 3. Always Use HTTPS: On
@@ -187,6 +190,7 @@ CNAME: www.yourdomain.com → yourdomain.com
 ## 📊 Monitoring & Logging
 
 ### Docker Logs:
+
 ```bash
 # Logs görüntüleme
 docker-compose -f docker-compose.prod.yml logs -f
@@ -194,22 +198,24 @@ docker-compose -f docker-compose.prod.yml logs -f
 # Sadece backend logs
 docker logs inflow_backend_prod -f
 
-# Sadece frontend logs  
+# Sadece frontend logs
 docker logs inflow_frontend_prod -f
 ```
 
 ### Health Checks:
+
 ```bash
 # API health check
 curl http://yourdomain.com/api/health
 
 # Database connection check
-docker exec inflow_mysql_prod mysqladmin ping -h localhost -u root -p
+docker exec devarp_postgres_prod pg_isready -U postgres -d inflow_db
 ```
 
 ## 🔒 Güvenlik
 
 ### Firewall Setup:
+
 ```bash
 # UFW firewall
 sudo ufw enable
@@ -220,6 +226,7 @@ sudo ufw allow 3001  # API port (sadece gerekirse)
 ```
 
 ### SSL Otomatik Yenileme:
+
 ```bash
 # Crontab ekleyin
 echo "0 12 * * * /usr/bin/certbot renew --quiet" | sudo crontab -
@@ -230,24 +237,28 @@ echo "0 12 * * * /usr/bin/certbot renew --quiet" | sudo crontab -
 ### Yaygın Problemler:
 
 #### 1. Container başlamıyor:
+
 ```bash
 docker-compose -f docker-compose.prod.yml logs backend
 docker-compose -f docker-compose.prod.yml restart backend
 ```
 
 #### 2. Database bağlantı hatası:
+
 ```bash
-# MySQL container'ı kontrol edin
-docker exec -it inflow_mysql_prod mysql -uroot -p
+# PostgreSQL container'ı kontrol edin
+docker exec -it devarp_postgres_prod psql -U postgres -d inflow_db
 ```
 
 #### 3. Frontend yüklenmiyor:
+
 ```bash
 # Nginx konfigürasyonunu kontrol edin
 docker exec inflow_frontend_prod nginx -t
 ```
 
 ### Log Monitoring:
+
 ```bash
 # Tüm servislerin loglarını takip edin
 docker-compose -f docker-compose.prod.yml logs -f --tail=100
@@ -256,10 +267,11 @@ docker-compose -f docker-compose.prod.yml logs -f --tail=100
 ## 📧 Destek
 
 Herhangi bir sorun yaşarsanız:
+
 1. Logs'ları kontrol edin
 2. GitHub Issues'da sorun bildirin
 3. Email: support@yourcompany.com
 
 ---
 
-**Not:** Production'a geçmeden önce mutlaka tüm güvenlik ayarlarını yapın ve backup stratejinizi belirleyin. 
+**Not:** Production'a geçmeden önce mutlaka tüm güvenlik ayarlarını yapın ve backup stratejinizi belirleyin.

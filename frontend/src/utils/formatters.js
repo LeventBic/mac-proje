@@ -48,6 +48,74 @@ export const formatNumber = (value, decimals = 2) => {
 };
 
 /**
+ * Tarihi Türk formatında formatlar
+ * @param {string|Date} date - Formatlanacak tarih
+ * @param {object} options - Formatlama seçenekleri
+ * @returns {string} Formatlanmış tarih
+ */
+export const formatDate = (date, options = {}) => {
+  if (!date) {
+    return '-';
+  }
+  
+  const dateObj = typeof date === 'string' ? new Date(date) : date;
+  
+  if (isNaN(dateObj.getTime())) {
+    return '-';
+  }
+  
+  const defaultOptions = {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  };
+  
+  return new Intl.DateTimeFormat('tr-TR', { ...defaultOptions, ...options }).format(dateObj);
+};
+
+/**
+ * Çalışma süresini hesaplar ve formatlar
+ * @param {string|Date} startDate - Başlangıç tarihi
+ * @param {string|Date} endDate - Bitiş tarihi (null ise bugün)
+ * @returns {string} Formatlanmış çalışma süresi
+ */
+export const formatWorkDuration = (startDate, endDate = null) => {
+  if (!startDate) {
+    return '-';
+  }
+  
+  const start = new Date(startDate);
+  const end = endDate ? new Date(endDate) : new Date();
+  
+  if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+    return '-';
+  }
+  
+  const diffTime = Math.abs(end - start);
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  
+  const years = Math.floor(diffDays / 365);
+  const months = Math.floor((diffDays % 365) / 30);
+  const days = diffDays % 30;
+  
+  const parts = [];
+  
+  if (years > 0) {
+    parts.push(`${years} yıl`);
+  }
+  
+  if (months > 0) {
+    parts.push(`${months} ay`);
+  }
+  
+  if (days > 0 && years === 0) {
+    parts.push(`${days} gün`);
+  }
+  
+  return parts.length > 0 ? parts.join(' ') : '1 günden az';
+};
+
+/**
  * Miktar değerlerini formatlar (genellikle ondalık olmayan)
  * @param {number|string} value - Formatlanacak değer
  * @returns {string} Formatlanmış değer

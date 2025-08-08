@@ -287,7 +287,7 @@ const BOMPage = () => {
                 setEditingBom(null);
                 resetForm();
               }}
-              className="flex items-center space-x-2 rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+              className="flex items-center space-x-2 rounded-md bg-red-600 px-4 py-2 text-white hover:bg-red-700"
             >
               <FiPlus className="h-4 w-4" />
               <span>Yeni Reçete</span>
@@ -375,7 +375,7 @@ const BOMPage = () => {
                             </button>
                             <button
                               onClick={() => handleEdit(bom)}
-                              className="flex items-center space-x-1 rounded bg-blue-600 px-2 py-1 text-xs text-white hover:bg-blue-700"
+                              className="flex items-center space-x-1 rounded bg-red-600 px-2 py-1 text-xs text-white hover:bg-red-700"
                             >
                               <FiEdit className="h-3 w-3" />
                               <span>Düzenle</span>
@@ -407,7 +407,7 @@ const BOMPage = () => {
                     setEditingBom(null);
                     resetForm();
                   }}
-                  className="mt-4 rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+                  className="mt-4 rounded-md bg-red-600 px-4 py-2 text-white hover:bg-red-700"
                 >
                   İlk Reçeteyi Oluştur
                 </button>
@@ -688,7 +688,7 @@ const BOMPage = () => {
                         createBomMutation.isPending ||
                         updateBomMutation.isPending
                       }
-                      className="rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 disabled:opacity-50"
+                      className="rounded-md bg-red-600 px-4 py-2 text-white hover:bg-red-700 disabled:opacity-50"
                     >
                       {createBomMutation.isPending ||
                       updateBomMutation.isPending
@@ -727,7 +727,7 @@ const BOMPage = () => {
                   <div className="space-y-2">{renderBomTree(bomTree)}</div>
                 ) : (
                   <div className="py-8 text-center">
-                    <div className="mx-auto h-8 w-8 animate-spin rounded-full border-b-2 border-blue-600"></div>
+                    <div className="mx-auto h-8 w-8 animate-spin rounded-full border-b-2 border-red-600"></div>
                     <p className="mt-2 text-gray-500">
                       Reçete ağacı yükleniyor...
                     </p>
@@ -776,7 +776,7 @@ const BOMPage = () => {
                   <button
                     type="submit"
                     disabled={updateProfitMarginMutation.isPending}
-                    className="rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 disabled:opacity-50"
+                    className="rounded-md bg-red-600 px-4 py-2 text-white hover:bg-red-700 disabled:opacity-50"
                   >
                     {updateProfitMarginMutation.isPending
                       ? 'Güncelleniyor...'

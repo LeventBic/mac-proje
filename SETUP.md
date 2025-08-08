@@ -5,12 +5,14 @@ Bu doküman, inFlow benzeri stok ve üretim yönetimi uygulamasının nasıl kur
 ## 🔧 Gereksinimler
 
 ### Sistem Gereksinimleri
+
 - **Node.js** 18+ (LTS önerilen)
-- **MySQL** 8.0+
+- **PostgreSQL** 14+
 - **npm** veya **yarn** paket yöneticisi
 - **Docker** (opsiyonel, kolay kurulum için)
 
 ### Tarayıcı Desteği
+
 - Chrome 90+
 - Firefox 88+
 - Safari 14+
@@ -21,12 +23,14 @@ Bu doküman, inFlow benzeri stok ve üretim yönetimi uygulamasının nasıl kur
 ### Yöntem 1: Docker ile Kurulum (Önerilen)
 
 1. **Repository'yi klonlayın:**
+
 ```bash
 git clone <repository-url>
 cd inflow-app
 ```
 
 2. **Docker ile başlatın:**
+
 ```bash
 # İlk kurulum için
 docker-compose build --no-cache
@@ -37,6 +41,7 @@ docker-compose up -d --build
 ```
 
 3. **Uygulamaya erişin:**
+
 - Frontend: http://localhost:3001
 - Backend API: http://localhost:3001
 - API Dokümantasyonu: http://localhost:3001/api/docs
@@ -45,28 +50,30 @@ docker-compose up -d --build
 
 ### Yöntem 2: Manuel Kurulum
 
-#### 1. MySQL Kurulumu
+#### 1. PostgreSQL Kurulumu
 
 **Ubuntu/Debian:**
+
 ```bash
 sudo apt update
-sudo apt install mysql-server
-sudo systemctl start mysql
-sudo systemctl enable mysql
-sudo mysql_secure_installation
+sudo apt install postgresql postgresql-contrib
+sudo systemctl start postgresql
+sudo systemctl enable postgresql
 ```
 
 **Windows:**
-- [MySQL Community Server](https://dev.mysql.com/downloads/mysql/) indirin ve kurun
-- MySQL Workbench'i de kurmanız önerilir
+
+- PostgreSQL'i resmi sitesinden indirin ve kurun
 
 **macOS:**
+
 ```bash
-brew install mysql
-brew services start mysql
+brew install postgresql
+brew services start postgresql
 ```
 
 **macOS (Homebrew):**
+
 ```bash
 brew install postgresql
 brew services start postgresql
@@ -104,26 +111,23 @@ nano .env
 ```
 
 **Örnek .env dosyası:**
+
 ```env
 NODE_ENV=development
 PORT=3001
 DB_HOST=localhost
-DB_PORT=3306
+DB_PORT=5432
 DB_NAME=inflow_db
 DB_USER=root
-DB_PASSWORD=your_mysql_password_here
+DB_PASSWORD=your_postgres_password_here
 JWT_SECRET=your_super_secret_jwt_key_here
 JWT_EXPIRES_IN=24h
 CORS_ORIGIN=http://localhost:3001
 ```
 
 ```bash
-# MySQL'de veritabanı ve kullanıcı oluşturun
-mysql -u root -p
-> CREATE DATABASE inflow_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-> SOURCE database/schema_mysql.sql;
-> SOURCE database/seed_mysql.sql;
-> EXIT;
+docker compose up -d postgres
+docker exec -it inflow_postgres psql -U postgres -d inflow_db -c "SELECT 'PostgreSQL bağlantısı başarılı!' as status;"
 
 # Backend'i başlatın
 npm run dev
@@ -145,6 +149,7 @@ nano .env
 ```
 
 **Örnek .env dosyası:**
+
 ```env
 REACT_APP_API_URL=http://localhost:3001/api
 ```
@@ -158,15 +163,16 @@ npm start
 
 Sistem ilk kurulumda aşağıdaki demo kullanıcılarla gelir:
 
-| Rol | Kullanıcı Adı | Şifre | E-posta |
-|-----|---------------|-------|---------|
-| Admin | admin | password123 | admin@inflow.com |
-| Operatör | operator1 | password123 | operator@inflow.com |
-| Görüntüleyici | viewer1 | password123 | viewer@inflow.com |
+| Rol           | Kullanıcı Adı | Şifre       | E-posta             |
+| ------------- | ------------- | ----------- | ------------------- |
+| Admin         | admin         | password123 | admin@inflow.com    |
+| Operatör      | operator1     | password123 | operator@inflow.com |
+| Görüntüleyici | viewer1       | password123 | viewer@inflow.com   |
 
 ## 📊 Özellikler
 
 ### ✅ Tamamlanan Özellikler
+
 - ✅ Kullanıcı girişi ve yetkilendirme
 - ✅ Responsive dashboard
 - ✅ Modern UI/UX tasarımı
@@ -175,6 +181,7 @@ Sistem ilk kurulumda aşağıdaki demo kullanıcılarla gelir:
 - ✅ Docker konfigürasyonu
 
 ### 🚧 Geliştirme Aşamasında
+
 - 🚧 Ürün yönetimi CRUD işlemleri
 - 🚧 Stok takibi ve hareket kayıtları
 - 🚧 Üretim emri yönetimi
@@ -184,6 +191,7 @@ Sistem ilk kurulumda aşağıdaki demo kullanıcılarla gelir:
 - 🚧 Raporlama ve analitik
 
 ### 📋 Planlanan Özellikler
+
 - 📋 Mobil uygulama
 - 📋 E-posta bildirimleri
 - 📋 Çoklu dil desteği
@@ -285,6 +293,7 @@ server {
 ### Yaygın Sorunlar
 
 1. **Port zaten kullanımda hatası:**
+
 ```bash
 # Port'u kullanan process'i bulun
 lsof -i :3001
@@ -293,11 +302,13 @@ kill -9 <PID>
 ```
 
 2. **Veritabanı bağlantı hatası:**
+
 - PostgreSQL servisinin çalıştığından emin olun
 - Bağlantı bilgilerini kontrol edin
 - Firewall ayarlarını kontrol edin
 
 3. **CORS hatası:**
+
 - Backend .env dosyasında CORS_ORIGIN'in doğru olduğundan emin olun
 - Frontend ve backend port'larının uyumlu olduğunu kontrol edin
 

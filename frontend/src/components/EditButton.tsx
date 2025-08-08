@@ -47,10 +47,10 @@ const EditButton: React.FC<EditButtonProps> = ({
 
   // Variant classes
   const variantClasses = {
-    primary: 'bg-blue-500 hover:bg-blue-600 text-white border-blue-500 focus:ring-blue-500',
+    primary: 'bg-red-500 hover:bg-red-600 text-white border-red-500 focus:ring-red-500',
     secondary: 'bg-gray-500 hover:bg-gray-600 text-white border-gray-500 focus:ring-gray-500',
-    outline: 'bg-transparent hover:bg-blue-50 text-blue-600 border-blue-500 focus:ring-blue-500',
-    modern: 'bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white border-transparent focus:ring-purple-500 shadow-lg hover:shadow-xl transform hover:scale-105',
+    outline: 'bg-transparent hover:bg-red-50 text-red-600 border-red-500 focus:ring-red-500',
+    modern: 'bg-gradient-to-r from-purple-500 to-red-500 hover:from-purple-600 hover:to-red-600 text-white border-transparent focus:ring-purple-500 shadow-lg hover:shadow-xl transform hover:scale-105',
     classic: 'bg-amber-500 hover:bg-amber-600 text-white border-amber-500 focus:ring-amber-500 shadow-md hover:shadow-lg'
   };
 

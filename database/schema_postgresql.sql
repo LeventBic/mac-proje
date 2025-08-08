@@ -1,6 +1,6 @@
 -- Devarp ERP Sistemi - PostgreSQL Database Schema
 -- Profesyonel ERP sistemi için gelişmiş veritabanı yapısı
--- MySQL'den PostgreSQL'e geçiş ve ERP özellikleri eklendi
+-- PostgreSQL şeması ve ERP özellikleri
 
 -- UUID extension'ını aktifleştir
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";

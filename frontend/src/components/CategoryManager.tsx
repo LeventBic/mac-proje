@@ -92,7 +92,7 @@ const CategoryManager: React.FC = () => {
   if (isLoading) {
     return (
       <div className="flex justify-center items-center p-8">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-600"></div>
         <span className="ml-2 text-gray-600">Kategoriler yükleniyor...</span>
       </div>
     );
@@ -133,7 +133,7 @@ const CategoryManager: React.FC = () => {
             <h2 className="text-xl font-semibold text-gray-800">Kategori Yönetimi</h2>
             <button
               onClick={() => setIsAddingCategory(!isAddingCategory)}
-              className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
+              className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 transition duration-200"
             >
               {isAddingCategory ? 'İptal' : 'Yeni Kategori'}
             </button>
@@ -288,7 +288,7 @@ const CategoryManager: React.FC = () => {
                         <div className="flex justify-end space-x-2">
                           <button
                             onClick={() => handleEditCategory(category)}
-                            className="text-blue-600 hover:text-blue-900"
+                            className="text-red-600 hover:text-red-900"
                           >
                             Düzenle
                           </button>

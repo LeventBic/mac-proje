@@ -33,16 +33,16 @@ const Header = () => {
     <header className="bg-white shadow-sm border-b border-secondary-200">
       <div className="flex items-center justify-between h-16 px-6">
         {/* Left side - Mobile menu button */}
-        <div className="flex items-center">
+        <div className="flex items-center bg-gray-900 px-4 py-2 rounded-lg">
           <button
             onClick={() => dispatch(toggleSidebar())}
-            className="lg:hidden p-2 rounded-md text-secondary-600 hover:text-secondary-900 hover:bg-secondary-100 focus:outline-none focus:ring-2 focus:ring-primary-500"
+            className="lg:hidden p-2 rounded-md text-gray-300 hover:text-white hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-primary-500"
           >
             <FiMenu className="h-6 w-6" />
           </button>
           
           {/* Page title will be added later */}
-          <h1 className="ml-4 text-lg font-semibold text-secondary-900 lg:ml-0">
+          <h1 className="ml-4 text-lg font-semibold text-gray-300 lg:ml-0">
             Stok ve Üretim Yönetimi
           </h1>
         </div>

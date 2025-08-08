@@ -1,6 +1,6 @@
 -- Devarp ERP - PostgreSQL Örnek Veriler
 -- Bu dosya PostgreSQL veritabanına örnek verileri yükler
--- MySQL'den PostgreSQL'e geçiş sırasında mevcut veriler korunmuştur
+-- Önceki sistemden PostgreSQL'e geçiş sırasında mevcut veriler korunmuştur
 
 -- =======================
 -- ÖRNEK VERİLER
@@ -21,7 +21,7 @@ INSERT INTO locations (code, name, type, company_id, address, is_active) VALUES
 ('LOC003', 'Kalite Kontrol', 'quality', 1, 'Kalite Kontrol Laboratuvarı', TRUE)
 ON CONFLICT (code) DO NOTHING;
 
--- Tedarikçiler (MySQL'den taşınan veriler)
+-- Tedarikçiler (önceki sistemden taşınan veriler)
 INSERT INTO suppliers (supplier_code, name, contact_person, email, phone, address, tax_number, payment_terms, is_active) VALUES 
 ('SUP001', 'ABC Çelik San. Tic. Ltd. Şti.', 'Ahmet Yılmaz', 'ahmet@abccelik.com', '+90 212 555 0101', 'Organize Sanayi Bölgesi, İstanbul', '1234567890', 30, TRUE),
 ('SUP002', 'XYZ Alüminyum A.Ş.', 'Mehmet Demir', 'mehmet@xyzaluminyum.com', '+90 232 555 0202', 'İzmir Serbest Bölge, İzmir', '2345678901', 45, TRUE),
@@ -39,7 +39,7 @@ INSERT INTO customers (customer_code, name, contact_person, email, phone, addres
 ('CUS005', 'Küçük İşletme Tic.', 'Osman Ak', 'osman@kucukisletme.com', '+90 262 444 0505', 'Merkez, Kocaeli', '5555666677', 10000.00, 30, 'individual', TRUE)
 ON CONFLICT (customer_code) DO NOTHING;
 
--- Ürünler (MySQL'den taşınan ve geliştirilmiş)
+-- Ürünler (geliştirilmiş veri seti)
 INSERT INTO products (sku, name, description, barcode, category_id, product_type_id, supplier_id, unit_price, cost_price, unit, min_stock_level, max_stock_level, reorder_point, reorder_quantity, is_raw_material, is_finished_product, is_active) VALUES 
 -- Hammaddeler
 ('HM001', 'Çelik Levha 2mm', '2mm kalınlığında çelik levha - DIN EN 10025 standardında', '1234567890001', 1, 1, 1, 15.50, 12.00, 'kg', 100, 500, 150, 200, TRUE, FALSE, TRUE),

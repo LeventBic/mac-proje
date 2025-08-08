@@ -88,10 +88,8 @@ if [ ! -f .env ]; then
 # Production Environment Variables
 # Update these values before running docker-compose
 
-# Database Configuration
-MYSQL_ROOT_PASSWORD=change_this_root_password_now
-MYSQL_USER=inflow_user
-MYSQL_PASSWORD=change_this_db_password_now
+# Database Configuration (PostgreSQL)
+POSTGRES_PASSWORD=change_this_postgres_password_now
 
 # JWT Security - Generate a strong secret!
 JWT_SECRET=change_this_jwt_secret_to_at_least_32_characters_long
@@ -123,9 +121,9 @@ mkdir -p $BACKUP_DIR
 
 cd $APP_DIR
 
-# Create database backup
+# Create database backup (PostgreSQL)
 echo "Creating database backup..."
-docker exec inflow_mysql_prod mysqldump -uroot -p$MYSQL_ROOT_PASSWORD inflow_db > $BACKUP_DIR/database_backup_$DATE.sql
+docker exec devarp_postgres_prod pg_dump -U postgres -d inflow_db > $BACKUP_DIR/database_backup_$DATE.sql
 
 # Create full application backup
 echo "Creating application backup..."

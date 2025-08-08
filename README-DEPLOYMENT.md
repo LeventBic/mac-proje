@@ -41,10 +41,13 @@ docker-compose -f docker-compose.prod.yml up -d
 ## 📋 Environment Değişkenleri (.env)
 
 ```env
-# Database
-MYSQL_ROOT_PASSWORD=güçlü_root_şifre
-MYSQL_USER=inflow_user
-MYSQL_PASSWORD=güçlü_db_şifre
+# Database (PostgreSQL)
+POSTGRES_PASSWORD=güçlü_postgres_şifre
+DB_HOST=postgres
+DB_PORT=5432
+DB_NAME=inflow_db
+DB_USER=postgres
+DB_PASSWORD=${POSTGRES_PASSWORD}
 
 # Security
 JWT_SECRET=en_az_32_karakter_güçlü_secret
@@ -83,12 +86,12 @@ docker-compose -f docker-compose.prod.yml restart
 
 ## 🔧 Deployment Seçenekleri
 
-| Platform | Maliyet | Kolaylık | Önerilen |
-|----------|---------|----------|----------|
-| **DigitalOcean Droplet** | $5-10/ay | ⭐⭐⭐⭐⭐ | ✅ En İyi |
-| **AWS EC2** | $8-15/ay | ⭐⭐⭐⭐ | ✅ Güvenilir |
-| **Hetzner VPS** | $3-7/ay | ⭐⭐⭐⭐ | ✅ Uygun Fiyat |
-| **Google Cloud** | $10-20/ay | ⭐⭐⭐ | ⚡ İleri Seviye |
+| Platform                 | Maliyet   | Kolaylık   | Önerilen        |
+| ------------------------ | --------- | ---------- | --------------- |
+| **DigitalOcean Droplet** | $5-10/ay  | ⭐⭐⭐⭐⭐ | ✅ En İyi       |
+| **AWS EC2**              | $8-15/ay  | ⭐⭐⭐⭐   | ✅ Güvenilir    |
+| **Hetzner VPS**          | $3-7/ay   | ⭐⭐⭐⭐   | ✅ Uygun Fiyat  |
+| **Google Cloud**         | $10-20/ay | ⭐⭐⭐     | ⚡ İleri Seviye |
 
 ## 🔐 Production Checklist
 
@@ -102,17 +105,20 @@ docker-compose -f docker-compose.prod.yml restart
 ## 🚨 Troubleshooting
 
 ### Container başlamıyor:
+
 ```bash
 docker-compose -f docker-compose.prod.yml logs backend
 docker-compose -f docker-compose.prod.yml restart
 ```
 
 ### Database bağlantı sorunu:
+
 ```bash
-docker exec -it inflow_mysql_prod mysql -uroot -p
+docker exec -it devarp_postgres_prod psql -U postgres -d inflow_db
 ```
 
 ### Nginx konfigürasyon:
+
 ```bash
 sudo nginx -t
 sudo systemctl reload nginx
@@ -126,4 +132,4 @@ sudo systemctl reload nginx
 
 ---
 
-**🎉 Başarılı deployment sonrası:** `https://yourdomain.com` adresinden sisteminize erişebilirsiniz! 
+**🎉 Başarılı deployment sonrası:** `https://yourdomain.com` adresinden sisteminize erişebilirsiniz!

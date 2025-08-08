@@ -4,7 +4,7 @@ const cors = require('cors')
 const helmet = require('helmet')
 const compression = require('compression')
 const rateLimit = require('express-rate-limit')
-const winston = require('winston')
+const logger = require('./utils/logger')
 const swaggerJsdoc = require('swagger-jsdoc')
 const swaggerUi = require('swagger-ui-express')
 
@@ -41,6 +41,7 @@ const hashAdminRoutes = require('./routes/hashAdmin')
 const settingsRoutes = require('./routes/settings')
 const lookupRoutes = require('./routes/lookup')
 const statsRoutes = require('./routes/stats')
+const employeesRoutes = require('./routes/employees')
 
 // Import middleware
 const errorHandler = require('./middleware/errorHandler')
@@ -54,37 +55,43 @@ const PORT = process.env.PORT || 3001
 app.set('trust proxy', 1)
 
 // Security middleware
-app.use(helmet({
-  crossOriginResourcePolicy: { policy: 'cross-origin' }
-}))
+app.use(
+  helmet({
+    crossOriginResourcePolicy: { policy: 'cross-origin' }
+  })
+)
 
 // CORS configuration - Allow both frontend ports
-app.use(cors({
-  origin: [
-    'http://localhost:3000',
-    'http://localhost:3001',
-    process.env.CORS_ORIGIN
-  ].filter(Boolean),
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-}))
+app.use(
+  cors({
+    origin: [
+      'http://localhost:3000',
+      'http://localhost:3001',
+      process.env.CORS_ORIGIN
+    ].filter(Boolean),
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+  })
+)
 
 // Compression middleware
 app.use(compression())
 
-// Rate limiting - Production için aktif et
-const limiter = rateLimit({
-  windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000, // 15 minutes
-  max: parseInt(process.env.RATE_LIMIT_MAX) || 100000, // Limit each IP to 100000 requests per windowMs
-  message: {
-    error: 'Too many requests from this IP, please try again later'
-  },
-  standardHeaders: true,
-  legacyHeaders: false
-})
-
-app.use('/api/', limiter)
+// Rate limiting - sadece production ortamında sıkılaştır
+const isProduction = process.env.NODE_ENV === 'production'
+if (isProduction) {
+  const limiter = rateLimit({
+    windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000,
+    max: parseInt(process.env.RATE_LIMIT_MAX) || 1000,
+    message: {
+      error: 'Too many requests from this IP, please try again later'
+    },
+    standardHeaders: true,
+    legacyHeaders: false
+  })
+  app.use('/api/', limiter)
+}
 
 // Body parsing middleware
 app.use(express.json({ limit: '10mb' }))
@@ -92,7 +99,7 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }))
 
 // Logging middleware
 app.use((req, res, next) => {
-  winston.info(`${req.method} ${req.path} - ${req.ip}`)
+  logger.info(`${req.method} ${req.path} - ${req.ip}`)
   next()
 })
 
@@ -157,7 +164,11 @@ app.use('/api/categories', authMiddleware.verifyToken, categoryRoutes)
 app.use('/api/product-types', authMiddleware.verifyToken, productTypeRoutes)
 app.use('/api/stock-reorder', authMiddleware.verifyToken, stockReorderRoutes)
 app.use('/api/stock-transfers', authMiddleware.verifyToken, stockTransferRoutes)
-app.use('/api/stock-adjustments', authMiddleware.verifyToken, stockAdjustmentRoutes)
+app.use(
+  '/api/stock-adjustments',
+  authMiddleware.verifyToken,
+  stockAdjustmentRoutes
+)
 app.use('/api/stock-counts', authMiddleware.verifyToken, stockCountRoutes)
 app.use('/api/stockroom-scans', authMiddleware.verifyToken, stockroomScanRoutes)
 app.use('/api/purchase-orders', authMiddleware.verifyToken, purchaseOrderRoutes)
@@ -169,6 +180,7 @@ app.use('/api/projects', authMiddleware.verifyToken, projectRoutes)
 app.use('/api/admin', authMiddleware.verifyToken, hashAdminRoutes)
 app.use('/api/lookup', authMiddleware.verifyToken, lookupRoutes)
 app.use('/api/stats', authMiddleware.verifyToken, statsRoutes)
+app.use('/api/employees', authMiddleware.verifyToken, employeesRoutes)
 
 app.use('/api/settings', authMiddleware.verifyToken, settingsRoutes)
 

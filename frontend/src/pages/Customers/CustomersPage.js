@@ -45,12 +45,12 @@ const CustomersPage = () => {
             <div className="flex justify-between items-center mb-6">
                 <div>
                     <h1 className="text-2xl font-bold text-gray-900 flex items-center">
-                        <FiUsers className="mr-3 text-blue-600" />
+                        <FiUsers className="mr-3 text-red-600" />
                         Müşteriler
                     </h1>
                     <p className="text-gray-600 mt-1">Müşteri bilgilerini görüntüleyin ve yönetin</p>
                 </div>
-                <button className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 flex items-center">
+                <button className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 flex items-center">
                     <FiPlus className="w-4 h-4 mr-2" />
                     Yeni Müşteri
                 </button>
@@ -148,7 +148,7 @@ const CustomersPage = () => {
                                             <button className="text-indigo-600 hover:text-indigo-900">
                                                 <FiEye className="w-4 h-4" />
                                             </button>
-                                            <button className="text-blue-600 hover:text-blue-900">
+                                            <button className="text-red-600 hover:text-red-900">
                                                 <FiEdit2 className="w-4 h-4" />
                                             </button>
                                         </div>

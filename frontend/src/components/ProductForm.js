@@ -229,7 +229,7 @@ const ProductForm = ({
                 onClick={() => setActiveTab(tab.id)}
                 className={`py-3 sm:py-4 px-2 sm:px-4 text-xs sm:text-sm font-medium border-b-2 whitespace-nowrap transition-colors ${
                   activeTab === tab.id
-                    ? 'border-blue-500 text-blue-600'
+                    ? 'border-red-500 text-red-600'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                 }`}
               >
@@ -615,12 +615,12 @@ const ProductForm = ({
                           dragActive ? 'bg-blue-100' : 'bg-gray-100'
                         }`}>
                           <FiUpload className={`h-8 w-8 ${
-                            dragActive ? 'text-blue-600' : 'text-gray-400'
+                            dragActive ? 'text-red-600' : 'text-gray-400'
                           }`} />
                         </div>
                         <div className="mb-2">
                           <label className="cursor-pointer">
-                            <span className="text-blue-600 hover:text-blue-500 font-medium">
+                            <span className="text-red-600 hover:text-red-500 font-medium">
                               Dosya seçin
                             </span>
                             <input
@@ -691,7 +691,7 @@ const ProductForm = ({
                         <input
                           type="checkbox"
                           {...register('is_popular')}
-                          className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 mt-0.5"
+                          className="h-4 w-4 rounded border-gray-300 text-red-600 focus:ring-red-500 mt-0.5"
                         />
                         <div>
                           <label className="text-sm font-medium text-gray-700">
@@ -763,7 +763,7 @@ const ProductForm = ({
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full sm:w-auto rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 disabled:opacity-50 transition-colors flex items-center justify-center"
+              className="w-full sm:w-auto rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-red-700 disabled:opacity-50 transition-colors flex items-center justify-center"
             >
               {isLoading ? (
                 <>

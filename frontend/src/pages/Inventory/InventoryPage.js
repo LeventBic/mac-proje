@@ -45,7 +45,7 @@ const InventoryPage = () => {
 
   if (analysisError) {
     return (
-      <div className="min-h-screen bg-gray-50 p-6">
+      <div className="min-h-full">
         <div className="max-w-7xl mx-auto">
           <div className="bg-red-50 border border-red-200 rounded-lg p-4">
             <div className="flex items-center">
@@ -60,7 +60,7 @@ const InventoryPage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 p-6">
+      <div className="min-h-full">
         <div className="max-w-7xl mx-auto">
           <div className="animate-pulse">
             <div className="h-8 bg-gray-200 rounded mb-4"></div>
@@ -78,7 +78,7 @@ const InventoryPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="min-h-full">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">

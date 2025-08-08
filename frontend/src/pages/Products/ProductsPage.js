@@ -296,7 +296,7 @@ const ProductsPage = () => {
         <h1 className="text-2xl font-bold text-gray-900">Ürünler</h1>
         <button
           onClick={handleCreateProduct}
-          className="flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+          className="flex items-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-white hover:bg-red-700"
         >
           <FiPlus /> Yeni Ürün
         </button>
@@ -337,7 +337,7 @@ const ProductsPage = () => {
               <button
                 type="button"
                 onClick={() => setShowCategoryForm(true)}
-                className="rounded-md bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="rounded-md bg-red-600 px-3 py-2 text-sm font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500"
                 title="Kategori Ekle"
               >
                 <FiPlus />
@@ -364,7 +364,7 @@ const ProductsPage = () => {
               </select>
               <button
                 onClick={() => setShowProductTypeModal(true)}
-                className="rounded-md bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="rounded-md bg-red-600 px-3 py-2 text-sm font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500"
                 title="Ürün Tipi Ekle"
               >
                 <FiPlus />
@@ -501,7 +501,7 @@ const ProductsPage = () => {
                     <div className="flex justify-center space-x-1">
                       <button
                         onClick={() => navigate(`/products/${product.id}`)}
-                        className="text-blue-600 hover:text-blue-900 p-1"
+                        className="text-red-600 hover:text-red-900 p-1"
                         title="İncele"
                         style={{ '--tooltip-delay': '0ms' }}
                       >
@@ -585,7 +585,7 @@ const ProductsPage = () => {
                 
                 {/* Mevcut sayfa */}
                 <button
-                  className="relative z-10 inline-flex items-center bg-blue-600 px-4 py-2 text-sm font-semibold text-white focus:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+                  className="relative z-10 inline-flex items-center bg-red-600 px-4 py-2 text-sm font-semibold text-white focus:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600"
                 >
                   {currentPage}
                 </button>

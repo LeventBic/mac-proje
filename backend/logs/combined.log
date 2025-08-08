@@ -2637,3 +2637,530 @@
 {"level":"info","message":"📊 Environment: development","service":"devarp-backend","timestamp":"2025-08-07 10:42:18"}
 {"level":"info","message":"🏥 Health Check: http://localhost:3001/health","service":"devarp-backend","timestamp":"2025-08-07 10:42:18"}
 {"level":"info","message":"📚 API Documentation: http://localhost:3001/api/docs","service":"devarp-backend","timestamp":"2025-08-07 10:42:18"}
+{"level":"info","message":"🚀 Devarp Backend Server started on port 3001","service":"devarp-backend","timestamp":"2025-08-07 14:21:17"}
+{"level":"info","message":"📊 Environment: development","service":"devarp-backend","timestamp":"2025-08-07 14:21:17"}
+{"level":"info","message":"🏥 Health Check: http://localhost:3001/health","service":"devarp-backend","timestamp":"2025-08-07 14:21:17"}
+{"level":"info","message":"📚 API Documentation: http://localhost:3001/api/docs","service":"devarp-backend","timestamp":"2025-08-07 14:21:17"}
+{"level":"info","message":"🚀 Devarp Backend Server started on port 3001","service":"devarp-backend","timestamp":"2025-08-07 14:21:29"}
+{"level":"info","message":"📊 Environment: development","service":"devarp-backend","timestamp":"2025-08-07 14:21:29"}
+{"level":"info","message":"🏥 Health Check: http://localhost:3001/health","service":"devarp-backend","timestamp":"2025-08-07 14:21:29"}
+{"level":"info","message":"📚 API Documentation: http://localhost:3001/api/docs","service":"devarp-backend","timestamp":"2025-08-07 14:21:29"}
+{"level":"info","message":"🚀 Devarp Backend Server started on port 3001","service":"devarp-backend","timestamp":"2025-08-07 14:21:35"}
+{"level":"info","message":"📊 Environment: development","service":"devarp-backend","timestamp":"2025-08-07 14:21:35"}
+{"level":"info","message":"🏥 Health Check: http://localhost:3001/health","service":"devarp-backend","timestamp":"2025-08-07 14:21:35"}
+{"level":"info","message":"📚 API Documentation: http://localhost:3001/api/docs","service":"devarp-backend","timestamp":"2025-08-07 14:21:35"}
+{"level":"info","message":"🚀 Devarp Backend Server started on port 3001","service":"devarp-backend","timestamp":"2025-08-07 14:21:58"}
+{"level":"info","message":"📊 Environment: development","service":"devarp-backend","timestamp":"2025-08-07 14:21:58"}
+{"level":"info","message":"🏥 Health Check: http://localhost:3001/health","service":"devarp-backend","timestamp":"2025-08-07 14:21:58"}
+{"level":"info","message":"📚 API Documentation: http://localhost:3001/api/docs","service":"devarp-backend","timestamp":"2025-08-07 14:21:58"}
+{"level":"info","message":"🚀 Devarp Backend Server started on port 3001","service":"devarp-backend","timestamp":"2025-08-07 14:22:12"}
+{"level":"info","message":"📊 Environment: development","service":"devarp-backend","timestamp":"2025-08-07 14:22:12"}
+{"level":"info","message":"🏥 Health Check: http://localhost:3001/health","service":"devarp-backend","timestamp":"2025-08-07 14:22:12"}
+{"level":"info","message":"📚 API Documentation: http://localhost:3001/api/docs","service":"devarp-backend","timestamp":"2025-08-07 14:22:12"}
+{"level":"info","message":"🚀 Devarp Backend Server started on port 3001","service":"devarp-backend","timestamp":"2025-08-07 14:22:30"}
+{"level":"info","message":"📊 Environment: development","service":"devarp-backend","timestamp":"2025-08-07 14:22:30"}
+{"level":"info","message":"🏥 Health Check: http://localhost:3001/health","service":"devarp-backend","timestamp":"2025-08-07 14:22:30"}
+{"level":"info","message":"📚 API Documentation: http://localhost:3001/api/docs","service":"devarp-backend","timestamp":"2025-08-07 14:22:30"}
+{"level":"info","message":"🚀 Devarp Backend Server started on port 3001","service":"devarp-backend","timestamp":"2025-08-07 14:22:38"}
+{"level":"info","message":"📊 Environment: development","service":"devarp-backend","timestamp":"2025-08-07 14:22:38"}
+{"level":"info","message":"🏥 Health Check: http://localhost:3001/health","service":"devarp-backend","timestamp":"2025-08-07 14:22:38"}
+{"level":"info","message":"📚 API Documentation: http://localhost:3001/api/docs","service":"devarp-backend","timestamp":"2025-08-07 14:22:38"}
+{"level":"info","message":"🚀 Devarp Backend Server started on port 3001","service":"devarp-backend","timestamp":"2025-08-07 14:23:12"}
+{"level":"info","message":"📊 Environment: development","service":"devarp-backend","timestamp":"2025-08-07 14:23:12"}
+{"level":"info","message":"🏥 Health Check: http://localhost:3001/health","service":"devarp-backend","timestamp":"2025-08-07 14:23:12"}
+{"level":"info","message":"📚 API Documentation: http://localhost:3001/api/docs","service":"devarp-backend","timestamp":"2025-08-07 14:23:12"}
+{"level":"info","message":"🚀 Devarp Backend Server started on port 3001","service":"devarp-backend","timestamp":"2025-08-07 14:23:31"}
+{"level":"info","message":"📊 Environment: development","service":"devarp-backend","timestamp":"2025-08-07 14:23:31"}
+{"level":"info","message":"🏥 Health Check: http://localhost:3001/health","service":"devarp-backend","timestamp":"2025-08-07 14:23:31"}
+{"level":"info","message":"📚 API Documentation: http://localhost:3001/api/docs","service":"devarp-backend","timestamp":"2025-08-07 14:23:31"}
+{"level":"info","message":"🚀 Devarp Backend Server started on port 3001","service":"devarp-backend","timestamp":"2025-08-07 14:23:47"}
+{"level":"info","message":"📊 Environment: development","service":"devarp-backend","timestamp":"2025-08-07 14:23:47"}
+{"level":"info","message":"🏥 Health Check: http://localhost:3001/health","service":"devarp-backend","timestamp":"2025-08-07 14:23:47"}
+{"level":"info","message":"📚 API Documentation: http://localhost:3001/api/docs","service":"devarp-backend","timestamp":"2025-08-07 14:23:47"}
+{"level":"info","message":"🚀 Devarp Backend Server started on port 3001","service":"devarp-backend","timestamp":"2025-08-07 14:30:03"}
+{"level":"info","message":"📊 Environment: development","service":"devarp-backend","timestamp":"2025-08-07 14:30:03"}
+{"level":"info","message":"🏥 Health Check: http://localhost:3001/health","service":"devarp-backend","timestamp":"2025-08-07 14:30:03"}
+{"level":"info","message":"📚 API Documentation: http://localhost:3001/api/docs","service":"devarp-backend","timestamp":"2025-08-07 14:30:03"}
+{"level":"info","message":"🚀 Devarp Backend Server started on port 3001","service":"devarp-backend","timestamp":"2025-08-07 14:30:11"}
+{"level":"info","message":"📊 Environment: development","service":"devarp-backend","timestamp":"2025-08-07 14:30:11"}
+{"level":"info","message":"🏥 Health Check: http://localhost:3001/health","service":"devarp-backend","timestamp":"2025-08-07 14:30:11"}
+{"level":"info","message":"📚 API Documentation: http://localhost:3001/api/docs","service":"devarp-backend","timestamp":"2025-08-07 14:30:11"}
+{"code":"22P02","file":"numutils.c","length":149,"level":"error","line":"320","message":"Error in employee repository findById: invalid input syntax for type integer: \"departments\"","name":"error","routine":"pg_strtoint32","service":"devarp-backend","severity":"ERROR","stack":"error: invalid input syntax for type integer: \"departments\"\n    at /app/node_modules/pg-pool/index.js:45:11\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async Object.query (/app/src/config/database.js:38:20)\n    at async Object.findById (/app/src/repositories/employees.js:128:20)\n    at async Object.getById (/app/src/services/employees.js:62:12)\n    at async getById (/app/src/controllers/employees.js:58:22)","timestamp":"2025-08-07 14:30:38","where":"unnamed portal parameter $1 = '...'"}
+{"code":"22P02","file":"numutils.c","length":149,"level":"error","line":"320","message":"Error in employee service getById: invalid input syntax for type integer: \"departments\"","name":"error","routine":"pg_strtoint32","service":"devarp-backend","severity":"ERROR","stack":"error: invalid input syntax for type integer: \"departments\"\n    at /app/node_modules/pg-pool/index.js:45:11\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async Object.query (/app/src/config/database.js:38:20)\n    at async Object.findById (/app/src/repositories/employees.js:128:20)\n    at async Object.getById (/app/src/services/employees.js:62:12)\n    at async getById (/app/src/controllers/employees.js:58:22)","timestamp":"2025-08-07 14:30:38","where":"unnamed portal parameter $1 = '...'"}
+{"code":"22P02","file":"numutils.c","length":149,"level":"error","line":"320","message":"Error getting employee by ID: invalid input syntax for type integer: \"departments\"","name":"error","routine":"pg_strtoint32","service":"devarp-backend","severity":"ERROR","stack":"error: invalid input syntax for type integer: \"departments\"\n    at /app/node_modules/pg-pool/index.js:45:11\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async Object.query (/app/src/config/database.js:38:20)\n    at async Object.findById (/app/src/repositories/employees.js:128:20)\n    at async Object.getById (/app/src/services/employees.js:62:12)\n    at async getById (/app/src/controllers/employees.js:58:22)","timestamp":"2025-08-07 14:30:38","where":"unnamed portal parameter $1 = '...'"}
+{"code":"22P02","file":"numutils.c","length":149,"level":"error","line":"320","message":"Error in employee repository findById: invalid input syntax for type integer: \"departments\"","name":"error","routine":"pg_strtoint32","service":"devarp-backend","severity":"ERROR","stack":"error: invalid input syntax for type integer: \"departments\"\n    at /app/node_modules/pg-pool/index.js:45:11\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async Object.query (/app/src/config/database.js:38:20)\n    at async Object.findById (/app/src/repositories/employees.js:128:20)\n    at async Object.getById (/app/src/services/employees.js:62:12)\n    at async getById (/app/src/controllers/employees.js:58:22)","timestamp":"2025-08-07 14:30:39","where":"unnamed portal parameter $1 = '...'"}
+{"code":"22P02","file":"numutils.c","length":149,"level":"error","line":"320","message":"Error in employee service getById: invalid input syntax for type integer: \"departments\"","name":"error","routine":"pg_strtoint32","service":"devarp-backend","severity":"ERROR","stack":"error: invalid input syntax for type integer: \"departments\"\n    at /app/node_modules/pg-pool/index.js:45:11\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async Object.query (/app/src/config/database.js:38:20)\n    at async Object.findById (/app/src/repositories/employees.js:128:20)\n    at async Object.getById (/app/src/services/employees.js:62:12)\n    at async getById (/app/src/controllers/employees.js:58:22)","timestamp":"2025-08-07 14:30:39","where":"unnamed portal parameter $1 = '...'"}
+{"code":"22P02","file":"numutils.c","length":149,"level":"error","line":"320","message":"Error getting employee by ID: invalid input syntax for type integer: \"departments\"","name":"error","routine":"pg_strtoint32","service":"devarp-backend","severity":"ERROR","stack":"error: invalid input syntax for type integer: \"departments\"\n    at /app/node_modules/pg-pool/index.js:45:11\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async Object.query (/app/src/config/database.js:38:20)\n    at async Object.findById (/app/src/repositories/employees.js:128:20)\n    at async Object.getById (/app/src/services/employees.js:62:12)\n    at async getById (/app/src/controllers/employees.js:58:22)","timestamp":"2025-08-07 14:30:39","where":"unnamed portal parameter $1 = '...'"}
+{"code":"22P02","file":"numutils.c","length":149,"level":"error","line":"320","message":"Error in employee repository findById: invalid input syntax for type integer: \"departments\"","name":"error","routine":"pg_strtoint32","service":"devarp-backend","severity":"ERROR","stack":"error: invalid input syntax for type integer: \"departments\"\n    at /app/node_modules/pg-pool/index.js:45:11\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async Object.query (/app/src/config/database.js:38:20)\n    at async Object.findById (/app/src/repositories/employees.js:128:20)\n    at async Object.getById (/app/src/services/employees.js:62:12)\n    at async getById (/app/src/controllers/employees.js:58:22)","timestamp":"2025-08-07 14:30:41","where":"unnamed portal parameter $1 = '...'"}
+{"code":"22P02","file":"numutils.c","length":149,"level":"error","line":"320","message":"Error in employee service getById: invalid input syntax for type integer: \"departments\"","name":"error","routine":"pg_strtoint32","service":"devarp-backend","severity":"ERROR","stack":"error: invalid input syntax for type integer: \"departments\"\n    at /app/node_modules/pg-pool/index.js:45:11\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async Object.query (/app/src/config/database.js:38:20)\n    at async Object.findById (/app/src/repositories/employees.js:128:20)\n    at async Object.getById (/app/src/services/employees.js:62:12)\n    at async getById (/app/src/controllers/employees.js:58:22)","timestamp":"2025-08-07 14:30:41","where":"unnamed portal parameter $1 = '...'"}
+{"code":"22P02","file":"numutils.c","length":149,"level":"error","line":"320","message":"Error getting employee by ID: invalid input syntax for type integer: \"departments\"","name":"error","routine":"pg_strtoint32","service":"devarp-backend","severity":"ERROR","stack":"error: invalid input syntax for type integer: \"departments\"\n    at /app/node_modules/pg-pool/index.js:45:11\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async Object.query (/app/src/config/database.js:38:20)\n    at async Object.findById (/app/src/repositories/employees.js:128:20)\n    at async Object.getById (/app/src/services/employees.js:62:12)\n    at async getById (/app/src/controllers/employees.js:58:22)","timestamp":"2025-08-07 14:30:41","where":"unnamed portal parameter $1 = '...'"}
+{"code":"22P02","file":"numutils.c","length":149,"level":"error","line":"320","message":"Error in employee repository findById: invalid input syntax for type integer: \"departments\"","name":"error","routine":"pg_strtoint32","service":"devarp-backend","severity":"ERROR","stack":"error: invalid input syntax for type integer: \"departments\"\n    at /app/node_modules/pg-pool/index.js:45:11\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async Object.query (/app/src/config/database.js:38:20)\n    at async Object.findById (/app/src/repositories/employees.js:128:20)\n    at async Object.getById (/app/src/services/employees.js:62:12)\n    at async getById (/app/src/controllers/employees.js:58:22)","timestamp":"2025-08-07 14:30:45","where":"unnamed portal parameter $1 = '...'"}
+{"code":"22P02","file":"numutils.c","length":149,"level":"error","line":"320","message":"Error in employee service getById: invalid input syntax for type integer: \"departments\"","name":"error","routine":"pg_strtoint32","service":"devarp-backend","severity":"ERROR","stack":"error: invalid input syntax for type integer: \"departments\"\n    at /app/node_modules/pg-pool/index.js:45:11\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async Object.query (/app/src/config/database.js:38:20)\n    at async Object.findById (/app/src/repositories/employees.js:128:20)\n    at async Object.getById (/app/src/services/employees.js:62:12)\n    at async getById (/app/src/controllers/employees.js:58:22)","timestamp":"2025-08-07 14:30:45","where":"unnamed portal parameter $1 = '...'"}
+{"code":"22P02","file":"numutils.c","length":149,"level":"error","line":"320","message":"Error getting employee by ID: invalid input syntax for type integer: \"departments\"","name":"error","routine":"pg_strtoint32","service":"devarp-backend","severity":"ERROR","stack":"error: invalid input syntax for type integer: \"departments\"\n    at /app/node_modules/pg-pool/index.js:45:11\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async Object.query (/app/src/config/database.js:38:20)\n    at async Object.findById (/app/src/repositories/employees.js:128:20)\n    at async Object.getById (/app/src/services/employees.js:62:12)\n    at async getById (/app/src/controllers/employees.js:58:22)","timestamp":"2025-08-07 14:30:45","where":"unnamed portal parameter $1 = '...'"}
+{"level":"info","message":"🚀 Devarp Backend Server started on port 3001","service":"devarp-backend","timestamp":"2025-08-07 14:30:53"}
+{"level":"info","message":"📊 Environment: development","service":"devarp-backend","timestamp":"2025-08-07 14:30:53"}
+{"level":"info","message":"🏥 Health Check: http://localhost:3001/health","service":"devarp-backend","timestamp":"2025-08-07 14:30:53"}
+{"level":"info","message":"📚 API Documentation: http://localhost:3001/api/docs","service":"devarp-backend","timestamp":"2025-08-07 14:30:53"}
+{"code":"22P02","file":"numutils.c","length":149,"level":"error","line":"320","message":"Error in employee repository findById: invalid input syntax for type integer: \"departments\"","name":"error","routine":"pg_strtoint32","service":"devarp-backend","severity":"ERROR","stack":"error: invalid input syntax for type integer: \"departments\"\n    at /app/node_modules/pg-pool/index.js:45:11\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async Object.query (/app/src/config/database.js:38:20)\n    at async Object.findById (/app/src/repositories/employees.js:128:20)\n    at async Object.getById (/app/src/services/employees.js:62:12)\n    at async getById (/app/src/controllers/employees.js:58:22)","timestamp":"2025-08-07 14:31:29","where":"unnamed portal parameter $1 = '...'"}
+{"code":"22P02","file":"numutils.c","length":149,"level":"error","line":"320","message":"Error in employee service getById: invalid input syntax for type integer: \"departments\"","name":"error","routine":"pg_strtoint32","service":"devarp-backend","severity":"ERROR","stack":"error: invalid input syntax for type integer: \"departments\"\n    at /app/node_modules/pg-pool/index.js:45:11\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async Object.query (/app/src/config/database.js:38:20)\n    at async Object.findById (/app/src/repositories/employees.js:128:20)\n    at async Object.getById (/app/src/services/employees.js:62:12)\n    at async getById (/app/src/controllers/employees.js:58:22)","timestamp":"2025-08-07 14:31:29","where":"unnamed portal parameter $1 = '...'"}
+{"code":"22P02","file":"numutils.c","length":149,"level":"error","line":"320","message":"Error getting employee by ID: invalid input syntax for type integer: \"departments\"","name":"error","routine":"pg_strtoint32","service":"devarp-backend","severity":"ERROR","stack":"error: invalid input syntax for type integer: \"departments\"\n    at /app/node_modules/pg-pool/index.js:45:11\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async Object.query (/app/src/config/database.js:38:20)\n    at async Object.findById (/app/src/repositories/employees.js:128:20)\n    at async Object.getById (/app/src/services/employees.js:62:12)\n    at async getById (/app/src/controllers/employees.js:58:22)","timestamp":"2025-08-07 14:31:29","where":"unnamed portal parameter $1 = '...'"}
+{"code":"22P02","file":"numutils.c","length":149,"level":"error","line":"320","message":"Error in employee repository findById: invalid input syntax for type integer: \"departments\"","name":"error","routine":"pg_strtoint32","service":"devarp-backend","severity":"ERROR","stack":"error: invalid input syntax for type integer: \"departments\"\n    at /app/node_modules/pg-pool/index.js:45:11\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async Object.query (/app/src/config/database.js:38:20)\n    at async Object.findById (/app/src/repositories/employees.js:128:20)\n    at async Object.getById (/app/src/services/employees.js:62:12)\n    at async getById (/app/src/controllers/employees.js:58:22)","timestamp":"2025-08-07 14:31:30","where":"unnamed portal parameter $1 = '...'"}
+{"code":"22P02","file":"numutils.c","length":149,"level":"error","line":"320","message":"Error in employee service getById: invalid input syntax for type integer: \"departments\"","name":"error","routine":"pg_strtoint32","service":"devarp-backend","severity":"ERROR","stack":"error: invalid input syntax for type integer: \"departments\"\n    at /app/node_modules/pg-pool/index.js:45:11\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async Object.query (/app/src/config/database.js:38:20)\n    at async Object.findById (/app/src/repositories/employees.js:128:20)\n    at async Object.getById (/app/src/services/employees.js:62:12)\n    at async getById (/app/src/controllers/employees.js:58:22)","timestamp":"2025-08-07 14:31:30","where":"unnamed portal parameter $1 = '...'"}
+{"code":"22P02","file":"numutils.c","length":149,"level":"error","line":"320","message":"Error getting employee by ID: invalid input syntax for type integer: \"departments\"","name":"error","routine":"pg_strtoint32","service":"devarp-backend","severity":"ERROR","stack":"error: invalid input syntax for type integer: \"departments\"\n    at /app/node_modules/pg-pool/index.js:45:11\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async Object.query (/app/src/config/database.js:38:20)\n    at async Object.findById (/app/src/repositories/employees.js:128:20)\n    at async Object.getById (/app/src/services/employees.js:62:12)\n    at async getById (/app/src/controllers/employees.js:58:22)","timestamp":"2025-08-07 14:31:30","where":"unnamed portal parameter $1 = '...'"}
+{"code":"22P02","file":"numutils.c","length":149,"level":"error","line":"320","message":"Error in employee repository findById: invalid input syntax for type integer: \"departments\"","name":"error","routine":"pg_strtoint32","service":"devarp-backend","severity":"ERROR","stack":"error: invalid input syntax for type integer: \"departments\"\n    at /app/node_modules/pg-pool/index.js:45:11\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async Object.query (/app/src/config/database.js:38:20)\n    at async Object.findById (/app/src/repositories/employees.js:128:20)\n    at async Object.getById (/app/src/services/employees.js:62:12)\n    at async getById (/app/src/controllers/employees.js:58:22)","timestamp":"2025-08-07 14:31:32","where":"unnamed portal parameter $1 = '...'"}
+{"code":"22P02","file":"numutils.c","length":149,"level":"error","line":"320","message":"Error in employee service getById: invalid input syntax for type integer: \"departments\"","name":"error","routine":"pg_strtoint32","service":"devarp-backend","severity":"ERROR","stack":"error: invalid input syntax for type integer: \"departments\"\n    at /app/node_modules/pg-pool/index.js:45:11\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async Object.query (/app/src/config/database.js:38:20)\n    at async Object.findById (/app/src/repositories/employees.js:128:20)\n    at async Object.getById (/app/src/services/employees.js:62:12)\n    at async getById (/app/src/controllers/employees.js:58:22)","timestamp":"2025-08-07 14:31:32","where":"unnamed portal parameter $1 = '...'"}
+{"code":"22P02","file":"numutils.c","length":149,"level":"error","line":"320","message":"Error getting employee by ID: invalid input syntax for type integer: \"departments\"","name":"error","routine":"pg_strtoint32","service":"devarp-backend","severity":"ERROR","stack":"error: invalid input syntax for type integer: \"departments\"\n    at /app/node_modules/pg-pool/index.js:45:11\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async Object.query (/app/src/config/database.js:38:20)\n    at async Object.findById (/app/src/repositories/employees.js:128:20)\n    at async Object.getById (/app/src/services/employees.js:62:12)\n    at async getById (/app/src/controllers/employees.js:58:22)","timestamp":"2025-08-07 14:31:32","where":"unnamed portal parameter $1 = '...'"}
+{"code":"22P02","file":"numutils.c","length":149,"level":"error","line":"320","message":"Error in employee repository findById: invalid input syntax for type integer: \"departments\"","name":"error","routine":"pg_strtoint32","service":"devarp-backend","severity":"ERROR","stack":"error: invalid input syntax for type integer: \"departments\"\n    at /app/node_modules/pg-pool/index.js:45:11\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async Object.query (/app/src/config/database.js:38:20)\n    at async Object.findById (/app/src/repositories/employees.js:128:20)\n    at async Object.getById (/app/src/services/employees.js:62:12)\n    at async getById (/app/src/controllers/employees.js:58:22)","timestamp":"2025-08-07 14:31:36","where":"unnamed portal parameter $1 = '...'"}
+{"code":"22P02","file":"numutils.c","length":149,"level":"error","line":"320","message":"Error in employee service getById: invalid input syntax for type integer: \"departments\"","name":"error","routine":"pg_strtoint32","service":"devarp-backend","severity":"ERROR","stack":"error: invalid input syntax for type integer: \"departments\"\n    at /app/node_modules/pg-pool/index.js:45:11\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async Object.query (/app/src/config/database.js:38:20)\n    at async Object.findById (/app/src/repositories/employees.js:128:20)\n    at async Object.getById (/app/src/services/employees.js:62:12)\n    at async getById (/app/src/controllers/employees.js:58:22)","timestamp":"2025-08-07 14:31:36","where":"unnamed portal parameter $1 = '...'"}
+{"code":"22P02","file":"numutils.c","length":149,"level":"error","line":"320","message":"Error getting employee by ID: invalid input syntax for type integer: \"departments\"","name":"error","routine":"pg_strtoint32","service":"devarp-backend","severity":"ERROR","stack":"error: invalid input syntax for type integer: \"departments\"\n    at /app/node_modules/pg-pool/index.js:45:11\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async Object.query (/app/src/config/database.js:38:20)\n    at async Object.findById (/app/src/repositories/employees.js:128:20)\n    at async Object.getById (/app/src/services/employees.js:62:12)\n    at async getById (/app/src/controllers/employees.js:58:22)","timestamp":"2025-08-07 14:31:36","where":"unnamed portal parameter $1 = '...'"}
+{"code":"22P02","file":"numutils.c","length":149,"level":"error","line":"320","message":"Error in employee repository findById: invalid input syntax for type integer: \"departments\"","name":"error","routine":"pg_strtoint32","service":"devarp-backend","severity":"ERROR","stack":"error: invalid input syntax for type integer: \"departments\"\n    at /app/node_modules/pg-pool/index.js:45:11\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async Object.query (/app/src/config/database.js:38:20)\n    at async Object.findById (/app/src/repositories/employees.js:128:20)\n    at async Object.getById (/app/src/services/employees.js:62:12)\n    at async getById (/app/src/controllers/employees.js:58:22)","timestamp":"2025-08-07 14:31:48","where":"unnamed portal parameter $1 = '...'"}
+{"code":"22P02","file":"numutils.c","length":149,"level":"error","line":"320","message":"Error in employee service getById: invalid input syntax for type integer: \"departments\"","name":"error","routine":"pg_strtoint32","service":"devarp-backend","severity":"ERROR","stack":"error: invalid input syntax for type integer: \"departments\"\n    at /app/node_modules/pg-pool/index.js:45:11\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async Object.query (/app/src/config/database.js:38:20)\n    at async Object.findById (/app/src/repositories/employees.js:128:20)\n    at async Object.getById (/app/src/services/employees.js:62:12)\n    at async getById (/app/src/controllers/employees.js:58:22)","timestamp":"2025-08-07 14:31:48","where":"unnamed portal parameter $1 = '...'"}
+{"code":"22P02","file":"numutils.c","length":149,"level":"error","line":"320","message":"Error getting employee by ID: invalid input syntax for type integer: \"departments\"","name":"error","routine":"pg_strtoint32","service":"devarp-backend","severity":"ERROR","stack":"error: invalid input syntax for type integer: \"departments\"\n    at /app/node_modules/pg-pool/index.js:45:11\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async Object.query (/app/src/config/database.js:38:20)\n    at async Object.findById (/app/src/repositories/employees.js:128:20)\n    at async Object.getById (/app/src/services/employees.js:62:12)\n    at async getById (/app/src/controllers/employees.js:58:22)","timestamp":"2025-08-07 14:31:48","where":"unnamed portal parameter $1 = '...'"}
+{"code":"22P02","file":"numutils.c","length":149,"level":"error","line":"320","message":"Error in employee repository findById: invalid input syntax for type integer: \"departments\"","name":"error","routine":"pg_strtoint32","service":"devarp-backend","severity":"ERROR","stack":"error: invalid input syntax for type integer: \"departments\"\n    at /app/node_modules/pg-pool/index.js:45:11\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async Object.query (/app/src/config/database.js:38:20)\n    at async Object.findById (/app/src/repositories/employees.js:128:20)\n    at async Object.getById (/app/src/services/employees.js:62:12)\n    at async getById (/app/src/controllers/employees.js:58:22)","timestamp":"2025-08-07 14:31:49","where":"unnamed portal parameter $1 = '...'"}
+{"code":"22P02","file":"numutils.c","length":149,"level":"error","line":"320","message":"Error in employee service getById: invalid input syntax for type integer: \"departments\"","name":"error","routine":"pg_strtoint32","service":"devarp-backend","severity":"ERROR","stack":"error: invalid input syntax for type integer: \"departments\"\n    at /app/node_modules/pg-pool/index.js:45:11\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async Object.query (/app/src/config/database.js:38:20)\n    at async Object.findById (/app/src/repositories/employees.js:128:20)\n    at async Object.getById (/app/src/services/employees.js:62:12)\n    at async getById (/app/src/controllers/employees.js:58:22)","timestamp":"2025-08-07 14:31:49","where":"unnamed portal parameter $1 = '...'"}
+{"code":"22P02","file":"numutils.c","length":149,"level":"error","line":"320","message":"Error getting employee by ID: invalid input syntax for type integer: \"departments\"","name":"error","routine":"pg_strtoint32","service":"devarp-backend","severity":"ERROR","stack":"error: invalid input syntax for type integer: \"departments\"\n    at /app/node_modules/pg-pool/index.js:45:11\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async Object.query (/app/src/config/database.js:38:20)\n    at async Object.findById (/app/src/repositories/employees.js:128:20)\n    at async Object.getById (/app/src/services/employees.js:62:12)\n    at async getById (/app/src/controllers/employees.js:58:22)","timestamp":"2025-08-07 14:31:49","where":"unnamed portal parameter $1 = '...'"}
+{"code":"22P02","file":"numutils.c","length":149,"level":"error","line":"320","message":"Error in employee repository findById: invalid input syntax for type integer: \"departments\"","name":"error","routine":"pg_strtoint32","service":"devarp-backend","severity":"ERROR","stack":"error: invalid input syntax for type integer: \"departments\"\n    at /app/node_modules/pg-pool/index.js:45:11\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async Object.query (/app/src/config/database.js:38:20)\n    at async Object.findById (/app/src/repositories/employees.js:128:20)\n    at async Object.getById (/app/src/services/employees.js:62:12)\n    at async getById (/app/src/controllers/employees.js:58:22)","timestamp":"2025-08-07 14:31:51","where":"unnamed portal parameter $1 = '...'"}
+{"code":"22P02","file":"numutils.c","length":149,"level":"error","line":"320","message":"Error in employee service getById: invalid input syntax for type integer: \"departments\"","name":"error","routine":"pg_strtoint32","service":"devarp-backend","severity":"ERROR","stack":"error: invalid input syntax for type integer: \"departments\"\n    at /app/node_modules/pg-pool/index.js:45:11\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async Object.query (/app/src/config/database.js:38:20)\n    at async Object.findById (/app/src/repositories/employees.js:128:20)\n    at async Object.getById (/app/src/services/employees.js:62:12)\n    at async getById (/app/src/controllers/employees.js:58:22)","timestamp":"2025-08-07 14:31:51","where":"unnamed portal parameter $1 = '...'"}
+{"code":"22P02","file":"numutils.c","length":149,"level":"error","line":"320","message":"Error getting employee by ID: invalid input syntax for type integer: \"departments\"","name":"error","routine":"pg_strtoint32","service":"devarp-backend","severity":"ERROR","stack":"error: invalid input syntax for type integer: \"departments\"\n    at /app/node_modules/pg-pool/index.js:45:11\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async Object.query (/app/src/config/database.js:38:20)\n    at async Object.findById (/app/src/repositories/employees.js:128:20)\n    at async Object.getById (/app/src/services/employees.js:62:12)\n    at async getById (/app/src/controllers/employees.js:58:22)","timestamp":"2025-08-07 14:31:51","where":"unnamed portal parameter $1 = '...'"}
+{"code":"22P02","file":"numutils.c","length":149,"level":"error","line":"320","message":"Error in employee repository findById: invalid input syntax for type integer: \"departments\"","name":"error","routine":"pg_strtoint32","service":"devarp-backend","severity":"ERROR","stack":"error: invalid input syntax for type integer: \"departments\"\n    at /app/node_modules/pg-pool/index.js:45:11\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async Object.query (/app/src/config/database.js:38:20)\n    at async Object.findById (/app/src/repositories/employees.js:128:20)\n    at async Object.getById (/app/src/services/employees.js:62:12)\n    at async getById (/app/src/controllers/employees.js:58:22)","timestamp":"2025-08-07 14:31:55","where":"unnamed portal parameter $1 = '...'"}
+{"code":"22P02","file":"numutils.c","length":149,"level":"error","line":"320","message":"Error in employee service getById: invalid input syntax for type integer: \"departments\"","name":"error","routine":"pg_strtoint32","service":"devarp-backend","severity":"ERROR","stack":"error: invalid input syntax for type integer: \"departments\"\n    at /app/node_modules/pg-pool/index.js:45:11\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async Object.query (/app/src/config/database.js:38:20)\n    at async Object.findById (/app/src/repositories/employees.js:128:20)\n    at async Object.getById (/app/src/services/employees.js:62:12)\n    at async getById (/app/src/controllers/employees.js:58:22)","timestamp":"2025-08-07 14:31:55","where":"unnamed portal parameter $1 = '...'"}
+{"code":"22P02","file":"numutils.c","length":149,"level":"error","line":"320","message":"Error getting employee by ID: invalid input syntax for type integer: \"departments\"","name":"error","routine":"pg_strtoint32","service":"devarp-backend","severity":"ERROR","stack":"error: invalid input syntax for type integer: \"departments\"\n    at /app/node_modules/pg-pool/index.js:45:11\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async Object.query (/app/src/config/database.js:38:20)\n    at async Object.findById (/app/src/repositories/employees.js:128:20)\n    at async Object.getById (/app/src/services/employees.js:62:12)\n    at async getById (/app/src/controllers/employees.js:58:22)","timestamp":"2025-08-07 14:31:55","where":"unnamed portal parameter $1 = '...'"}
+{"level":"info","message":"🚀 Devarp Backend Server started on port 3001","service":"devarp-backend","timestamp":"2025-08-07 14:32:10"}
+{"level":"info","message":"📊 Environment: development","service":"devarp-backend","timestamp":"2025-08-07 14:32:10"}
+{"level":"info","message":"🏥 Health Check: http://localhost:3001/health","service":"devarp-backend","timestamp":"2025-08-07 14:32:10"}
+{"level":"info","message":"📚 API Documentation: http://localhost:3001/api/docs","service":"devarp-backend","timestamp":"2025-08-07 14:32:10"}
+{"level":"info","message":"🚀 Devarp Backend Server started on port 3001","service":"devarp-backend","timestamp":"2025-08-07 14:32:16"}
+{"level":"info","message":"📊 Environment: development","service":"devarp-backend","timestamp":"2025-08-07 14:32:16"}
+{"level":"info","message":"🏥 Health Check: http://localhost:3001/health","service":"devarp-backend","timestamp":"2025-08-07 14:32:16"}
+{"level":"info","message":"📚 API Documentation: http://localhost:3001/api/docs","service":"devarp-backend","timestamp":"2025-08-07 14:32:16"}
+{"level":"info","message":"🚀 Devarp Backend Server started on port 3001","service":"devarp-backend","timestamp":"2025-08-07 14:32:25"}
+{"level":"info","message":"📊 Environment: development","service":"devarp-backend","timestamp":"2025-08-07 14:32:25"}
+{"level":"info","message":"🏥 Health Check: http://localhost:3001/health","service":"devarp-backend","timestamp":"2025-08-07 14:32:25"}
+{"level":"info","message":"📚 API Documentation: http://localhost:3001/api/docs","service":"devarp-backend","timestamp":"2025-08-07 14:32:25"}
+{"level":"info","message":"🚀 Devarp Backend Server started on port 3001","service":"devarp-backend","timestamp":"2025-08-07 14:32:34"}
+{"level":"info","message":"📊 Environment: development","service":"devarp-backend","timestamp":"2025-08-07 14:32:34"}
+{"level":"info","message":"🏥 Health Check: http://localhost:3001/health","service":"devarp-backend","timestamp":"2025-08-07 14:32:34"}
+{"level":"info","message":"📚 API Documentation: http://localhost:3001/api/docs","service":"devarp-backend","timestamp":"2025-08-07 14:32:34"}
+{"level":"info","message":"🚀 Devarp Backend Server started on port 3001","service":"devarp-backend","timestamp":"2025-08-07 14:32:40"}
+{"level":"info","message":"📊 Environment: development","service":"devarp-backend","timestamp":"2025-08-07 14:32:40"}
+{"level":"info","message":"🏥 Health Check: http://localhost:3001/health","service":"devarp-backend","timestamp":"2025-08-07 14:32:40"}
+{"level":"info","message":"📚 API Documentation: http://localhost:3001/api/docs","service":"devarp-backend","timestamp":"2025-08-07 14:32:40"}
+{"level":"info","message":"🚀 Devarp Backend Server started on port 3001","service":"devarp-backend","timestamp":"2025-08-07 14:32:49"}
+{"level":"info","message":"📊 Environment: development","service":"devarp-backend","timestamp":"2025-08-07 14:32:49"}
+{"level":"info","message":"🏥 Health Check: http://localhost:3001/health","service":"devarp-backend","timestamp":"2025-08-07 14:32:49"}
+{"level":"info","message":"📚 API Documentation: http://localhost:3001/api/docs","service":"devarp-backend","timestamp":"2025-08-07 14:32:49"}
+{"level":"info","message":"🚀 Devarp Backend Server started on port 3001","service":"devarp-backend","timestamp":"2025-08-07 14:33:00"}
+{"level":"info","message":"📊 Environment: development","service":"devarp-backend","timestamp":"2025-08-07 14:33:00"}
+{"level":"info","message":"🏥 Health Check: http://localhost:3001/health","service":"devarp-backend","timestamp":"2025-08-07 14:33:00"}
+{"level":"info","message":"📚 API Documentation: http://localhost:3001/api/docs","service":"devarp-backend","timestamp":"2025-08-07 14:33:00"}
+{"level":"info","message":"🚀 Devarp Backend Server started on port 3001","service":"devarp-backend","timestamp":"2025-08-07 14:33:07"}
+{"level":"info","message":"📊 Environment: development","service":"devarp-backend","timestamp":"2025-08-07 14:33:07"}
+{"level":"info","message":"🏥 Health Check: http://localhost:3001/health","service":"devarp-backend","timestamp":"2025-08-07 14:33:07"}
+{"level":"info","message":"📚 API Documentation: http://localhost:3001/api/docs","service":"devarp-backend","timestamp":"2025-08-07 14:33:07"}
+{"level":"info","message":"🚀 Devarp Backend Server started on port 3001","service":"devarp-backend","timestamp":"2025-08-07 14:33:14"}
+{"level":"info","message":"📊 Environment: development","service":"devarp-backend","timestamp":"2025-08-07 14:33:14"}
+{"level":"info","message":"🏥 Health Check: http://localhost:3001/health","service":"devarp-backend","timestamp":"2025-08-07 14:33:14"}
+{"level":"info","message":"📚 API Documentation: http://localhost:3001/api/docs","service":"devarp-backend","timestamp":"2025-08-07 14:33:14"}
+{"level":"info","message":"🚀 Devarp Backend Server started on port 3001","service":"devarp-backend","timestamp":"2025-08-07 14:33:22"}
+{"level":"info","message":"📊 Environment: development","service":"devarp-backend","timestamp":"2025-08-07 14:33:22"}
+{"level":"info","message":"🏥 Health Check: http://localhost:3001/health","service":"devarp-backend","timestamp":"2025-08-07 14:33:22"}
+{"level":"info","message":"📚 API Documentation: http://localhost:3001/api/docs","service":"devarp-backend","timestamp":"2025-08-07 14:33:22"}
+{"level":"info","message":"🚀 Devarp Backend Server started on port 3001","service":"devarp-backend","timestamp":"2025-08-07 14:33:32"}
+{"level":"info","message":"📊 Environment: development","service":"devarp-backend","timestamp":"2025-08-07 14:33:32"}
+{"level":"info","message":"🏥 Health Check: http://localhost:3001/health","service":"devarp-backend","timestamp":"2025-08-07 14:33:32"}
+{"level":"info","message":"📚 API Documentation: http://localhost:3001/api/docs","service":"devarp-backend","timestamp":"2025-08-07 14:33:32"}
+{"level":"info","message":"🚀 Devarp Backend Server started on port 3001","service":"devarp-backend","timestamp":"2025-08-07 14:33:44"}
+{"level":"info","message":"📊 Environment: development","service":"devarp-backend","timestamp":"2025-08-07 14:33:44"}
+{"level":"info","message":"🏥 Health Check: http://localhost:3001/health","service":"devarp-backend","timestamp":"2025-08-07 14:33:44"}
+{"level":"info","message":"📚 API Documentation: http://localhost:3001/api/docs","service":"devarp-backend","timestamp":"2025-08-07 14:33:44"}
+{"level":"info","message":"🚀 Devarp Backend Server started on port 3001","service":"devarp-backend","timestamp":"2025-08-07 14:33:49"}
+{"level":"info","message":"📊 Environment: development","service":"devarp-backend","timestamp":"2025-08-07 14:33:49"}
+{"level":"info","message":"🏥 Health Check: http://localhost:3001/health","service":"devarp-backend","timestamp":"2025-08-07 14:33:49"}
+{"level":"info","message":"📚 API Documentation: http://localhost:3001/api/docs","service":"devarp-backend","timestamp":"2025-08-07 14:33:49"}
+{"level":"info","message":"🚀 Devarp Backend Server started on port 3001","service":"devarp-backend","timestamp":"2025-08-07 14:36:26"}
+{"level":"info","message":"📊 Environment: development","service":"devarp-backend","timestamp":"2025-08-07 14:36:26"}
+{"level":"info","message":"🏥 Health Check: http://localhost:3001/health","service":"devarp-backend","timestamp":"2025-08-07 14:36:26"}
+{"level":"info","message":"📚 API Documentation: http://localhost:3001/api/docs","service":"devarp-backend","timestamp":"2025-08-07 14:36:26"}
+{"level":"info","message":"🚀 Devarp Backend Server started on port 3001","service":"devarp-backend","timestamp":"2025-08-08 07:15:59"}
+{"level":"info","message":"📊 Environment: development","service":"devarp-backend","timestamp":"2025-08-08 07:15:59"}
+{"level":"info","message":"🏥 Health Check: http://localhost:3001/health","service":"devarp-backend","timestamp":"2025-08-08 07:15:59"}
+{"level":"info","message":"📚 API Documentation: http://localhost:3001/api/docs","service":"devarp-backend","timestamp":"2025-08-08 07:15:59"}
+{"level":"info","message":"🚀 Devarp Backend Server started on port 3001","service":"devarp-backend","timestamp":"2025-08-08 07:33:42"}
+{"level":"info","message":"📊 Environment: development","service":"devarp-backend","timestamp":"2025-08-08 07:33:42"}
+{"level":"info","message":"🏥 Health Check: http://localhost:3001/health","service":"devarp-backend","timestamp":"2025-08-08 07:33:42"}
+{"level":"info","message":"📚 API Documentation: http://localhost:3001/api/docs","service":"devarp-backend","timestamp":"2025-08-08 07:33:42"}
+{"level":"info","message":"🚀 Devarp Backend Server started on port 3001","service":"devarp-backend","timestamp":"2025-08-08 07:39:04"}
+{"level":"info","message":"📊 Environment: development","service":"devarp-backend","timestamp":"2025-08-08 07:39:04"}
+{"level":"info","message":"🏥 Health Check: http://localhost:3001/health","service":"devarp-backend","timestamp":"2025-08-08 07:39:04"}
+{"level":"info","message":"📚 API Documentation: http://localhost:3001/api/docs","service":"devarp-backend","timestamp":"2025-08-08 07:39:04"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 07:39:06"}
+{"level":"info","message":"🚀 Devarp Backend Server started on port 3001","service":"devarp-backend","timestamp":"2025-08-08 07:39:11"}
+{"level":"info","message":"📊 Environment: development","service":"devarp-backend","timestamp":"2025-08-08 07:39:11"}
+{"level":"info","message":"🏥 Health Check: http://localhost:3001/health","service":"devarp-backend","timestamp":"2025-08-08 07:39:11"}
+{"level":"info","message":"📚 API Documentation: http://localhost:3001/api/docs","service":"devarp-backend","timestamp":"2025-08-08 07:39:11"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 07:39:36"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 07:40:06"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 07:40:36"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 07:41:06"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 07:41:36"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 07:42:06"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 07:42:36"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 07:43:06"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 07:43:37"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 07:44:07"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 07:44:37"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 07:45:07"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 07:45:37"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 07:46:07"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 07:46:37"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 07:47:07"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 07:47:37"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 07:48:07"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 07:48:37"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 07:49:07"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 07:49:37"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 07:50:08"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 07:50:38"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 07:51:08"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 07:51:38"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 07:52:08"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 07:52:38"}
+{"level":"info","message":"🚀 Devarp Backend Server started on port 3001","service":"devarp-backend","timestamp":"2025-08-08 07:52:57"}
+{"level":"info","message":"📊 Environment: development","service":"devarp-backend","timestamp":"2025-08-08 07:52:57"}
+{"level":"info","message":"🏥 Health Check: http://localhost:3001/health","service":"devarp-backend","timestamp":"2025-08-08 07:52:57"}
+{"level":"info","message":"📚 API Documentation: http://localhost:3001/api/docs","service":"devarp-backend","timestamp":"2025-08-08 07:52:57"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 07:53:00"}
+{"level":"info","message":"GET /health - ::ffff:192.168.65.1","service":"devarp-backend","timestamp":"2025-08-08 07:53:01"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 07:53:30"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 07:54:00"}
+{"level":"info","message":"🚀 Devarp Backend Server started on port 3001","service":"devarp-backend","timestamp":"2025-08-08 07:54:05"}
+{"level":"info","message":"📊 Environment: development","service":"devarp-backend","timestamp":"2025-08-08 07:54:05"}
+{"level":"info","message":"🏥 Health Check: http://localhost:3001/health","service":"devarp-backend","timestamp":"2025-08-08 07:54:05"}
+{"level":"info","message":"📚 API Documentation: http://localhost:3001/api/docs","service":"devarp-backend","timestamp":"2025-08-08 07:54:05"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 07:54:31"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 07:55:01"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 07:55:31"}
+{"level":"info","message":"GET /api/dashboard/activities - ::ffff:192.168.65.1","service":"devarp-backend","timestamp":"2025-08-08 07:55:36"}
+{"level":"info","message":"GET /api/dashboard/alerts - ::ffff:192.168.65.1","service":"devarp-backend","timestamp":"2025-08-08 07:55:36"}
+{"level":"info","message":"Auth success for levent2","service":"devarp-backend","timestamp":"2025-08-08 07:55:36"}
+{"level":"info","message":"Auth success for levent2","service":"devarp-backend","timestamp":"2025-08-08 07:55:36"}
+{"level":"info","message":"Auth success for levent2","service":"devarp-backend","timestamp":"2025-08-08 07:55:36"}
+{"level":"info","message":"Auth success for levent2","service":"devarp-backend","timestamp":"2025-08-08 07:55:36"}
+{"level":"info","message":"GET /api/dashboard/activities - ::ffff:192.168.65.1","service":"devarp-backend","timestamp":"2025-08-08 07:55:37"}
+{"level":"info","message":"GET /api/dashboard/stats - ::ffff:192.168.65.1","service":"devarp-backend","timestamp":"2025-08-08 07:55:37"}
+{"level":"info","message":"Auth success for levent2","service":"devarp-backend","timestamp":"2025-08-08 07:55:37"}
+{"level":"info","message":"Auth success for levent2","service":"devarp-backend","timestamp":"2025-08-08 07:55:37"}
+{"level":"info","message":"GET /api/dashboard/alerts - ::ffff:192.168.65.1","service":"devarp-backend","timestamp":"2025-08-08 07:55:37"}
+{"level":"info","message":"Auth success for levent2","service":"devarp-backend","timestamp":"2025-08-08 07:55:37"}
+{"level":"info","message":"Auth success for levent2","service":"devarp-backend","timestamp":"2025-08-08 07:55:37"}
+{"level":"info","message":"Auth success for levent2","service":"devarp-backend","timestamp":"2025-08-08 07:55:37"}
+{"level":"info","message":"Auth success for levent2","service":"devarp-backend","timestamp":"2025-08-08 07:55:37"}
+{"level":"info","message":"GET /api/stats/product-count - ::ffff:192.168.65.1","service":"devarp-backend","timestamp":"2025-08-08 07:55:37"}
+{"level":"info","message":"Auth success for levent2","service":"devarp-backend","timestamp":"2025-08-08 07:55:37"}
+{"level":"info","message":"Auth success for levent2","service":"devarp-backend","timestamp":"2025-08-08 07:55:37"}
+{"level":"info","message":"GET /api/dashboard/stats - ::ffff:192.168.65.1","service":"devarp-backend","timestamp":"2025-08-08 07:55:38"}
+{"level":"info","message":"GET /api/dashboard/activities - ::ffff:192.168.65.1","service":"devarp-backend","timestamp":"2025-08-08 07:55:38"}
+{"level":"info","message":"GET /api/dashboard/alerts - ::ffff:192.168.65.1","service":"devarp-backend","timestamp":"2025-08-08 07:55:38"}
+{"level":"info","message":"Auth success for levent2","service":"devarp-backend","timestamp":"2025-08-08 07:55:38"}
+{"level":"info","message":"Auth success for levent2","service":"devarp-backend","timestamp":"2025-08-08 07:55:38"}
+{"level":"info","message":"Auth success for levent2","service":"devarp-backend","timestamp":"2025-08-08 07:55:38"}
+{"level":"info","message":"Auth success for levent2","service":"devarp-backend","timestamp":"2025-08-08 07:55:38"}
+{"level":"info","message":"Auth success for levent2","service":"devarp-backend","timestamp":"2025-08-08 07:55:38"}
+{"level":"info","message":"Auth success for levent2","service":"devarp-backend","timestamp":"2025-08-08 07:55:38"}
+{"level":"info","message":"GET /api/stats/product-count - ::ffff:192.168.65.1","service":"devarp-backend","timestamp":"2025-08-08 07:55:38"}
+{"level":"info","message":"Auth success for levent2","service":"devarp-backend","timestamp":"2025-08-08 07:55:38"}
+{"level":"info","message":"Auth success for levent2","service":"devarp-backend","timestamp":"2025-08-08 07:55:38"}
+{"level":"info","message":"GET /api/products - ::ffff:192.168.65.1","service":"devarp-backend","timestamp":"2025-08-08 07:55:53"}
+{"level":"info","message":"GET /api/product-types - ::ffff:192.168.65.1","service":"devarp-backend","timestamp":"2025-08-08 07:55:53"}
+{"level":"info","message":"GET /api/categories - ::ffff:192.168.65.1","service":"devarp-backend","timestamp":"2025-08-08 07:55:53"}
+{"level":"info","message":"Auth success for levent2","service":"devarp-backend","timestamp":"2025-08-08 07:55:53"}
+{"level":"info","message":"Auth success for levent2","service":"devarp-backend","timestamp":"2025-08-08 07:55:53"}
+{"level":"info","message":"Auth success for levent2","service":"devarp-backend","timestamp":"2025-08-08 07:55:53"}
+{"level":"info","message":"Auth success for levent2","service":"devarp-backend","timestamp":"2025-08-08 07:55:53"}
+{"level":"info","message":"Auth success for levent2","service":"devarp-backend","timestamp":"2025-08-08 07:55:53"}
+{"level":"info","message":"Auth success for levent2","service":"devarp-backend","timestamp":"2025-08-08 07:55:53"}
+{"level":"info","message":"GET /api/suppliers - ::ffff:192.168.65.1","service":"devarp-backend","timestamp":"2025-08-08 07:55:53"}
+{"level":"info","message":"Auth success for levent2","service":"devarp-backend","timestamp":"2025-08-08 07:55:53"}
+{"level":"info","message":"Auth success for levent2","service":"devarp-backend","timestamp":"2025-08-08 07:55:53"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 07:56:01"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 07:56:31"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 07:57:01"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 07:57:31"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 07:58:01"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 07:58:31"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 07:59:01"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 07:59:31"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:00:01"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:00:31"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:01:02"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:01:32"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:02:02"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:02:32"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:03:02"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:03:32"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:04:02"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:04:32"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:05:02"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:05:32"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:06:02"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:06:32"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:07:03"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:07:33"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:08:03"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:08:33"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:09:03"}
+{"level":"info","message":"🚀 Devarp Backend Server started on port 3001","service":"devarp-backend","timestamp":"2025-08-08 08:09:09"}
+{"level":"info","message":"📊 Environment: development","service":"devarp-backend","timestamp":"2025-08-08 08:09:09"}
+{"level":"info","message":"🏥 Health Check: http://localhost:3001/health","service":"devarp-backend","timestamp":"2025-08-08 08:09:09"}
+{"level":"info","message":"📚 API Documentation: http://localhost:3001/api/docs","service":"devarp-backend","timestamp":"2025-08-08 08:09:09"}
+{"level":"info","message":"🚀 Devarp Backend Server started on port 3001","service":"devarp-backend","timestamp":"2025-08-08 08:09:25"}
+{"level":"info","message":"📊 Environment: development","service":"devarp-backend","timestamp":"2025-08-08 08:09:25"}
+{"level":"info","message":"🏥 Health Check: http://localhost:3001/health","service":"devarp-backend","timestamp":"2025-08-08 08:09:25"}
+{"level":"info","message":"📚 API Documentation: http://localhost:3001/api/docs","service":"devarp-backend","timestamp":"2025-08-08 08:09:25"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:09:33"}
+{"level":"info","message":"🚀 Devarp Backend Server started on port 3001","service":"devarp-backend","timestamp":"2025-08-08 08:09:35"}
+{"level":"info","message":"📊 Environment: development","service":"devarp-backend","timestamp":"2025-08-08 08:09:35"}
+{"level":"info","message":"🏥 Health Check: http://localhost:3001/health","service":"devarp-backend","timestamp":"2025-08-08 08:09:35"}
+{"level":"info","message":"📚 API Documentation: http://localhost:3001/api/docs","service":"devarp-backend","timestamp":"2025-08-08 08:09:35"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:10:03"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:10:33"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:11:03"}
+{"level":"info","message":"🚀 Devarp Backend Server started on port 3001","service":"devarp-backend","timestamp":"2025-08-08 08:11:17"}
+{"level":"info","message":"📊 Environment: development","service":"devarp-backend","timestamp":"2025-08-08 08:11:17"}
+{"level":"info","message":"🏥 Health Check: http://localhost:3001/health","service":"devarp-backend","timestamp":"2025-08-08 08:11:17"}
+{"level":"info","message":"📚 API Documentation: http://localhost:3001/api/docs","service":"devarp-backend","timestamp":"2025-08-08 08:11:17"}
+{"level":"info","message":"GET /health - ::ffff:192.168.65.1","service":"devarp-backend","timestamp":"2025-08-08 08:11:19"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:11:20"}
+{"level":"info","message":"🚀 Devarp Backend Server started on port 3001","service":"devarp-backend","timestamp":"2025-08-08 08:11:33"}
+{"level":"info","message":"📊 Environment: development","service":"devarp-backend","timestamp":"2025-08-08 08:11:33"}
+{"level":"info","message":"🏥 Health Check: http://localhost:3001/health","service":"devarp-backend","timestamp":"2025-08-08 08:11:33"}
+{"level":"info","message":"📚 API Documentation: http://localhost:3001/api/docs","service":"devarp-backend","timestamp":"2025-08-08 08:11:33"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:11:50"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:12:20"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:12:50"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:13:21"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:13:51"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:14:21"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:14:51"}
+{"level":"info","message":"🚀 Devarp Backend Server started on port 3001","service":"devarp-backend","timestamp":"2025-08-08 08:15:12"}
+{"level":"info","message":"📊 Environment: development","service":"devarp-backend","timestamp":"2025-08-08 08:15:12"}
+{"level":"info","message":"🏥 Health Check: http://localhost:3001/health","service":"devarp-backend","timestamp":"2025-08-08 08:15:12"}
+{"level":"info","message":"📚 API Documentation: http://localhost:3001/api/docs","service":"devarp-backend","timestamp":"2025-08-08 08:15:12"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:15:21"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:15:51"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:16:21"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:16:51"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:17:22"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:17:52"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:18:22"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:18:52"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:19:22"}
+{"level":"info","message":"🚀 Devarp Backend Server started on port 3001","service":"devarp-backend","timestamp":"2025-08-08 08:19:47"}
+{"level":"info","message":"📊 Environment: development","service":"devarp-backend","timestamp":"2025-08-08 08:19:47"}
+{"level":"info","message":"🏥 Health Check: http://localhost:3001/health","service":"devarp-backend","timestamp":"2025-08-08 08:19:47"}
+{"level":"info","message":"📚 API Documentation: http://localhost:3001/api/docs","service":"devarp-backend","timestamp":"2025-08-08 08:19:47"}
+{"level":"info","message":"GET /health - ::ffff:192.168.65.1","service":"devarp-backend","timestamp":"2025-08-08 08:19:50"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:19:51"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:20:21"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:20:51"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:21:21"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:21:51"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:22:21"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:22:51"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:23:21"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:23:51"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:24:22"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:24:52"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:25:22"}
+{"level":"info","message":"GET /api/products - ::ffff:192.168.65.1","service":"devarp-backend","timestamp":"2025-08-08 08:25:30"}
+{"level":"info","message":"GET /api/categories - ::ffff:192.168.65.1","service":"devarp-backend","timestamp":"2025-08-08 08:25:30"}
+{"level":"info","message":"GET /api/product-types - ::ffff:192.168.65.1","service":"devarp-backend","timestamp":"2025-08-08 08:25:30"}
+{"level":"info","message":"Auth success for levent2","service":"devarp-backend","timestamp":"2025-08-08 08:25:30"}
+{"level":"info","message":"Auth success for levent2","service":"devarp-backend","timestamp":"2025-08-08 08:25:30"}
+{"level":"info","message":"Auth success for levent2","service":"devarp-backend","timestamp":"2025-08-08 08:25:30"}
+{"level":"info","message":"Auth success for levent2","service":"devarp-backend","timestamp":"2025-08-08 08:25:30"}
+{"level":"info","message":"Auth success for levent2","service":"devarp-backend","timestamp":"2025-08-08 08:25:30"}
+{"level":"info","message":"Auth success for levent2","service":"devarp-backend","timestamp":"2025-08-08 08:25:30"}
+{"level":"info","message":"GET /api/suppliers - ::ffff:192.168.65.1","service":"devarp-backend","timestamp":"2025-08-08 08:25:30"}
+{"level":"info","message":"Auth success for levent2","service":"devarp-backend","timestamp":"2025-08-08 08:25:30"}
+{"level":"info","message":"Auth success for levent2","service":"devarp-backend","timestamp":"2025-08-08 08:25:30"}
+{"level":"info","message":"GET /api/products - ::ffff:192.168.65.1","service":"devarp-backend","timestamp":"2025-08-08 08:25:34"}
+{"level":"info","message":"Auth success for levent2","service":"devarp-backend","timestamp":"2025-08-08 08:25:34"}
+{"level":"info","message":"Auth success for levent2","service":"devarp-backend","timestamp":"2025-08-08 08:25:34"}
+{"level":"info","message":"GET /api/products - ::ffff:192.168.65.1","service":"devarp-backend","timestamp":"2025-08-08 08:25:36"}
+{"level":"info","message":"Auth success for levent2","service":"devarp-backend","timestamp":"2025-08-08 08:25:36"}
+{"level":"info","message":"Auth success for levent2","service":"devarp-backend","timestamp":"2025-08-08 08:25:36"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:25:52"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:26:22"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:26:52"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:27:22"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:27:52"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:28:22"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:28:52"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:29:22"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:29:52"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:30:23"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:30:53"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:31:23"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:31:53"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:32:23"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:32:53"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:33:23"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:33:53"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:34:23"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:34:53"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:35:23"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:35:53"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:36:24"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:36:54"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:37:24"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:37:54"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:38:24"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:38:54"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:39:24"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:39:54"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:40:24"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:40:54"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:41:24"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:41:54"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:42:24"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:42:54"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:43:25"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:43:55"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:44:25"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:44:55"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:45:25"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:45:55"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:46:25"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:46:55"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:47:25"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:47:55"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:48:25"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:48:56"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:49:26"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:49:56"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:50:26"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:50:56"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:51:26"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:51:56"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:52:26"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:52:56"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:53:26"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:53:56"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:54:26"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:54:56"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:55:26"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:55:57"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:56:27"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:56:57"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:57:27"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:57:57"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:58:27"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:58:57"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:59:27"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 08:59:57"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:00:27"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:00:57"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:01:27"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:01:57"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:02:28"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:02:58"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:03:28"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:03:58"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:04:28"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:04:58"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:05:28"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:05:58"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:06:28"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:06:58"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:07:28"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:07:58"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:08:29"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:08:59"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:09:29"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:09:59"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:10:29"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:10:59"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:11:29"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:11:59"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:12:29"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:12:59"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:13:29"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:13:59"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:14:30"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:15:00"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:15:30"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:16:00"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:16:30"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:17:00"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:17:30"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:18:00"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:18:30"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:19:00"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:19:30"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:20:00"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:20:30"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:21:00"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:21:31"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:22:01"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:22:31"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:23:01"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:23:31"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:24:01"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:24:31"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:25:01"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:25:31"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:26:01"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:26:31"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:27:01"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:27:31"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:28:02"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:28:32"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:29:02"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:29:32"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:30:02"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:30:32"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:31:02"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:31:32"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:32:02"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:32:32"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:33:02"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:33:32"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:34:02"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:34:32"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:35:03"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:35:33"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:36:03"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:36:33"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:37:03"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:37:33"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:38:03"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:38:33"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:39:03"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:39:33"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:40:03"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:40:33"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:41:03"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:41:34"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:42:04"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:42:34"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:43:04"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:43:34"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:44:04"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:44:34"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:45:04"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:45:34"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:46:04"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:46:34"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:47:04"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:47:35"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:48:05"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:48:35"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:49:05"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:49:35"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:50:05"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:50:35"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:51:05"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:51:35"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:52:05"}
+{"level":"info","message":"GET /health - ::1","service":"devarp-backend","timestamp":"2025-08-08 09:52:35"}

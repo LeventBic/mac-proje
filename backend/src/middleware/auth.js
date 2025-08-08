@@ -1,27 +1,31 @@
 const jwt = require('jsonwebtoken')
 const { query } = require('../config/database')
 const { AppError } = require('./errorHandler')
+const logger = require('../utils/logger')
 
 // Verify JWT token
 const verifyToken = async (req, res, next) => {
   try {
-    console.log(`🔐 Auth: ${req.method} ${req.path} - Starting token verification`)
+    logger.debug(`Auth start ${req.method} ${req.path}`)
 
     // Get token from header
     let token
-    if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+    if (
+      req.headers.authorization &&
+      req.headers.authorization.startsWith('Bearer')
+    ) {
       token = req.headers.authorization.split(' ')[1]
     }
 
     if (!token) {
-      console.log('🔐 Auth: No token provided')
+      logger.warn('Auth: No token provided')
       return next(new AppError('Access token is required', 401))
     }
 
-    console.log('🔐 Auth: Token found, verifying...')
+    logger.debug('Auth: Token found, verifying...')
     // Verify token
     const decoded = jwt.verify(token, process.env.JWT_SECRET)
-    console.log(`🔐 Auth: Token decoded for user ID: ${decoded.userId}`)
+    logger.debug(`Auth: Token decoded for user ID: ${decoded.userId}`)
 
     // Get user from database
     const result = await query(
@@ -30,24 +34,26 @@ const verifyToken = async (req, res, next) => {
     )
 
     if (result.rows.length === 0) {
-      console.log(`🔐 Auth: User ${decoded.userId} not found`)
+      logger.warn(`Auth: User ${decoded.userId} not found`)
       return next(new AppError('User no longer exists', 401))
     }
 
     const user = result.rows[0]
-    console.log(`🔐 Auth: User found: ${user.username}, role: ${user.role}, active: ${user.is_active}`)
+    logger.debug(
+      `Auth: User found: ${user.username}, role: ${user.role}, active: ${user.is_active}`
+    )
 
     if (!user.is_active) {
-      console.log(`🔐 Auth: User ${user.username} is not active`)
+      logger.warn(`Auth: User ${user.username} is not active`)
       return next(new AppError('User account is disabled', 401))
     }
 
     // Add user to request object
     req.user = user
-    console.log(`🔐 Auth: Authentication successful for ${user.username}`)
+    logger.info(`Auth success for ${user.username}`)
     next()
   } catch (error) {
-    console.log('🔐 Auth: Error during verification:', error.message)
+    logger.warn(`Auth error: ${error.message}`)
     if (error.name === 'JsonWebTokenError') {
       return next(new AppError('Invalid token', 401))
     }
@@ -83,7 +89,10 @@ const requireAdminOrOperator = [verifyToken, requireRole('admin', 'operator')]
 const optionalAuth = async (req, res, next) => {
   try {
     let token
-    if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+    if (
+      req.headers.authorization &&
+      req.headers.authorization.startsWith('Bearer')
+    ) {
       token = req.headers.authorization.split(' ')[1]
     }
 
@@ -107,16 +116,14 @@ const optionalAuth = async (req, res, next) => {
 }
 
 // Generate JWT token
-const generateToken = (userId) => {
-  return jwt.sign(
-    { userId },
-    process.env.JWT_SECRET,
-    { expiresIn: process.env.JWT_EXPIRES_IN || '24h' }
-  )
+const generateToken = userId => {
+  return jwt.sign({ userId }, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_EXPIRES_IN || '24h'
+  })
 }
 
 // Generate refresh token
-const generateRefreshToken = (userId) => {
+const generateRefreshToken = userId => {
   return jwt.sign(
     { userId, type: 'refresh' },
     process.env.JWT_REFRESH_SECRET || process.env.JWT_SECRET,
@@ -125,8 +132,11 @@ const generateRefreshToken = (userId) => {
 }
 
 // Verify refresh token
-const verifyRefreshToken = (token) => {
-  return jwt.verify(token, process.env.JWT_REFRESH_SECRET || process.env.JWT_SECRET)
+const verifyRefreshToken = token => {
+  return jwt.verify(
+    token,
+    process.env.JWT_REFRESH_SECRET || process.env.JWT_SECRET
+  )
 }
 
 module.exports = {

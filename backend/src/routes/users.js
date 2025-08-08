@@ -146,7 +146,7 @@ router.post(
       }
 
       // Hash password
-      const saltRounds = 10
+      const saltRounds = parseInt(process.env.BCRYPT_ROUNDS) || 12
       const passwordHash = await bcrypt.hash(password, saltRounds)
 
       // Insert user
@@ -226,7 +226,7 @@ router.put('/:id', requireAdmin, async (req, res, next) => {
       [isActive, id]
     )
 
-    if (result.affectedRows === 0) {
+    if (result.rowCount === 0) {
       return next(new AppError('User not found', 404))
     }
 
@@ -293,7 +293,7 @@ router.delete('/:id', requireAdmin, async (req, res, next) => {
     // Delete user
     const result = await query('DELETE FROM users WHERE id = $1', [id])
 
-    if (result.affectedRows === 0) {
+    if (result.rowCount === 0) {
       return next(new AppError('User not found', 404))
     }
 
@@ -406,7 +406,7 @@ router.put('/:id/password', requireAuth, async (req, res, next) => {
 
     // Yeni şifreyi hashle
     const bcrypt = require('bcryptjs')
-    const saltRounds = 10
+    const saltRounds = parseInt(process.env.BCRYPT_ROUNDS) || 12
     const newPasswordHash = await bcrypt.hash(newPassword, saltRounds)
 
     // SQL NULL hatası almamak için parametreyi kontrol et
@@ -481,7 +481,7 @@ router.put('/:id/change-password', requireAuth, async (req, res, next) => {
     }
 
     // Yeni şifreyi hashle
-    const saltRounds = 10
+    const saltRounds = parseInt(process.env.BCRYPT_ROUNDS) || 12
     const newPasswordHash = await bcrypt.hash(newPassword, saltRounds)
 
     // Şifreyi güncelle

@@ -48,6 +48,9 @@ import SettingsPage from "./pages/Settings/SettingsPage";
 import NotFoundPage from "./pages/NotFoundPage";
 import ReportsPage from "./pages/Dashboard/ReportsPage";
 import OperationsPage from "./pages/Operations/OperationsPage";
+import EmployeesPage from "./pages/Employees/EmployeesPage";
+import NewEmployeePage from "./pages/Employees/NewEmployeePage";
+import EditEmployeePage from "./pages/Employees/EditEmployeePage";
 
 // QueryClient is imported from config/queryClient.js
 
@@ -85,6 +88,7 @@ function App() {
 
                 {/* Inventory */}
                 <Route path="inventory" element={<InventoryPage />} />
+                <Route path="inventory/products-services" element={<ProductsPage />} />
 
                 {/* Current Stock */}
                 <Route path="current-stock" element={<CurrentStockPage />} />
@@ -137,6 +141,11 @@ function App() {
                 {/* Customers */}
                 <Route path="customers" element={<CustomersPage />} />
 
+                {/* Employees */}
+                <Route path="employees" element={<EmployeesPage />} />
+                <Route path="employees/new" element={<NewEmployeePage />} />
+                <Route path="employees/edit/:id" element={<EditEmployeePage />} />
+
                 {/* Production */}
                 <Route path="production" element={<ProductionPage />} />
                 <Route
@@ -166,6 +175,15 @@ function App() {
 
                 {/* Settings */}
                 <Route path="settings" element={<SettingsPage />} />
+                <Route path="ayarlar">
+                  <Route path="kullanicilar" element={
+                    <ProtectedRoute requiredRole="admin">
+                      <UsersPage />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="firma-bilgileri" element={<SettingsPage />} />
+                  <Route path="kategori-ve-etiketler" element={<SettingsPage />} />
+                </Route>
               </Route>
 
               {/* 404 page */}

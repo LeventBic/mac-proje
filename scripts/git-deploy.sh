@@ -124,9 +124,9 @@ APP_DIR="/home/$USER/inflow-inventory/output/project_files"
 mkdir -p $BACKUP_DIR
 cd $APP_DIR
 
-# Database backup
+# Database backup (PostgreSQL)
 echo "Creating database backup..."
-docker exec inflow_mysql_prod mysqldump -uroot -p$MYSQL_ROOT_PASSWORD inflow_db > $BACKUP_DIR/database_backup_$DATE.sql
+docker exec devarp_postgres_prod pg_dump -U postgres -d inflow_db > $BACKUP_DIR/database_backup_$DATE.sql
 
 # Application backup
 echo "Creating application backup..."

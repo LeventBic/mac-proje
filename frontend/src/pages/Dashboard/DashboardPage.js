@@ -41,10 +41,10 @@ const DashboardPage = () => {
   const mainCategories = [
     {
       title: "Envanter",
-      color: "bg-blue-600", 
+      color: "bg-red-600", 
       colorHover: "hover:bg-blue-700",
       colorLight: "bg-blue-50",
-      colorDark: "text-blue-600",
+      colorDark: "text-red-600",
       items: [
         { name: "Ürünler", icon: <FiPackage className="w-4 h-4" />, link: "/products" },
         { name: "Mevcut stok", icon: <FiArchive className="w-4 h-4" />, link: "/current-stock" },

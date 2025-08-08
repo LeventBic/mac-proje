@@ -9,7 +9,7 @@ const TotalProductsWidget = ({ className = '' }) => {
     return (
       <div className={`bg-white rounded-lg shadow-sm border border-gray-200 p-6 ${className}`}>
         <div className="flex items-center justify-center h-24">
-          <FiLoader className="w-8 h-8 text-blue-600 animate-spin" />
+          <FiLoader className="w-8 h-8 text-red-600 animate-spin" />
           <span className="ml-2 text-gray-600">Yükleniyor...</span>
         </div>
       </div>
@@ -38,7 +38,7 @@ const TotalProductsWidget = ({ className = '' }) => {
       <div className="flex items-center">
         <div className="flex-shrink-0">
           <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-            <FiPackage className="w-6 h-6 text-blue-600" />
+            <FiPackage className="w-6 h-6 text-red-600" />
           </div>
         </div>
         <div className="ml-4 flex-1">

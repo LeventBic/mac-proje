@@ -515,7 +515,7 @@ const PurchaseOrdersPage = () => {
                 disabled={
                   createOrderMutation.isPending || formData.items.length === 0
                 }
-                className="rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 disabled:opacity-50"
+                className="rounded-md bg-red-600 px-4 py-2 text-white hover:bg-red-700 disabled:opacity-50"
               >
                 {createOrderMutation.isPending
                   ? 'Oluşturuluyor...'
@@ -552,7 +552,7 @@ const PurchaseOrdersPage = () => {
         <div className="flex space-x-3">
           <button
             onClick={() => setShowCreateModal(true)}
-            className="flex items-center rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+            className="flex items-center rounded-md bg-red-600 px-4 py-2 text-white hover:bg-red-700"
           >
             <FiPlus className="mr-2 h-4 w-4" />
             Yeni Sipariş
@@ -751,7 +751,7 @@ const PurchaseOrdersPage = () => {
                             setSelectedOrder(order);
                             setShowReceiveModal(true);
                           }}
-                          className="text-blue-600 hover:text-blue-900"
+                          className="text-red-600 hover:text-red-900"
                           title="Mal Kabul"
                         >
                           <FiTruck className="h-4 w-4" />

@@ -231,7 +231,7 @@ const ProjectsPage = () => {
               resetForm();
               setShowForm(true);
             }}
-            className="flex items-center rounded-lg bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700"
+            className="flex items-center rounded-lg bg-red-600 px-4 py-2 text-white transition-colors hover:bg-red-700"
           >
             <FiPlus className="mr-2" />
             Yeni Proje
@@ -296,7 +296,7 @@ const ProjectsPage = () => {
             <div className="flex items-end space-x-2">
               <button
                 onClick={handleSearch}
-                className="flex flex-1 items-center justify-center rounded-lg bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700"
+                className="flex flex-1 items-center justify-center rounded-lg bg-red-600 px-4 py-2 text-white transition-colors hover:bg-red-700"
               >
                 <FiSearch className="mr-2" />
                 Ara
@@ -315,7 +315,7 @@ const ProjectsPage = () => {
         <div className="overflow-hidden rounded-lg bg-white shadow-sm">
           {loading ? (
             <div className="p-8 text-center">
-              <div className="mx-auto h-8 w-8 animate-spin rounded-full border-b-2 border-blue-600"></div>
+              <div className="mx-auto h-8 w-8 animate-spin rounded-full border-b-2 border-red-600"></div>
               <p className="mt-2 text-gray-600">Yükleniyor...</p>
             </div>
           ) : projects.length === 0 ? (
@@ -422,7 +422,7 @@ const ProjectsPage = () => {
                             <div className="flex space-x-2">
                               <button
                                 onClick={() => handleEdit(project)}
-                                className="text-blue-600 hover:text-blue-900"
+                                className="text-red-600 hover:text-red-900"
                               >
                                 <FiEdit />
                               </button>
@@ -741,7 +741,7 @@ const ProjectsPage = () => {
                       createProjectMutation.isLoading ||
                       updateProjectMutation.isLoading
                     }
-                    className="rounded-lg bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700 disabled:opacity-50"
+                    className="rounded-lg bg-red-600 px-4 py-2 text-white transition-colors hover:bg-red-700 disabled:opacity-50"
                   >
                     {createProjectMutation.isLoading ||
                     updateProjectMutation.isLoading
