@@ -121,6 +121,10 @@ if (process.env.API_DOCS_ENABLED === 'true') {
         {
           url: `http://localhost:${PORT}`,
           description: 'Development server'
+        },
+        {
+          url: `${process.env.API_BASE_URL || `http://localhost:${PORT}`}`,
+          description: 'External/LAN server'
         }
       ],
       components: {

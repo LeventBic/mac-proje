@@ -1,9 +1,12 @@
 import axios from 'axios';
 import toast from 'react-hot-toast';
 
-// API Base URL
+// API Base URL (LAN-friendly default: same host, backend on 3002)
 const API_BASE_URL =
-  process.env.REACT_APP_API_URL || 'http://localhost:3003/api';
+  process.env.REACT_APP_API_URL ||
+  (typeof window !== 'undefined'
+    ? `${window.location.protocol}//${window.location.hostname}:3002/api`
+    : 'http://localhost:3002/api');
 
 // Create axios instance
 const axiosClient = axios.create({
